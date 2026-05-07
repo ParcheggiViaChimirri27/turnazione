@@ -491,3 +491,40 @@ tr:last-child td{
     min-width:0;
   }
 }
+/* FIX DEFINITIVO INPUT DATA MOBILE */
+.panel,
+.date-grid,
+.date-grid > div {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+input[type="date"] {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 18px;
+}
+
+@media (max-width: 560px) {
+  .panel {
+    padding: 16px;
+  }
+
+  .date-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  input[type="date"] {
+    font-size: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
