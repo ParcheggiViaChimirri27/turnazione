@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Turnazione Parcheggi Via Chimirri 27</title>
+  <title>VIA CHIMIRRI 27</title>
 
   <style>
     :root {
@@ -29,9 +29,10 @@
 
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Inter", "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      letter-spacing: -0.01em;
     }
 
     header {
@@ -42,11 +43,14 @@
     h1 {
       margin: 0 0 6px;
       font-size: clamp(24px, 4vw, 42px);
+      letter-spacing: -0.04em;
+      font-weight: 950;
     }
 
     .subtitle {
       margin: 0;
       color: var(--muted);
+      font-weight: 500;
     }
 
     main {
@@ -86,6 +90,8 @@
       font-weight: 900;
       box-shadow: var(--shadow);
       cursor: pointer;
+      font-family: inherit;
+      letter-spacing: -0.01em;
     }
 
     .secondary-btn.active {
@@ -117,6 +123,7 @@
     button {
       max-width: 100%;
       min-width: 0;
+      font-family: inherit;
     }
 
     select,
@@ -223,11 +230,12 @@
       justify-content: space-between;
       gap: 12px;
       align-items: center;
+      letter-spacing: -0.02em;
     }
 
     .card h2 small {
       color: #d1d5db;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     table {
@@ -319,7 +327,7 @@
     }
 
     .spot-num {
-      font-weight: 900;
+      font-weight: 950;
       font-size: 16px;
     }
 
@@ -327,6 +335,7 @@
       font-size: 11px;
       line-height: 1.15;
       word-break: break-word;
+      font-weight: 650;
     }
 
     .legend {
@@ -335,6 +344,7 @@
       flex-wrap: wrap;
       gap: 12px;
       color: var(--muted);
+      font-weight: 600;
     }
 
     .legend span::before {
@@ -363,6 +373,7 @@
       color: var(--muted);
       font-size: 13px;
       margin-top: 14px;
+      font-weight: 500;
     }
 
     .warn {
@@ -381,8 +392,16 @@
 
       .card h2 {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         font-size: 16px;
+      }
+
+      .card h2 span,
+      .card h2 small {
+        width: 100%;
+        text-align: center;
       }
 
       th,
@@ -415,8 +434,8 @@
 
 <body>
   <header>
-    <h1>Turnazione Parcheggi Via Chimirri 27</h1>
-    <p class="subtitle">Parcheggi del periodo corrente, con ricerca per data o condomino.</p>
+    <h1>VIA CHIMIRRI 27</h1>
+    <p class="subtitle">TURNAZIONE PARCHEGGI</p>
   </header>
 
   <main>
@@ -502,7 +521,7 @@
       ["CARTOLANO-LOMBARDI", 17],
       ["LEONE", 30],
       ["LE PIANE", 37],
-      ["MAZZUCA", 31],
+      ["MAZZUCA PATRIZIA", 31],
       ["ALESSIO CAVARRETTA", 33],
       ["SALERNI", 12],
       ["SANDULLI", 11],
@@ -510,7 +529,7 @@
       ["ROMITI - MONTILLA", 19],
       ["SANZI", 36],
       ["MANGONE", 14],
-      ["CAMPENNÌ - POLITO", 20],
+      ["CAMPENNI POLITO", 20],
       ["PISTOIA - GEMELLI", 13],
       ["MILANO", 29],
       ["RICCI DANTE", 32],
@@ -519,7 +538,7 @@
       ["STAIANO", 22],
       ["DEMASI ANTONINO INT. 8", 27],
       ["RICCI ANGELO", 8],
-      ["MARASCO [B]", 26],
+      ["MARASCO", 26],
       ["DEMASI - SCALA B PIANO 2", 25],
       ["BOVIO", 10],
       ["POLITI", 23],
@@ -536,7 +555,7 @@
       ["AVERSA ENRICHETTA", 29],
       ["DEMASI FRANCESCO", 21],
       ["BARBUTO", 30],
-      ["D'AGOSTINO", 31],
+      ["D' AGOSTINO", 31],
       ["RICCELLI", 26],
       ["AVERSA - GEMELLI", 28],
       ["MANNO", 24],
@@ -559,116 +578,28 @@
     ];
 
     const smallGroups = {
-      A1: [
-        ["TRAPASSO - AVERSA ENRICHETTA", 5],
-        ["PUCCIO MARISA", 10],
-        ["CARTOLANO-LOMBARDI", 14],
-        ["LEONE", 3],
-        ["LE PIANE", 13],
-        ["MAZZUCA", 4],
-        ["ALESSIO CAVARRETTA", 1]
-      ],
-      A2: [
-        ["SALERNI", 10],
-        ["SANDULLI", 1],
-        ["PRESTA", 5],
-        ["ROMITA", 14],
-        ["SANZI", 13],
-        ["MANGONE", 4],
-        ["CAMPENNÌ - POLITO", 3]
-      ],
-      A3: [
-        ["PISTOIA - GEMELLI", 13],
-        ["MILANO", 14],
-        ["RICCI DANTE", 1],
-        ["AGOSTO - PIANO RIALZ.", 10],
-        ["JIRILLO LUIGI", 5],
-        ["STAIANO", 4],
-        ["DEMASI ANTONINO INT. 8", 3]
-      ],
-      A4: [
-        ["RICCI ANGELO", 1],
-        ["MARASCO [B]", 5],
-        ["DEMASI SCALA B PIANO 2", 4],
-        ["BOVIO", 14],
-        ["POLITI", 13],
-        ["MIRIGLIANI ROSA", 10],
-        ["VERALDI", 3]
-      ],
-      B1: [
-        ["AGOSTO AB 3° PIANO", 5],
-        ["SANZI", 1],
-        ["SQUILLACIOTI", 3],
-        ["PILÒ", 9],
-        ["ELIA", 2],
-        ["AVERSA ENRICHETTA", 4],
-        ["DE MASI", 15]
-      ],
-      B2: [
-        ["BARBUTO", 1],
-        ["D'AGOSTINO", 15],
-        ["RICCELLI", 2],
-        ["AVERSA - GEMELLI", 4],
-        ["MANNO", 3],
-        ["VARANO", 9],
-        ["LUCENTE", 5]
-      ],
-      B3: [
-        ["COLACINO", 15],
-        ["CIANFLONE", 9],
-        ["MANCUSO", 1],
-        ["MIRIGLIANI RAFFAELE", 3],
-        ["AGOSTO (AMMEZZ.)", 2],
-        ["PUCCIO ANGELA", 5],
-        ["EREDI SPADARO", 4]
-      ],
-      B4: [
-        ["SELVAGGIO", 15],
-        ["JIRILLO QUINTINO", 3],
-        ["RUSSO", 1],
-        ["PISTOIA FRANCESCO", 4],
-        ["DEMASI INT.6", 5],
-        ["MARASCO [C]", 9],
-        ["PORTIERE", 2]
-      ]
+      A1: [["TRAPASSO-AVERSA ENRICHETTA", 5], ["PUCCIO MARISA", 10], ["CARTOLANO-LOMBARDI", 14], ["LEONE", 3], ["LE PIANE", 13], ["MAZZUCA", 4], ["ALESSIO-CAVARRETTA", 1]],
+      A2: [["SALERNI", 10], ["SANDULLI", 1], ["PRESTA", 5], ["ROMITA", 14], ["SANZI", 13], ["MANGONE", 4], ["CAMPENNI - POLITO", 3]],
+      A3: [["PISTOIA - GEMELLI", 13], ["MILANO", 14], ["RICCI DANTE", 1], ["AGOSTO - PIANO RIALZ.", 10], ["JIRILLO LUIGI", 5], ["STAIANO", 4], ["DEMASI ANTONINO INT.8", 3]],
+      A4: [["RICCI ANGELO", 1], ["MARASCO B", 5], ["DEMASI SCALA B PIANO 2", 4], ["BOVIO", 14], ["POLITI", 13], ["MIRIGLIANI ROSA", 10], ["VERALDI", 3]],
+      B1: [["AGOSTO AB 3° PIANO", 5], ["SANZI", 1], ["SQUILLACIOTI", 3], ["PILÒ", 9], ["ELIA", 2], ["AVERSA ENRICHETTA", 4], ["DE MASI", 15]],
+      B2: [["BARBUTO", 1], ["D' AGOSTINO", 15], ["RICCELLI", 2], ["AVERSA - GEMELLI", 4], ["MANNO", 3], ["VARANO", 9], ["LUCENTE", 5]],
+      B3: [["COLACINO", 15], ["CIANFLONE", 9], ["MANCUSO", 1], ["MIRIGLIANI RAFFAELE", 3], ["AGOSTO (AMMEZZ.)", 2], ["PUCCIO ANGELA", 5], ["EREDI SPADARO", 4]],
+      B4: [["SELVAGGIO", 15], ["JIRILLO QUINTINO", 3], ["RUSSO", 1], ["PISTOIA FRANCESCO", 4], ["DEMASI INT.6", 5], ["MARASCO C", 9], ["PORTIERE", 2]]
     };
 
     const cycle = [
-      ["A", "B3"],
-      ["A", "B4"],
-      ["B", "A3"],
-      ["A", "B1"],
-      ["B", "A4"],
-      ["B", "A1"],
-      ["A", "B2"],
-      ["A", "B3"],
-      ["B", "A2"],
-      ["B", "A3"],
-      ["A", "B4"],
-      ["B", "A4"],
-      ["A", "B1"],
-      ["A", "B2"],
-      ["B", "A1"],
-      ["B", "A2"]
+      ["A", "B3"], ["A", "B4"], ["B", "A3"], ["A", "B1"],
+      ["B", "A4"], ["B", "A1"], ["A", "B2"], ["A", "B3"],
+      ["B", "A2"], ["B", "A3"], ["A", "B4"], ["B", "A4"],
+      ["A", "B1"], ["A", "B2"], ["B", "A1"], ["B", "A2"]
     ];
 
     const periodTemplates = [
-      ["09-01", "10-08"],
-      ["10-09", "11-15"],
-      ["11-16", "12-23"],
-      ["12-24", "01-31"],
-      ["02-01", "03-09"],
-      ["03-10", "04-15"],
-      ["04-16", "05-23"],
-      ["05-24", "06-30"],
-      ["09-01", "10-08"],
-      ["10-09", "11-15"],
-      ["11-16", "12-23"],
-      ["12-24", "01-31"],
-      ["02-01", "03-09"],
-      ["03-10", "04-15"],
-      ["04-16", "05-23"],
-      ["05-24", "06-30"]
+      ["09-01", "10-08"], ["10-09", "11-15"], ["11-16", "12-23"], ["12-24", "01-31"],
+      ["02-01", "03-09"], ["03-10", "04-15"], ["04-16", "05-23"], ["05-24", "06-30"],
+      ["09-01", "10-08"], ["10-09", "11-15"], ["11-16", "12-23"], ["12-24", "01-31"],
+      ["02-01", "03-09"], ["03-10", "04-15"], ["04-16", "05-23"], ["05-24", "06-30"]
     ];
 
     let selectedPeriod = null;
@@ -739,62 +670,14 @@
       }
 
       periods.unshift(
-        {
-          main: "B",
-          small: "A4",
-          biennium: "2025-2027",
-          start: new Date(2026, 1, 1),
-          end: new Date(2026, 2, 9)
-        },
-        {
-          main: "B",
-          small: "A1",
-          biennium: "2025-2027",
-          start: new Date(2026, 2, 10),
-          end: new Date(2026, 3, 15)
-        },
-        {
-          main: "A",
-          small: "B2",
-          biennium: "2025-2027",
-          start: new Date(2026, 3, 16),
-          end: new Date(2026, 4, 23)
-        },
-        {
-          main: "A",
-          small: "B3",
-          biennium: "2025-2027",
-          start: new Date(2026, 4, 24),
-          end: new Date(2026, 5, 30)
-        },
-        {
-          main: "B",
-          small: "A2",
-          biennium: "2025-2027",
-          start: new Date(2026, 8, 1),
-          end: new Date(2026, 9, 8)
-        },
-        {
-          main: "B",
-          small: "A3",
-          biennium: "2025-2027",
-          start: new Date(2026, 9, 9),
-          end: new Date(2026, 10, 15)
-        },
-        {
-          main: "A",
-          small: "B4",
-          biennium: "2025-2027",
-          start: new Date(2026, 10, 16),
-          end: new Date(2026, 11, 23)
-        },
-        {
-          main: "B",
-          small: "A4",
-          biennium: "2025-2027",
-          start: new Date(2026, 11, 24),
-          end: new Date(2027, 0, 31)
-        }
+        { main: "B", small: "A4", biennium: "2025-2027", start: new Date(2026, 1, 1), end: new Date(2026, 2, 9) },
+        { main: "B", small: "A1", biennium: "2025-2027", start: new Date(2026, 2, 10), end: new Date(2026, 3, 15) },
+        { main: "A", small: "B2", biennium: "2025-2027", start: new Date(2026, 3, 16), end: new Date(2026, 4, 23) },
+        { main: "A", small: "B3", biennium: "2025-2027", start: new Date(2026, 4, 24), end: new Date(2026, 5, 30) },
+        { main: "B", small: "A2", biennium: "2025-2027", start: new Date(2026, 8, 1), end: new Date(2026, 9, 8) },
+        { main: "B", small: "A3", biennium: "2025-2027", start: new Date(2026, 9, 9), end: new Date(2026, 10, 15) },
+        { main: "A", small: "B4", biennium: "2025-2027", start: new Date(2026, 10, 16), end: new Date(2026, 11, 23) },
+        { main: "B", small: "A4", biennium: "2025-2027", start: new Date(2026, 11, 24), end: new Date(2027, 0, 31) }
       );
 
       return periods.sort((a, b) => a.start - b.start);
