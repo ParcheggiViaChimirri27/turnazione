@@ -2,894 +2,730 @@
 <html lang="it">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VIA CHIMIRRI 27</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Turnazione Parcheggi Via Chimirri 27</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#0b5fd7">
+  <meta name="apple-mobile-web-app-title" content="Parcheggi">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
 
   <style>
-    :root {
-      --bg: #f6f7f9;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #d1d5db;
-      --dark: #111827;
-      --accent: #0f766e;
-      --accent-light: #ccfbf1;
-      --blue: #2563eb;
-      --blue-light: #eff6ff;
-      --green-light: #ecfdf5;
-      --danger: #b91c1c;
-      --danger-light: #fef2f2;
-      --shadow: 0 10px 30px rgba(0, 0, 0, .08);
+    :root{
+      --bg:#f7fbff;
+      --card:#ffffff;
+      --text:#071735;
+      --muted:#6f7890;
+      --line:#e6edf7;
+      --blue:#0b7ee8;
+      --blue2:#2f6bff;
+      --navy:#071b3f;
+      --navy2:#102856;
+      --soft:#eef6ff;
+      --pill:#edf4ff;
+      --danger:#b91c1c;
+      --ok:#067647;
+      --shadow:0 18px 45px rgba(16,40,86,.10);
+      --radius:24px;
     }
 
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter","Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at top left, #eaf5ff 0, transparent 38%),
+        linear-gradient(180deg,#fbfdff 0%,#f5f9ff 100%);
+      color:var(--text);
+      letter-spacing:-.02em;
+      padding-bottom:92px;
     }
 
-    body {
-      margin: 0;
-      font-family: "Inter", "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      letter-spacing: -0.01em;
+    .app{
+      max-width:920px;
+      margin:0 auto;
+      padding:24px 18px 0;
     }
 
-    header {
-      padding: 24px 14px 12px;
-      text-align: center;
+    header{
+      display:grid;
+      grid-template-columns:96px 1fr 44px;
+      align-items:center;
+      gap:16px;
+      padding:8px 0 24px;
     }
 
-    h1 {
-      margin: 0 0 6px;
-      font-size: clamp(24px, 4vw, 42px);
-      letter-spacing: -0.04em;
-      font-weight: 950;
+    .logo{
+      width:92px;height:92px;border-radius:50%;
+      background:linear-gradient(145deg,#f1f8ff,#fff);
+      display:grid;place-items:center;
+      box-shadow:inset 0 0 0 1px #eaf2fb;
+      font-size:54px;
     }
 
-    .subtitle {
-      margin: 0;
-      color: var(--muted);
-      font-weight: 500;
+    h1{
+      margin:0;
+      font-size:clamp(30px,6vw,52px);
+      line-height:.95;
+      font-weight:950;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
     }
 
-    main {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 14px;
-      overflow-x: hidden;
+    .subtitle{
+      margin:10px 0 0;
+      font-size:clamp(18px,3.8vw,30px);
+      color:var(--muted);
+      font-weight:650;
+      text-transform:uppercase;
+      letter-spacing:-.035em;
     }
 
-    .tools {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-      margin-bottom: 18px;
-      align-items: start;
+    .bell{
+      width:44px;height:44px;border:0;background:transparent;
+      color:var(--navy);font-size:32px;position:relative;
+    }
+    .bell::after{
+      content:"";position:absolute;right:5px;top:5px;
+      width:12px;height:12px;border-radius:50%;background:var(--blue);
+      border:2px solid white;
     }
 
-    @media (min-width: 760px) {
-      .tools {
-        grid-template-columns: 1fr 1fr;
-      }
+    .quick-actions{
+      display:grid;
+      gap:16px;
+      margin-bottom:28px;
     }
 
-    .tool-block {
-      width: 100%;
-      min-width: 0;
+    .action-card{
+      width:100%;
+      border:0;
+      border-radius:22px;
+      background:rgba(255,255,255,.92);
+      box-shadow:var(--shadow);
+      padding:18px 20px;
+      display:grid;
+      grid-template-columns:74px 1fr 28px;
+      gap:18px;
+      align-items:center;
+      cursor:pointer;
+      text-align:left;
+      color:var(--text);
+      font:inherit;
     }
 
-    .secondary-btn {
-      width: 100%;
-      border: 0;
-      border-radius: 14px;
-      background: var(--dark);
-      color: #ffffff;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 900;
-      box-shadow: var(--shadow);
-      cursor: pointer;
-      font-family: inherit;
-      letter-spacing: -0.01em;
+    .action-icon{
+      width:64px;height:64px;border-radius:20px;
+      background:var(--soft);
+      display:grid;place-items:center;
+      color:var(--blue);
     }
 
-    .secondary-btn.active {
-      background: var(--accent);
+    .action-title{
+      display:block;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-.04em;
     }
 
-    .panel {
-      display: none;
-      margin-top: 10px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 16px;
+    .action-sub{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      font-size:17px;
+      font-weight:550;
+      letter-spacing:-.02em;
     }
 
-    .panel.open {
-      display: block;
+    .chev{
+      font-size:42px;
+      line-height:1;
+      color:#70788c;
+      font-weight:300;
     }
 
-    label {
-      display: block;
-      font-weight: 800;
-      margin-bottom: 6px;
+    .panel{
+      display:none;
+      margin:-12px 0 18px;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .panel.open{display:block}
+
+    label{
+      display:block;
+      font-weight:850;
+      margin-bottom:8px;
+      color:var(--text);
+    }
+    select,input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px 16px;
+      background:#fff;
+      font-size:18px;
+      font-family:inherit;
+      color:var(--text);
     }
 
-    select,
-    input,
-    button {
-      max-width: 100%;
-      min-width: 0;
-      font-family: inherit;
+    .date-grid{display:grid;gap:12px}
+    @media(min-width:650px){
+      .date-grid{grid-template-columns:1fr auto;align-items:end}
     }
 
-    select,
-    input {
-      width: 100%;
-      display: block;
-      padding: 11px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #ffffff;
-      font-size: 16px;
+    .primary-btn{
+      border:0;border-radius:16px;background:var(--blue);
+      color:white;padding:15px 18px;font-size:17px;
+      font-weight:900;font-family:inherit;cursor:pointer;
+      min-width:210px;
     }
 
-    input[type="date"] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      text-align: center;
+    .resident-result{
+      margin-top:12px;
+      min-height:50px;
+      padding:14px;
+      border-radius:16px;
+      background:#f4f7fb;
+      border:1px solid var(--line);
+      color:var(--muted);
+      font-weight:750;
+    }
+    .resident-result.ok{background:#ecfdf5;border-color:#80d8b4;color:var(--ok)}
+    .resident-result.out{background:#fff1f2;border-color:#fca5a5;color:var(--danger)}
+
+    .tabs{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      background:rgba(255,255,255,.94);
+      backdrop-filter:blur(18px);
+      border-top:1px solid var(--line);
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      padding:9px max(10px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom));
+      z-index:50;
     }
 
-    .date-grid {
-      display: grid;
-      gap: 12px;
+    .tab{
+      border:0;background:transparent;
+      color:#687189;
+      font:inherit;font-size:12px;font-weight:650;
+      display:grid;gap:2px;place-items:center;
+      cursor:pointer;
+    }
+    .tab svg{width:28px;height:28px}
+    .tab.active{color:var(--blue)}
+
+    .section{display:none}
+    .section.active{display:block}
+
+    .cards-grid{display:grid;gap:20px}
+    @media(min-width:900px){.cards-grid{grid-template-columns:1fr 1fr}}
+
+    .turn-card{
+      background:white;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:1px solid var(--line);
+      margin-bottom:20px;
     }
 
-    @media (min-width: 640px) {
-      .date-grid {
-        grid-template-columns: 1fr auto;
-        align-items: end;
-      }
+    .turn-head{
+      min-height:174px;
+      background:
+        linear-gradient(135deg,rgba(7,23,53,.98),rgba(15,45,96,.98)),
+        radial-gradient(circle at right,rgba(11,126,232,.28),transparent 42%);
+      color:white;
+      padding:28px;
+      display:grid;
+      grid-template-columns:82px 1fr 110px;
+      align-items:center;
+      gap:18px;
+      position:relative;
+      overflow:hidden;
     }
 
-    .date-grid button {
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      background: var(--accent);
-      color: white;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: 900;
-      cursor: pointer;
+    .turn-head::after{
+      content:"🚙 🅿️";
+      position:absolute;
+      right:26px;
+      bottom:24px;
+      font-size:58px;
+      opacity:.22;
+      letter-spacing:8px;
     }
 
-    @media (min-width: 640px) {
-      .date-grid button {
-        min-width: 210px;
-      }
+    .head-icon{
+      width:76px;height:76px;border-radius:50%;
+      display:grid;place-items:center;
+      background:linear-gradient(145deg,#2f6bff,#263bd7);
+      box-shadow:0 15px 30px rgba(47,107,255,.32);
+      z-index:1;
     }
 
-    .lookup-box {
-      display: grid;
-      gap: 12px;
+    .turn-head h2{
+      margin:0;
+      font-size:30px;
+      line-height:1.05;
+      font-weight:950;
+      letter-spacing:-.05em;
+      z-index:1;
     }
 
-    .resident-result {
-      min-height: 44px;
-      padding: 12px;
-      border-radius: 12px;
-      background: #f3f4f6;
-      border: 1px solid var(--border);
-      font-weight: 800;
+    .dates{
+      margin-top:10px;
+      color:#d7deec;
+      font-size:18px;
+      font-weight:650;
+      z-index:1;
     }
 
-    .resident-result.ok {
-      background: var(--green-light);
-      border-color: var(--accent);
-      color: #064e3b;
+    .table-wrap{overflow:hidden}
+    table{width:100%;border-collapse:collapse;background:white}
+    th,td{
+      border-bottom:1px solid var(--line);
+      padding:17px 28px;
+      text-align:left;
+      vertical-align:middle;
+    }
+    th{
+      background:#fbfdff;
+      color:#6d7489;
+      text-transform:uppercase;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.02em;
+    }
+    tr:last-child td{border-bottom:none}
+    td{
+      font-size:21px;
+      font-weight:650;
+      color:var(--text);
+      text-transform:uppercase;
     }
 
-    .resident-result.out {
-      background: var(--danger-light);
-      border-color: #fca5a5;
-      color: #991b1b;
+    .posto{text-align:right;width:120px}
+    .badge{
+      display:inline-grid;place-items:center;
+      min-width:58px;height:38px;border-radius:18px;
+      background:var(--pill);
+      color:var(--blue);
+      font-weight:900;
     }
 
-    .grid {
-      display: grid;
-      gap: 18px;
-      grid-template-columns: 1fr;
+    .sort-btn{
+      padding:0;border:0;background:transparent;color:inherit;
+      font:inherit;font-weight:900;text-transform:inherit;
+      cursor:pointer;
     }
 
-    @media (min-width: 980px) {
-      .grid {
-        grid-template-columns: 1fr 1fr;
-      }
+    .map-card{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      margin-bottom:20px;
+    }
+    .map-title{
+      padding:22px 24px;
+      background:var(--navy);
+      color:white;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      font-weight:900;
+      font-size:24px;
+    }
+    .parking-map{
+      padding:16px;
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(82px,1fr));
+      gap:9px;
+    }
+    .spot{
+      min-height:82px;
+      border:2px solid var(--line);
+      border-radius:16px;
+      background:#fff;
+      padding:9px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+    }
+    .spot.active-main{border-color:var(--blue);background:#eef6ff}
+    .spot.active-small{border-color:#23a88a;background:#ecfdf5}
+    .spot.empty{opacity:.40}
+    .spot-num{font-size:20px;font-weight:950;color:var(--navy)}
+    .spot-name{font-size:11px;line-height:1.1;font-weight:750;color:var(--text);word-break:break-word}
+
+    .settings-card{
+      background:white;border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);padding:22px;margin-bottom:20px;
+      color:var(--muted);font-weight:650;line-height:1.5;
     }
 
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .install-btn{
+      width:100%;
+      border:0;border-radius:18px;background:var(--blue);
+      color:white;padding:16px;font:inherit;font-size:18px;
+      font-weight:950;display:none;margin-bottom:16px;
     }
 
-    .card h2 {
-      margin: 0;
-      padding: 14px 16px;
-      background: var(--dark);
-      color: white;
-      font-size: 18px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      letter-spacing: -0.02em;
-    }
-
-    .card h2 small {
-      color: #d1d5db;
-      font-weight: 600;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 10px 12px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      vertical-align: top;
-    }
-
-    th {
-      background: #f3f4f6;
-      color: #374151;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .posto {
-      text-align: center;
-      width: 72px;
-      font-weight: 900;
-    }
-
-    .sort-btn {
-      width: auto;
-      padding: 0;
-      border: 0;
-      background: transparent;
-      color: inherit;
-      font: inherit;
-      font-weight: 900;
-      text-transform: inherit;
-      letter-spacing: inherit;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .sort-arrow {
-      font-size: 12px;
-      opacity: .75;
-    }
-
-    .map-card {
-      margin-top: 18px;
-    }
-
-    .parking-map {
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
-      gap: 8px;
-    }
-
-    .spot {
-      min-height: 72px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      background: #ffffff;
-      padding: 7px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .spot.active-main {
-      border-color: var(--blue);
-      background: var(--blue-light);
-    }
-
-    .spot.active-small {
-      border-color: var(--accent);
-      background: var(--green-light);
-    }
-
-    .spot.empty {
-      opacity: .45;
-    }
-
-    .spot-num {
-      font-weight: 950;
-      font-size: 16px;
-    }
-
-    .spot-name {
-      font-size: 11px;
-      line-height: 1.15;
-      word-break: break-word;
-      font-weight: 650;
-    }
-
-    .legend {
-      padding: 0 16px 16px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .legend span::before {
-      content: "";
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-      margin-right: 6px;
-      vertical-align: -2px;
-      border: 2px solid var(--border);
-      background: white;
-    }
-
-    .legend .main::before {
-      border-color: var(--blue);
-      background: var(--blue-light);
-    }
-
-    .legend .small::before {
-      border-color: var(--accent);
-      background: var(--green-light);
-    }
-
-    .note {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 14px;
-      font-weight: 500;
-    }
-
-    .warn {
-      color: var(--danger);
-      font-weight: 900;
-    }
-
-    @media (max-width: 520px) {
-      header {
-        padding: 18px 12px 8px;
-      }
-
-      main {
-        padding: 10px;
-      }
-
-      .card h2 {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        font-size: 16px;
-      }
-
-      .card h2 span,
-      .card h2 small {
-        width: 100%;
-        text-align: center;
-      }
-
-      th,
-      td {
-        padding: 9px 8px;
-        font-size: 14px;
-      }
-
-      .posto {
-        width: 56px;
-      }
-
-      .parking-map {
-        grid-template-columns: repeat(3, 1fr);
-        padding: 10px;
-        gap: 6px;
-      }
-
-      .spot {
-        min-height: 66px;
-        padding: 6px;
-      }
-
-      .spot-name {
-        font-size: 10px;
-      }
+    @media(max-width:560px){
+      .app{padding:22px 14px 0}
+      header{grid-template-columns:88px 1fr 38px;gap:12px}
+      .logo{width:82px;height:82px;font-size:48px}
+      .bell{font-size:28px}
+      .action-card{grid-template-columns:62px 1fr 22px;padding:16px;gap:14px}
+      .action-icon{width:56px;height:56px}
+      .action-title{font-size:22px}
+      .action-sub{font-size:16px}
+      .turn-head{grid-template-columns:74px 1fr;padding:24px 22px;min-height:172px}
+      .turn-head h2{font-size:26px}
+      .dates{font-size:17px}
+      th,td{padding:15px 22px}
+      th{font-size:17px}
+      td{font-size:19px}
+      .posto{width:92px}
+      .parking-map{grid-template-columns:repeat(3,1fr)}
     }
   </style>
 </head>
 
 <body>
-  <header>
-    <h1>VIA CHIMIRRI 27</h1>
-    <p class="subtitle">TURNAZIONE PARCHEGGI</p>
-  </header>
+  <div class="app">
+    <header>
+      <div class="logo" aria-hidden="true">🏢</div>
+      <div>
+        <h1>Via Chimirri 27</h1>
+        <p class="subtitle">Turnazione Parcheggi</p>
+      </div>
+      <button class="bell" type="button" aria-label="Notifiche">♧</button>
+    </header>
 
-  <main>
-    <section class="tools">
-      <div class="tool-block">
-        <button id="toggleDateBtn" class="secondary-btn" type="button">Cerca per data</button>
+    <button id="installBtn" class="install-btn" type="button">Aggiungi alla Home</button>
 
-        <div id="datePanel" class="panel">
-          <div class="date-grid">
-            <div>
-              <label for="dateInput">Data</label>
-              <input id="dateInput" type="date" />
-            </div>
+    <section class="quick-actions">
+      <button id="openResident" class="action-card" type="button">
+        <span class="action-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17" stroke="currentColor" stroke-width="2"/><path d="M16 8h3a1 1 0 0 1 1 1v12M8 7h1M12 7h1M8 11h1M12 11h1M8 15h1M12 15h1M3 21h19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span><span class="action-title">Cerca per condomino</span><span class="action-sub">Seleziona un condomino per visualizzare i turni</span></span>
+        <span class="chev">›</span>
+      </button>
 
-            <div>
-              <label>&nbsp;</label>
-              <button id="todayBtn" type="button">Mostra data attuale</button>
-            </div>
+      <div id="residentPanel" class="panel">
+        <label for="residentSelect">Condomino</label>
+        <select id="residentSelect"></select>
+        <div id="residentResult" class="resident-result">Seleziona un condomino per vedere il posto.</div>
+      </div>
+
+      <button id="openDate" class="action-card" type="button">
+        <span class="action-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M8 13h2M12 13h2M16 13h1M8 17h2M12 17h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span><span class="action-title">Cerca per data</span><span class="action-sub">Trova il tuo posto in una data specifica</span></span>
+        <span class="chev">›</span>
+      </button>
+
+      <div id="datePanel" class="panel">
+        <div class="date-grid">
+          <div>
+            <label for="dateInput">Data</label>
+            <input id="dateInput" type="date" />
           </div>
+          <button id="todayBtn" class="primary-btn" type="button">Mostra data attuale</button>
         </div>
       </div>
+    </section>
 
-      <div class="tool-block">
-        <button id="toggleResidentBtn" class="secondary-btn" type="button">Cerca condomino</button>
-
-        <div id="residentPanel" class="panel">
-          <div class="lookup-box">
-            <div>
-              <label for="residentSelect">Condomino</label>
-              <select id="residentSelect"></select>
+    <main>
+      <section id="homeSection" class="section active">
+        <div class="cards-grid">
+          <div class="turn-card">
+            <div class="turn-head">
+              <div class="head-icon" aria-hidden="true">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M16 11a4 4 0 1 0-8 0M4 20a8 8 0 0 1 16 0" stroke="white" stroke-width="2" stroke-linecap="round"/><path d="M19 9a3 3 0 0 1 2 5M5 9a3 3 0 0 0-2 5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <h2 id="mainTitle">Gruppo principale</h2>
+                <div id="mainDates" class="dates"></div>
+              </div>
             </div>
+            <div id="mainTable" class="table-wrap"></div>
+          </div>
 
-            <div id="residentResult" class="resident-result">
-              Seleziona un condomino per vedere il posto.
+          <div class="turn-card">
+            <div class="turn-head">
+              <div class="head-icon" aria-hidden="true">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <h2 id="smallTitle">Gruppetto</h2>
+                <div id="smallDates" class="dates"></div>
+              </div>
             </div>
+            <div id="smallTable" class="table-wrap"></div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="grid">
-      <div class="card">
-        <h2>
-          <span id="mainTitle">Gruppo</span>
-          <small id="mainDates"></small>
-        </h2>
-        <div id="mainTable"></div>
-      </div>
+      <section id="turniSection" class="section">
+        <div class="map-card">
+          <div class="map-title"><span>Mappa posti</span><small>periodo corrente</small></div>
+          <div id="parkingMap" class="parking-map"></div>
+        </div>
+      </section>
 
-      <div class="card">
-        <h2>
-          <span id="smallTitle">Gruppetto</span>
-          <small id="smallDates"></small>
-        </h2>
-        <div id="smallTable"></div>
-      </div>
-    </section>
+      <section id="condominiSection" class="section">
+        <div class="settings-card">
+          Usa “Cerca per condomino” in alto per vedere subito se un condomino è nel gruppo principale, nel gruppetto o fuori turno.
+        </div>
+      </section>
 
-    <section class="card map-card">
-      <h2>
-        <span>Mappa posti</span>
-        <small>evidenziati in base al periodo</small>
-      </h2>
+      <section id="settingsSection" class="section">
+        <div class="settings-card">
+          Per aggiungere l’app alla Home: apri il sito da Chrome, premi i tre puntini e scegli “Aggiungi a schermata Home” oppure “Installa app”.
+        </div>
+      </section>
+    </main>
+  </div>
 
-      <div id="parkingMap" class="parking-map"></div>
-
-      <div class="legend">
-        <span class="main">Gruppo principale</span>
-        <span class="small">Gruppetto</span>
-        <span>Non attivo / libero</span>
-      </div>
-    </section>
-
-    <p class="note">
-      Dati ricostruiti dai prospetti di turnazione. Controllare sempre eventuali delibere o aggiornamenti condominiali.
-    </p>
-  </main>
+  <nav class="tabs">
+    <button class="tab active" data-section="homeSection" type="button">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10.8 12 3l9 7.8V21a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V10.8Z"/></svg>
+      Home
+    </button>
+    <button class="tab" data-section="turniSection" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Turni
+    </button>
+    <button class="tab" data-section="condominiSection" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M5 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17M16 8h3a1 1 0 0 1 1 1v12M8 7h1M12 7h1M8 11h1M12 11h1M8 15h1M12 15h1M3 21h19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      Condomini
+    </button>
+    <button class="tab" data-section="settingsSection" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.25.4.6.75 1 1 .34.2.72.3 1.1.3h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.1.7Z" stroke="currentColor" stroke-width="1.6"/></svg>
+      Impostazioni
+    </button>
+  </nav>
 
   <script>
-    const groupA = [
-      ["TRAPASSO - AVERSA ENRICHETTA", 34],
-      ["PUCCIO ANNA MARIA LUISA", 35],
-      ["CARTOLANO-LOMBARDI", 17],
-      ["LEONE", 30],
-      ["LE PIANE", 37],
-      ["MAZZUCA PATRIZIA", 31],
-      ["ALESSIO CAVARRETTA", 33],
-      ["SALERNI", 12],
-      ["SANDULLI", 11],
-      ["PRESTA", 18],
-      ["ROMITI - MONTILLA", 19],
-      ["SANZI", 36],
-      ["MANGONE", 14],
-      ["CAMPENNI POLITO", 20],
-      ["PISTOIA - GEMELLI", 13],
-      ["MILANO", 29],
-      ["RICCI DANTE", 32],
-      ["AGOSTO - AB. P.R.", 28],
-      ["JIRILLO LUIGI", 21],
-      ["STAIANO", 22],
-      ["DEMASI ANTONINO INT. 8", 27],
-      ["RICCI ANGELO", 8],
-      ["MARASCO", 26],
-      ["DEMASI - SCALA B PIANO 2", 25],
-      ["BOVIO", 10],
-      ["POLITI", 23],
-      ["MIRIGLIANI ROSA", 24],
-      ["CATRAMBONE", 16]
-    ];
-
-    const groupB = [
-      ["AGOSTO VIOLETTA 3° P.", 34],
-      ["SANZI", 36],
-      ["SQUILLACIOTI", 2],
-      ["PILÒ", 35],
-      ["ELIA", 22],
-      ["AVERSA ENRICHETTA", 29],
-      ["DEMASI FRANCESCO", 21],
-      ["BARBUTO", 30],
-      ["D' AGOSTINO", 31],
-      ["RICCELLI", 26],
-      ["AVERSA - GEMELLI", 28],
-      ["MANNO", 24],
-      ["VARANO", 27],
-      ["LUCENTE", 25],
-      ["COLACINO", 23],
-      ["CIANFLONE", 32],
-      ["MANCUSO", 20],
-      ["MIRIGLIANI RAFFAELE", 33],
-      ["AGOSTO - SEMINT.", 17],
-      ["EREDI PUCCIO ANGELA", 9],
-      ["EREDI SPADARO", 19],
-      ["SELVAGGIO", 37],
-      ["JIRILLO QUINTINO", 18],
-      ["RUSSO", 11],
-      ["PISTOIA FRANCESCO", 15],
-      ["DEMASI INT.6", 12],
-      ["MARASCO [C]", 8],
-      ["CATRAMBONE", 16]
-    ];
-
+    const groupA = [["TRAPASSO - AVERSA ENRICHETTA",34],["PUCCIO ANNA MARIA LUISA",35],["CARTOLANO-LOMBARDI",17],["LEONE",30],["LE PIANE",37],["MAZZUCA PATRIZIA",31],["ALESSIO CAVARRETTA",33],["SALERNI",12],["SANDULLI",11],["PRESTA",18],["ROMITI - MONTILLA",19],["SANZI",36],["MANGONE",14],["CAMPENNI POLITO",20],["PISTOIA - GEMELLI",13],["MILANO",29],["RICCI DANTE",32],["AGOSTO - AB. P.R.",28],["JIRILLO LUIGI",21],["STAIANO",22],["DEMASI ANTONINO INT. 8",27],["RICCI ANGELO",8],["MARASCO",26],["DEMASI - SCALA B PIANO 2",25],["BOVIO",10],["POLITI",23],["MIRIGLIANI ROSA",24],["CATRAMBONE",16]];
+    const groupB = [["AGOSTO VIOLETTA 3° P.",34],["SANZI",36],["SQUILLACIOTI",2],["PILÒ",35],["ELIA",22],["AVERSA ENRICHETTA",29],["DEMASI FRANCESCO",21],["BARBUTO",30],["D' AGOSTINO",31],["RICCELLI",26],["AVERSA - GEMELLI",28],["MANNO",24],["VARANO",27],["LUCENTE",25],["COLACINO",23],["CIANFLONE",32],["MANCUSO",20],["MIRIGLIANI RAFFAELE",33],["AGOSTO - SEMINT.",17],["EREDI PUCCIO ANGELA",9],["EREDI SPADARO",19],["SELVAGGIO",37],["JIRILLO QUINTINO",18],["RUSSO",11],["PISTOIA FRANCESCO",15],["DEMASI INT.6",12],["MARASCO [C]",8],["CATRAMBONE",16]];
     const smallGroups = {
-      A1: [["TRAPASSO-AVERSA ENRICHETTA", 5], ["PUCCIO MARISA", 10], ["CARTOLANO-LOMBARDI", 14], ["LEONE", 3], ["LE PIANE", 13], ["MAZZUCA", 4], ["ALESSIO-CAVARRETTA", 1]],
-      A2: [["SALERNI", 10], ["SANDULLI", 1], ["PRESTA", 5], ["ROMITA", 14], ["SANZI", 13], ["MANGONE", 4], ["CAMPENNI - POLITO", 3]],
-      A3: [["PISTOIA - GEMELLI", 13], ["MILANO", 14], ["RICCI DANTE", 1], ["AGOSTO - PIANO RIALZ.", 10], ["JIRILLO LUIGI", 5], ["STAIANO", 4], ["DEMASI ANTONINO INT.8", 3]],
-      A4: [["RICCI ANGELO", 1], ["MARASCO B", 5], ["DEMASI SCALA B PIANO 2", 4], ["BOVIO", 14], ["POLITI", 13], ["MIRIGLIANI ROSA", 10], ["VERALDI", 3]],
-      B1: [["AGOSTO AB 3° PIANO", 5], ["SANZI", 1], ["SQUILLACIOTI", 3], ["PILÒ", 9], ["ELIA", 2], ["AVERSA ENRICHETTA", 4], ["DE MASI", 15]],
-      B2: [["BARBUTO", 1], ["D' AGOSTINO", 15], ["RICCELLI", 2], ["AVERSA - GEMELLI", 4], ["MANNO", 3], ["VARANO", 9], ["LUCENTE", 5]],
-      B3: [["COLACINO", 15], ["CIANFLONE", 9], ["MANCUSO", 1], ["MIRIGLIANI RAFFAELE", 3], ["AGOSTO (AMMEZZ.)", 2], ["PUCCIO ANGELA", 5], ["EREDI SPADARO", 4]],
-      B4: [["SELVAGGIO", 15], ["JIRILLO QUINTINO", 3], ["RUSSO", 1], ["PISTOIA FRANCESCO", 4], ["DEMASI INT.6", 5], ["MARASCO C", 9], ["PORTIERE", 2]]
+      A1:[["TRAPASSO-AVERSA ENRICHETTA",5],["PUCCIO MARISA",10],["CARTOLANO-LOMBARDI",14],["LEONE",3],["LE PIANE",13],["MAZZUCA",4],["ALESSIO-CAVARRETTA",1]],
+      A2:[["SALERNI",10],["SANDULLI",1],["PRESTA",5],["ROMITA",14],["SANZI",13],["MANGONE",4],["CAMPENNI - POLITO",3]],
+      A3:[["PISTOIA - GEMELLI",13],["MILANO",14],["RICCI DANTE",1],["AGOSTO - PIANO RIALZ.",10],["JIRILLO LUIGI",5],["STAIANO",4],["DEMASI ANTONINO INT.8",3]],
+      A4:[["RICCI ANGELO",1],["MARASCO B",5],["DEMASI SCALA B PIANO 2",4],["BOVIO",14],["POLITI",13],["MIRIGLIANI ROSA",10],["VERALDI",3]],
+      B1:[["AGOSTO AB 3° PIANO",5],["SANZI",1],["SQUILLACIOTI",3],["PILÒ",9],["ELIA",2],["AVERSA ENRICHETTA",4],["DE MASI",15]],
+      B2:[["BARBUTO",1],["D' AGOSTINO",15],["RICCELLI",2],["AVERSA - GEMELLI",4],["MANNO",3],["VARANO",9],["LUCENTE",5]],
+      B3:[["COLACINO",15],["CIANFLONE",9],["MANCUSO",1],["MIRIGLIANI RAFFAELE",3],["AGOSTO (AMMEZZ.)",2],["PUCCIO ANGELA",5],["EREDI SPADARO",4]],
+      B4:[["SELVAGGIO",15],["JIRILLO QUINTINO",3],["RUSSO",1],["PISTOIA FRANCESCO",4],["DEMASI INT.6",5],["MARASCO C",9],["PORTIERE",2]]
     };
 
-    const cycle = [
-      ["A", "B3"], ["A", "B4"], ["B", "A3"], ["A", "B1"],
-      ["B", "A4"], ["B", "A1"], ["A", "B2"], ["A", "B3"],
-      ["B", "A2"], ["B", "A3"], ["A", "B4"], ["B", "A4"],
-      ["A", "B1"], ["A", "B2"], ["B", "A1"], ["B", "A2"]
-    ];
-
-    const periodTemplates = [
-      ["09-01", "10-08"], ["10-09", "11-15"], ["11-16", "12-23"], ["12-24", "01-31"],
-      ["02-01", "03-09"], ["03-10", "04-15"], ["04-16", "05-23"], ["05-24", "06-30"],
-      ["09-01", "10-08"], ["10-09", "11-15"], ["11-16", "12-23"], ["12-24", "01-31"],
-      ["02-01", "03-09"], ["03-10", "04-15"], ["04-16", "05-23"], ["05-24", "06-30"]
-    ];
+    const cycle = [["A","B3"],["A","B4"],["B","A3"],["A","B1"],["B","A4"],["B","A1"],["A","B2"],["A","B3"],["B","A2"],["B","A3"],["A","B4"],["B","A4"],["A","B1"],["A","B2"],["B","A1"],["B","A2"]];
+    const periodTemplates = [["09-01","10-08"],["10-09","11-15"],["11-16","12-23"],["12-24","01-31"],["02-01","03-09"],["03-10","04-15"],["04-16","05-23"],["05-24","06-30"],["09-01","10-08"],["10-09","11-15"],["11-16","12-23"],["12-24","01-31"],["02-01","03-09"],["03-10","04-15"],["04-16","05-23"],["05-24","06-30"]];
 
     let selectedPeriod = null;
-    let sortColumn = "name";
+    let sortColumn = "spot";
     let sortDirection = "asc";
 
-    function byId(id) {
-      return document.getElementById(id);
-    }
+    const byId = id => document.getElementById(id);
 
-    function makeDate(year, mmdd) {
-      const [month, day] = mmdd.split("-").map(Number);
-      return new Date(year, month - 1, day);
-    }
+    function makeDate(year, mmdd){const [month,day]=mmdd.split("-").map(Number);return new Date(year,month-1,day)}
+    function isoDate(date){return date.getFullYear()+"-"+String(date.getMonth()+1).padStart(2,"0")+"-"+String(date.getDate()).padStart(2,"0")}
+    function formatDate(date){return date.toLocaleDateString("it-IT",{day:"numeric",month:"short",year:"numeric"})}
+    function cleanName(name){const text=String(name).trim();return text.startsWith(">")?text.slice(1).trim():text}
+    function normalizeName(name){return cleanName(name).toLowerCase().replaceAll("-"," ").replaceAll("."," ").replaceAll("'"," ").replaceAll('"'," ").split(" ").filter(Boolean).join(" ")}
 
-    function isoDate(date) {
-      return date.getFullYear() + "-" +
-        String(date.getMonth() + 1).padStart(2, "0") + "-" +
-        String(date.getDate()).padStart(2, "0");
-    }
-
-    function formatDate(date) {
-      return date.toLocaleDateString("it-IT", {
-        day: "numeric",
-        month: "short",
-        year: "numeric"
-      });
-    }
-
-    function cleanName(name) {
-      const text = String(name).trim();
-      return text.startsWith(">") ? text.slice(1).trim() : text;
-    }
-
-    function normalizeName(name) {
-      return cleanName(name)
-        .toLowerCase()
-        .replaceAll("-", " ")
-        .replaceAll(".", " ")
-        .replaceAll("'", " ")
-        .replaceAll('"', " ")
-        .split(" ")
-        .filter(Boolean)
-        .join(" ");
-    }
-
-    function buildPeriods() {
-      const periods = [];
-
-      for (let bienniumStart = 2027; bienniumStart <= 2033; bienniumStart += 2) {
-        for (let i = 0; i < 16; i++) {
-          const [main, small] = cycle[i];
-          const [startMD, endMD] = periodTemplates[i];
-
-          const yearOffset = i < 4 ? 0 : i < 12 ? 1 : 2;
-          const startYear = bienniumStart + yearOffset;
-          const endYear = startMD === "12-24" ? startYear + 1 : startYear;
-
-          periods.push({
-            main,
-            small,
-            step: i + 1,
-            biennium: `${bienniumStart}-${bienniumStart + 2}`,
-            start: makeDate(startYear, startMD),
-            end: makeDate(endYear, endMD)
-          });
+    function buildPeriods(){
+      const periods=[];
+      for(let bienniumStart=2027;bienniumStart<=2033;bienniumStart+=2){
+        for(let i=0;i<16;i++){
+          const [main,small]=cycle[i];
+          const [startMD,endMD]=periodTemplates[i];
+          const yearOffset=i<4?0:i<12?1:2;
+          const startYear=bienniumStart+yearOffset;
+          const endYear=startMD==="12-24"?startYear+1:startYear;
+          periods.push({main,small,step:i+1,biennium:`${bienniumStart}-${bienniumStart+2}`,start:makeDate(startYear,startMD),end:makeDate(endYear,endMD)});
         }
       }
-
       periods.unshift(
-        { main: "B", small: "A4", biennium: "2025-2027", start: new Date(2026, 1, 1), end: new Date(2026, 2, 9) },
-        { main: "B", small: "A1", biennium: "2025-2027", start: new Date(2026, 2, 10), end: new Date(2026, 3, 15) },
-        { main: "A", small: "B2", biennium: "2025-2027", start: new Date(2026, 3, 16), end: new Date(2026, 4, 23) },
-        { main: "A", small: "B3", biennium: "2025-2027", start: new Date(2026, 4, 24), end: new Date(2026, 5, 30) },
-        { main: "B", small: "A2", biennium: "2025-2027", start: new Date(2026, 8, 1), end: new Date(2026, 9, 8) },
-        { main: "B", small: "A3", biennium: "2025-2027", start: new Date(2026, 9, 9), end: new Date(2026, 10, 15) },
-        { main: "A", small: "B4", biennium: "2025-2027", start: new Date(2026, 10, 16), end: new Date(2026, 11, 23) },
-        { main: "B", small: "A4", biennium: "2025-2027", start: new Date(2026, 11, 24), end: new Date(2027, 0, 31) }
+        {main:"B",small:"A4",biennium:"2025-2027",start:new Date(2026,1,1),end:new Date(2026,2,9)},
+        {main:"B",small:"A1",biennium:"2025-2027",start:new Date(2026,2,10),end:new Date(2026,3,15)},
+        {main:"A",small:"B2",biennium:"2025-2027",start:new Date(2026,3,16),end:new Date(2026,4,23)},
+        {main:"A",small:"B3",biennium:"2025-2027",start:new Date(2026,4,24),end:new Date(2026,5,30)},
+        {main:"B",small:"A2",biennium:"2025-2027",start:new Date(2026,8,1),end:new Date(2026,9,8)},
+        {main:"B",small:"A3",biennium:"2025-2027",start:new Date(2026,9,9),end:new Date(2026,10,15)},
+        {main:"A",small:"B4",biennium:"2025-2027",start:new Date(2026,10,16),end:new Date(2026,11,23)},
+        {main:"B",small:"A4",biennium:"2025-2027",start:new Date(2026,11,24),end:new Date(2027,0,31)}
       );
-
-      return periods.sort((a, b) => a.start - b.start);
+      return periods.sort((a,b)=>a.start-b.start);
     }
 
     const allPeriods = buildPeriods();
 
-    function findPeriodByDate(date) {
-      const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      return allPeriods.find(period => d >= period.start && d <= period.end) || null;
+    function findPeriodByDate(date){
+      const d=new Date(date.getFullYear(),date.getMonth(),date.getDate());
+      return allPeriods.find(period=>d>=period.start&&d<=period.end)||null;
     }
 
-    function sortRows(rows) {
-      return [...rows].sort((a, b) => {
-        let result;
-
-        if (sortColumn === "spot") {
-          result = Number(a[1]) - Number(b[1]);
-        } else {
-          result = cleanName(a[0]).localeCompare(cleanName(b[0]), "it", {
-            sensitivity: "base"
-          });
-        }
-
-        return sortDirection === "asc" ? result : -result;
+    function sortRows(rows){
+      return [...rows].sort((a,b)=>{
+        let result = sortColumn==="spot"
+          ? Number(a[1])-Number(b[1])
+          : cleanName(a[0]).localeCompare(cleanName(b[0]),"it",{sensitivity:"base"});
+        return sortDirection==="asc"?result:-result;
       });
     }
 
-    function table(rows) {
-      const sorted = sortRows(rows);
-      const nameArrow = sortColumn === "name" ? (sortDirection === "asc" ? "▲" : "▼") : "↕";
-      const spotArrow = sortColumn === "spot" ? (sortDirection === "asc" ? "▲" : "▼") : "↕";
-
-      return `
-        <table>
-          <thead>
-            <tr>
-              <th>
-                <button class="sort-btn" data-sort="name">
-                  Condomino <span class="sort-arrow">${nameArrow}</span>
-                </button>
-              </th>
-              <th class="posto">
-                <button class="sort-btn" data-sort="spot">
-                  Posto <span class="sort-arrow">${spotArrow}</span>
-                </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sorted.map(row => `
-              <tr>
-                <td>${cleanName(row[0])}</td>
-                <td class="posto">${row[1]}</td>
-              </tr>
-            `).join("")}
-          </tbody>
-        </table>
-      `;
+    function table(rows){
+      const sorted=sortRows(rows);
+      const nameArrow=sortColumn==="name"?(sortDirection==="asc"?"▲":"▼"):"↕";
+      const spotArrow=sortColumn==="spot"?(sortDirection==="asc"?"▲":"▼"):"↕";
+      return `<table><thead><tr>
+        <th><button class="sort-btn" data-sort="name">Condominio ${nameArrow}</button></th>
+        <th class="posto"><button class="sort-btn" data-sort="spot">Posto ${spotArrow}</button></th>
+      </tr></thead><tbody>
+        ${sorted.map(row=>`<tr><td>${cleanName(row[0])}</td><td class="posto"><span class="badge">${row[1]}</span></td></tr>`).join("")}
+      </tbody></table>`;
     }
 
-    function renderMap(mainRows, smallRows) {
-      const occupants = new Map();
-
-      mainRows.forEach(row => {
-        occupants.set(Number(row[1]), {
-          name: cleanName(row[0]),
-          type: "main"
-        });
-      });
-
-      smallRows.forEach(row => {
-        occupants.set(Number(row[1]), {
-          name: cleanName(row[0]),
-          type: "small"
-        });
-      });
-
-      let html = "";
-
-      for (let i = 1; i <= 37; i++) {
-        const occupant = occupants.get(i);
-
-        html += `
-          <div class="spot ${occupant ? `active-${occupant.type}` : "empty"}">
-            <div class="spot-num">${i}</div>
-            <div class="spot-name">${occupant ? occupant.name : ""}</div>
-          </div>
-        `;
+    function renderMap(mainRows,smallRows){
+      const occupants=new Map();
+      mainRows.forEach(row=>occupants.set(Number(row[1]),{name:cleanName(row[0]),type:"main"}));
+      smallRows.forEach(row=>occupants.set(Number(row[1]),{name:cleanName(row[0]),type:"small"}));
+      let html="";
+      for(let i=1;i<=37;i++){
+        const occupant=occupants.get(i);
+        html+=`<div class="spot ${occupant?`active-${occupant.type}`:"empty"}"><div class="spot-num">${i}</div><div class="spot-name">${occupant?occupant.name:""}</div></div>`;
       }
-
-      byId("parkingMap").innerHTML = html;
+      byId("parkingMap").innerHTML=html;
     }
 
-    function updateResidentResult() {
-      const result = byId("residentResult");
-      const selected = byId("residentSelect").value;
-      const period = selectedPeriod;
-
-      if (!selected || !period) {
-        result.className = "resident-result";
-        result.textContent = "Seleziona un condomino per vedere il posto.";
+    function updateResidentResult(){
+      const result=byId("residentResult");
+      const selected=byId("residentSelect").value;
+      const period=selectedPeriod;
+      if(!selected||!period){
+        result.className="resident-result";
+        result.textContent="Seleziona un condomino per vedere il posto.";
         return;
       }
-
-      const mainRows = period.main === "A" ? groupA : groupB;
-      const smallRows = smallGroups[period.small];
-      const target = normalizeName(selected);
-
-      const mainMatch = mainRows.find(row => normalizeName(row[0]) === target);
-      const smallMatch = smallRows.find(row => normalizeName(row[0]) === target);
-
-      if (smallMatch) {
-        result.className = "resident-result ok";
-        result.textContent = `${cleanName(smallMatch[0])}: posto ${smallMatch[1]} nel gruppetto ${period.small}.`;
-      } else if (mainMatch) {
-        result.className = "resident-result ok";
-        result.textContent = `${cleanName(mainMatch[0])}: posto ${mainMatch[1]} nel gruppo principale ${period.main}.`;
-      } else {
-        result.className = "resident-result out";
-        result.textContent = `${selected}: fuori turno in questo periodo.`;
+      const mainRows=period.main==="A"?groupA:groupB;
+      const smallRows=smallGroups[period.small];
+      const target=normalizeName(selected);
+      const mainMatch=mainRows.find(row=>normalizeName(row[0])===target);
+      const smallMatch=smallRows.find(row=>normalizeName(row[0])===target);
+      if(smallMatch){
+        result.className="resident-result ok";
+        result.textContent=`${cleanName(smallMatch[0])}: posto ${smallMatch[1]} nel gruppetto ${period.small}.`;
+      }else if(mainMatch){
+        result.className="resident-result ok";
+        result.textContent=`${cleanName(mainMatch[0])}: posto ${mainMatch[1]} nel gruppo principale ${period.main}.`;
+      }else{
+        result.className="resident-result out";
+        result.textContent=`${selected}: fuori turno in questo periodo.`;
       }
     }
 
-    function render(period) {
-      selectedPeriod = period;
-
-      if (!period) {
-        byId("mainTitle").textContent = "Nessun turno trovato";
-        byId("mainDates").textContent = "";
-        byId("smallTitle").textContent = "";
-        byId("smallDates").textContent = "";
-        byId("mainTable").innerHTML = `<p class="note warn" style="padding:16px">Nessun turno trovato per questa data.</p>`;
-        byId("smallTable").innerHTML = "";
-        renderMap([], []);
+    function render(period){
+      selectedPeriod=period;
+      if(!period){
+        byId("mainTitle").textContent="Nessun turno trovato";
+        byId("mainDates").textContent="";
+        byId("smallTitle").textContent="";
+        byId("smallDates").textContent="";
+        byId("mainTable").innerHTML=`<div class="settings-card">Nessun turno trovato per questa data.</div>`;
+        byId("smallTable").innerHTML="";
+        renderMap([],[]);
         updateResidentResult();
         return;
       }
 
-      byId("dateInput").value = isoDate(period.start);
+      byId("dateInput").value=isoDate(period.start);
+      const mainRows=period.main==="A"?groupA:groupB;
+      const smallRows=smallGroups[period.small];
 
-      const mainRows = period.main === "A" ? groupA : groupB;
-      const smallRows = smallGroups[period.small];
+      byId("mainTitle").textContent=`Gruppo principale ${period.main}`;
+      byId("mainDates").textContent=`📅 ${formatDate(period.start)} – ${formatDate(period.end)}`;
+      byId("smallTitle").textContent=`Gruppetto ${period.small}`;
+      byId("smallDates").textContent=`📅 ${formatDate(period.start)} – ${formatDate(period.end)}`;
 
-      byId("mainTitle").textContent = `Gruppo principale ${period.main}`;
-      byId("mainDates").textContent = `${formatDate(period.start)} – ${formatDate(period.end)}`;
-
-      byId("smallTitle").textContent = `Gruppetto ${period.small}`;
-      byId("smallDates").textContent = `${formatDate(period.start)} – ${formatDate(period.end)}`;
-
-      byId("mainTable").innerHTML = table(mainRows);
-      byId("smallTable").innerHTML = table(smallRows);
-
-      renderMap(mainRows, smallRows);
+      byId("mainTable").innerHTML=table(mainRows);
+      byId("smallTable").innerHTML=table(smallRows);
+      renderMap(mainRows,smallRows);
       updateResidentResult();
     }
 
-    function populateResidents() {
-      const names = new Set();
-
-      [...groupA, ...groupB, ...Object.values(smallGroups).flat()].forEach(row => {
-        names.add(cleanName(row[0]));
-      });
-
-      byId("residentSelect").innerHTML =
-        `<option value="">Seleziona un condomino</option>` +
-        [...names]
-          .sort((a, b) => a.localeCompare(b, "it", { sensitivity: "base" }))
-          .map(name => `<option value="${name}">${name}</option>`)
-          .join("");
+    function populateResidents(){
+      const names=new Set();
+      [...groupA,...groupB,...Object.values(smallGroups).flat()].forEach(row=>names.add(cleanName(row[0])));
+      byId("residentSelect").innerHTML=`<option value="">Seleziona un condomino</option>`+
+        [...names].sort((a,b)=>a.localeCompare(b,"it",{sensitivity:"base"}))
+        .map(name=>`<option value="${name}">${name}</option>`).join("");
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
+    let deferredPrompt;
+    window.addEventListener("beforeinstallprompt", event=>{
+      event.preventDefault();
+      deferredPrompt=event;
+      const installBtn=byId("installBtn");
+      installBtn.style.display="block";
+      installBtn.onclick=async()=>{
+        installBtn.style.display="none";
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt=null;
+      };
+    });
+
+    document.addEventListener("DOMContentLoaded",()=>{
       populateResidents();
+      const today=new Date();
+      render(findPeriodByDate(today)||allPeriods.find(p=>p.start>=today)||allPeriods[0]);
 
-      const today = new Date();
-      render(findPeriodByDate(today) || allPeriods.find(p => p.start >= today) || allPeriods[0]);
-
-      byId("toggleDateBtn").addEventListener("click", () => {
-        byId("datePanel").classList.toggle("open");
-        byId("toggleDateBtn").classList.toggle("active");
-      });
-
-      byId("toggleResidentBtn").addEventListener("click", () => {
+      byId("openResident").addEventListener("click",()=>{
         byId("residentPanel").classList.toggle("open");
-        byId("toggleResidentBtn").classList.toggle("active");
+        byId("residentPanel").scrollIntoView({block:"nearest"});
       });
 
-      byId("todayBtn").addEventListener("click", () => {
-        render(findPeriodByDate(new Date()));
+      byId("openDate").addEventListener("click",()=>{
+        byId("datePanel").classList.toggle("open");
+        byId("datePanel").scrollIntoView({block:"nearest"});
       });
 
-      byId("dateInput").addEventListener("change", event => {
-        render(findPeriodByDate(new Date(event.target.value + "T00:00:00")));
-      });
+      byId("todayBtn").addEventListener("click",()=>render(findPeriodByDate(new Date())));
+      byId("dateInput").addEventListener("change",event=>render(findPeriodByDate(new Date(event.target.value+"T00:00:00"))));
+      byId("residentSelect").addEventListener("change",updateResidentResult);
 
-      byId("residentSelect").addEventListener("change", updateResidentResult);
-
-      document.addEventListener("click", event => {
-        const button = event.target.closest(".sort-btn");
-        if (!button) return;
-
-        const column = button.dataset.sort;
-
-        if (sortColumn === column) {
-          sortDirection = sortDirection === "asc" ? "desc" : "asc";
-        } else {
-          sortColumn = column;
-          sortDirection = "asc";
-        }
-
+      document.addEventListener("click",event=>{
+        const button=event.target.closest(".sort-btn");
+        if(!button)return;
+        const column=button.dataset.sort;
+        if(sortColumn===column){sortDirection=sortDirection==="asc"?"desc":"asc"}
+        else{sortColumn=column;sortDirection="asc"}
         render(selectedPeriod);
+      });
+
+      document.querySelectorAll(".tab").forEach(tab=>{
+        tab.addEventListener("click",()=>{
+          document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+          document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+          tab.classList.add("active");
+          byId(tab.dataset.section).classList.add("active");
+          window.scrollTo({top:0,behavior:"smooth"});
+        });
       });
     });
   </script>
