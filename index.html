@@ -14,221 +14,172 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
-  <!-- CSS ESTERNO -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="app">
-
     <header>
-      <div class="logo" aria-hidden="true">🏢</div>
-
       <div>
         <h1>Via Chimirri 27</h1>
         <p class="subtitle">Turnazione Parcheggi</p>
       </div>
-
-      <button class="bell" type="button" aria-label="Notifiche">♧</button>
     </header>
 
-    <button id="installBtn" class="install-btn" type="button">
-      Aggiungi alla Home
-    </button>
-
-    <section class="quick-actions">
-
-      <!-- CERCA CONDOMINO -->
-      <button id="openResident" class="action-card" type="button">
-
-        <span class="action-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M5 21V4a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v17"
-              stroke="currentColor"
-              stroke-width="2"/>
-
-            <path d="M16 8h3a1 1 0 0 1 1 1v12M8 7h1M12 7h1M8 11h1M12 11h1M8 15h1M12 15h1M3 21h19"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"/>
-          </svg>
-        </span>
-
-        <span>
-          <span class="action-title">
-            Cerca per condomino
-          </span>
-
-          <span class="action-sub">
-            Seleziona un condomino per visualizzare il posto
-          </span>
-        </span>
-
-        <span class="chev">›</span>
-      </button>
-
-      <div id="residentPanel" class="panel">
-
-        <label for="residentSelect">
-          Condomino
-        </label>
-
-        <select id="residentSelect"></select>
-
-        <div id="residentResult" class="resident-result">
-          Seleziona un condomino per vedere il posto.
-        </div>
-
-      </div>
-
-      <!-- CERCA DATA -->
-      <button id="openDate" class="action-card" type="button">
-
-        <span class="action-icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"/>
-
-            <path d="M8 13h2M12 13h2M16 13h1M8 17h2M12 17h2"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"/>
-          </svg>
-        </span>
-
-        <span>
-          <span class="action-title">
-            Cerca per data
-          </span>
-
-          <span class="action-sub">
-            Trova la turnazione in una data specifica
-          </span>
-        </span>
-
-        <span class="chev">›</span>
-      </button>
-
-      <div id="datePanel" class="panel">
-
-        <div class="date-grid">
-
-          <div>
-            <label for="dateInput">
-              Data
-            </label>
-
-            <input id="dateInput" type="date" />
-          </div>
-
-          <button id="todayBtn"
-            class="primary-btn"
-            type="button">
-
-            Mostra data attuale
+    <main>
+      <!-- HOME -->
+      <section id="homeSection" class="page-section active">
+        <section class="quick-actions">
+          <button id="openHomeDate" class="action-card" type="button">
+            <span class="action-icon" aria-hidden="true">📅</span>
+            <span>
+              <span class="action-title">Cerca per data</span>
+              <span class="action-sub">Visualizza i turni in una data specifica</span>
+            </span>
+            <span class="chev">›</span>
           </button>
 
-        </div>
+          <div id="homeDatePanel" class="panel">
+            <div class="date-grid">
+              <div>
+                <label for="homeDateInput">Data</label>
+                <input id="homeDateInput" type="date" />
+              </div>
 
-      </div>
+              <button id="homeTodayBtn" class="primary-btn" type="button">
+                Mostra data attuale
+              </button>
+            </div>
+          </div>
+        </section>
 
-    </section>
-
-    <!-- CONTENUTO -->
-    <main>
-
-      <div class="cards-grid">
-
-        <!-- GRUPPO PRINCIPALE -->
-        <div class="turn-card">
-
-          <div class="turn-head">
-
-            <div class="head-icon" aria-hidden="true">
-              <svg width="44"
-                height="44"
-                viewBox="0 0 24 24"
-                fill="none">
-
-                <path d="M16 11a4 4 0 1 0-8 0M4 20a8 8 0 0 1 16 0"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"/>
-
-                <path d="M19 9a3 3 0 0 1 2 5M5 9a3 3 0 0 0-2 5"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"/>
-              </svg>
+        <div class="cards-grid">
+          <div class="turn-card">
+            <div class="turn-head">
+              <div class="head-icon" aria-hidden="true">👥</div>
+              <div>
+                <h2 id="mainTitle">Gruppo principale</h2>
+                <div id="mainDates" class="dates"></div>
+              </div>
             </div>
 
-            <div>
-              <h2 id="mainTitle">
-                Gruppo principale
-              </h2>
-
-              <div id="mainDates" class="dates"></div>
-            </div>
-
+            <div id="mainTable" class="table-wrap"></div>
           </div>
 
-          <div id="mainTable" class="table-wrap"></div>
+          <div class="turn-card">
+            <div class="turn-head">
+              <div class="head-icon" aria-hidden="true">👤</div>
+              <div>
+                <h2 id="smallTitle">Gruppetto</h2>
+                <div id="smallDates" class="dates"></div>
+              </div>
+            </div>
 
+            <div id="smallTable" class="table-wrap"></div>
+          </div>
         </div>
+      </section>
 
-        <!-- GRUPPETTO -->
-        <div class="turn-card">
+      <!-- CONDOMINO -->
+      <section id="condominoSection" class="page-section">
+        <section class="quick-actions">
+          <button id="openResidentDate" class="action-card" type="button">
+            <span class="action-icon" aria-hidden="true">📅</span>
+            <span>
+              <span class="action-title">Data</span>
+              <span class="action-sub">Scegli la data per controllare il posto</span>
+            </span>
+            <span class="chev">›</span>
+          </button>
 
-          <div class="turn-head">
+          <div id="residentDatePanel" class="panel">
+            <div class="date-grid">
+              <div>
+                <label for="residentDateInput">Data</label>
+                <input id="residentDateInput" type="date" />
+              </div>
 
-            <div class="head-icon" aria-hidden="true">
-              <svg width="44"
-                height="44"
-                viewBox="0 0 24 24"
-                fill="none">
-
-                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0"
-                  stroke="white"
-                  stroke-width="2"
-                  stroke-linecap="round"/>
-              </svg>
+              <button id="residentTodayBtn" class="primary-btn" type="button">
+                Mostra data attuale
+              </button>
             </div>
-
-            <div>
-              <h2 id="smallTitle">
-                Gruppetto
-              </h2>
-
-              <div id="smallDates" class="dates"></div>
-            </div>
-
           </div>
 
-          <div id="smallTable" class="table-wrap"></div>
+          <button id="openResidentSearch" class="action-card" type="button">
+            <span class="action-icon" aria-hidden="true">🏠</span>
+            <span>
+              <span class="action-title">Cerca condomino</span>
+              <span class="action-sub">Seleziona il condomino e visualizza il posto</span>
+            </span>
+            <span class="chev">›</span>
+          </button>
 
-        </div>
+          <div id="residentSearchPanel" class="panel">
+            <label for="residentSelect">Condomino</label>
+            <select id="residentSelect"></select>
 
-      </div>
+            <div id="residentResult" class="resident-result">
+              Seleziona una data e un condomino.
+            </div>
+          </div>
+        </section>
+      </section>
 
       <!-- MAPPA -->
-      <div class="map-card">
+      <section id="mapSection" class="page-section">
+        <section class="quick-actions">
+          <button id="openMapDate" class="action-card" type="button">
+            <span class="action-icon" aria-hidden="true">📅</span>
+            <span>
+              <span class="action-title">Cerca per data</span>
+              <span class="action-sub">Aggiorna la mappa in base alla data</span>
+            </span>
+            <span class="chev">›</span>
+          </button>
 
-        <div class="map-title">
-          <span>Mappa posti</span>
-          <small>periodo corrente</small>
+          <div id="mapDatePanel" class="panel">
+            <div class="date-grid">
+              <div>
+                <label for="mapDateInput">Data</label>
+                <input id="mapDateInput" type="date" />
+              </div>
+
+              <button id="mapTodayBtn" class="primary-btn" type="button">
+                Mostra data attuale
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div class="map-card">
+          <div class="map-title">
+            <span>Mappa posti</span>
+            <small id="mapDates">periodo corrente</small>
+          </div>
+
+          <div id="parkingMap" class="parking-map"></div>
         </div>
-
-        <div id="parkingMap" class="parking-map"></div>
-
-      </div>
-
+      </section>
     </main>
-
   </div>
 
-  <!-- JAVASCRIPT ESTERNO -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-section="homeSection" type="button">
+      <span class="nav-icon">🏠</span>
+      <span>Home</span>
+    </button>
+
+    <button class="nav-btn" data-section="condominoSection" type="button">
+      <span class="nav-icon">👤</span>
+      <span>Condomino</span>
+    </button>
+
+    <button class="nav-btn" data-section="mapSection" type="button">
+      <span class="nav-icon">🅿️</span>
+      <span>Mappa</span>
+    </button>
+  </nav>
+
   <script src="app.js"></script>
 </body>
 </html>
