@@ -1,0 +1,17 @@
+{
+  "name": "Turnazione Parcheggi Via Chimirri 27",
+  "short_name": "Parcheggi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7fbff",
+  "theme_color": "#0b7ee8",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
