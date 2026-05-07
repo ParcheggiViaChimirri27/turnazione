@@ -161,6 +161,15 @@ input{
   font-size:clamp(16px,3.5vw,19px);
   font-family:inherit;
   color:var(--text);
+  box-sizing:border-box;
+}
+
+input[type="date"]{
+  appearance:none;
+  -webkit-appearance:none;
+  display:block;
+  width:100%;
+  min-width:0;
 }
 
 .date-grid{
