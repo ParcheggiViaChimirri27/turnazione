@@ -631,3 +631,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   updateResidentResult();
 });
+    .resident-fixed-info div.active-turno{
+  background:#ecfdf5;
+  border-color:#21a67f;
+  box-shadow:0 0 0 3px rgba(33,166,127,.12);
+}
+
+.resident-fixed-info div.active-turnetto{
+  background:#eef6ff;
+  border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(11,126,232,.12);
+}
