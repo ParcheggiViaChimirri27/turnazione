@@ -193,9 +193,8 @@ function normalizeName(name){
     .replaceAll('"', " ")
     .replaceAll("[", " ")
     .replaceAll("]", " ")
-    .split(" ")
-    .filter(Boolean)
-    .join(" ");
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function makeDate(year, mmdd){
@@ -219,6 +218,18 @@ function formatDate(date){
     month:"long",
     year:"numeric"
   });
+}
+
+function isSameDate(a,b){
+  return a.getFullYear() === b.getFullYear() &&
+         a.getMonth() === b.getMonth() &&
+         a.getDate() === b.getDate();
+}
+
+function dateLabel(date){
+  return isSameDate(date, new Date())
+    ? `oggi ${formatDate(date)}`
+    : `nella data ${formatDate(date)}`;
 }
 
 function buildPeriods(){
@@ -385,20 +396,12 @@ function findPermanentMainSpot(selectedName){
 
   const matchA = groupA.find(row => normalizeName(row[0]) === target);
   if(matchA){
-    return {
-      group:"A",
-      spot:matchA[1],
-      label:`A / ${matchA[1]}`
-    };
+    return { group:"A", spot:matchA[1], name:cleanName(matchA[0]) };
   }
 
   const matchB = groupB.find(row => normalizeName(row[0]) === target);
   if(matchB){
-    return {
-      group:"B",
-      spot:matchB[1],
-      label:`B / ${matchB[1]}`
-    };
+    return { group:"B", spot:matchB[1], name:cleanName(matchB[0]) };
   }
 
   return null;
@@ -413,33 +416,51 @@ function findPermanentSmallSpot(selectedName){
     const match = smallGroups[groupName].find(row => normalizeName(row[0]) === target);
 
     if(match){
-      return {
-        group:groupName,
-        spot:match[1],
-        label:`${groupName} / ${match[1]}`
-      };
+      return { group:groupName, spot:match[1], name:cleanName(match[0]) };
     }
   }
 
   return null;
 }
 
-function updateResidentFixedInfo(){
-  const selected = byId("residentSelect").value;
+function resetResidentBoxes(){
   const mainBox = byId("residentMainSpot");
   const smallBox = byId("residentSmallSpot");
 
-  if(!selected){
-    mainBox.textContent = "-";
-    smallBox.textContent = "-";
-    return;
+  mainBox.textContent = "-";
+  smallBox.textContent = "-";
+
+  mainBox.parentElement.classList.remove("active-turn");
+  smallBox.parentElement.classList.remove("active-turn");
+}
+
+function highlightResidentBox(type){
+  const mainBox = byId("residentMainSpot");
+  const smallBox = byId("residentSmallSpot");
+
+  if(type === "main"){
+    mainBox.parentElement.classList.add("active-turn");
   }
 
-  const permanentMain = findPermanentMainSpot(selected);
-  const permanentSmall = findPermanentSmallSpot(selected);
+  if(type === "small"){
+    smallBox.parentElement.classList.add("active-turn");
+  }
+}
 
-  mainBox.textContent = permanentMain ? permanentMain.label : "-";
-  smallBox.textContent = permanentSmall ? permanentSmall.label : "-";
+function updateResidentFixedInfo(selectedName, activeType){
+  resetResidentBoxes();
+
+  if(!selectedName) return;
+
+  const permanentMain = findPermanentMainSpot(selectedName);
+  const permanentSmall = findPermanentSmallSpot(selectedName);
+
+  byId("residentMainSpot").textContent = permanentMain ? permanentMain.spot : "-";
+  byId("residentSmallSpot").textContent = permanentSmall ? permanentSmall.spot : "-";
+
+  if(activeType){
+    highlightResidentBox(activeType);
+  }
 }
 
 function populateResidents(){
@@ -461,20 +482,25 @@ function updateResidentResult(){
   const dateValue = byId("residentDateInput").value;
   const result = byId("residentResult");
 
-  updateResidentFixedInfo();
-
-  if(!selected || !dateValue){
+  if(!selected){
+    updateResidentFixedInfo("", null);
     result.className = "resident-result";
-    result.textContent = "Seleziona una data e un condomino.";
+    result.textContent = "Seleziona un condomino.";
     return;
   }
 
-  const selectedDate = dateFromInput(dateValue);
+  if(!dateValue){
+    const today = new Date();
+    byId("residentDateInput").value = isoDate(today);
+  }
+
+  const selectedDate = dateFromInput(byId("residentDateInput").value);
   const period = findPeriodByDate(selectedDate);
 
   if(!period){
+    updateResidentFixedInfo(selected, null);
     result.className = "resident-result out";
-    result.textContent = `Nessun turno trovato nella data ${formatDate(selectedDate)}.`;
+    result.textContent = `Nessun turno trovato ${dateLabel(selectedDate)}.`;
     return;
   }
 
@@ -487,17 +513,20 @@ function updateResidentResult(){
   const smallMatch = smallRows.find(row => normalizeName(row[0]) === target);
 
   if(smallMatch){
+    updateResidentFixedInfo(selected, "small");
     result.className = "resident-result ok";
     result.textContent =
-      `Il condomino ${cleanName(smallMatch[0])} è in turnetto e ha diritto al posto ${smallMatch[1]} nella data ${formatDate(selectedDate)}.`;
+      `Il condomino ${cleanName(smallMatch[0])} ${dateLabel(selectedDate)} è in turnetto e ha diritto al posto ${smallMatch[1]}.`;
   }else if(mainMatch){
+    updateResidentFixedInfo(selected, "main");
     result.className = "resident-result ok";
     result.textContent =
-      `Il condomino ${cleanName(mainMatch[0])} è in turno principale e ha diritto al posto ${mainMatch[1]} nella data ${formatDate(selectedDate)}.`;
+      `Il condomino ${cleanName(mainMatch[0])} ${dateLabel(selectedDate)} è in turno principale e ha diritto al posto ${mainMatch[1]}.`;
   }else{
+    updateResidentFixedInfo(selected, null);
     result.className = "resident-result out";
     result.textContent =
-      `${selected} è fuori turno nella data ${formatDate(selectedDate)}.`;
+      `${selected} ${dateLabel(selectedDate)} è fuori turno.`;
   }
 }
 
@@ -591,6 +620,5 @@ document.addEventListener("DOMContentLoaded", ()=>{
     });
   });
 
-  updateResidentFixedInfo();
   updateResidentResult();
 });
