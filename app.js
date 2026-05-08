@@ -1,7 +1,7 @@
 const groupA = [
   ["TRAPASSO - AVERSA ENRICHETTA",34],
   ["PUCCIO ANNA MARIA LUISA",35],
-  ["CARTOLANO - LOMBARDI",17],
+  ["CARTOLANO-LOMBARDI",17],
   ["LEONE",30],
   ["LE PIANE",37],
   ["MAZZUCA PATRIZIA",31],
@@ -12,17 +12,17 @@ const groupA = [
   ["ROMITI - MONTILLA",19],
   ["SANZI",36],
   ["MANGONE",14],
-  ["CAMPENNÌ - POLITO",20],
+  ["CAMPENNI POLITO",20],
   ["PISTOIA - GEMELLI",13],
   ["MILANO",29],
   ["RICCI DANTE",32],
-  ["AGOSTO [AB. P.R.]",28],
+  ["AGOSTO - AB. P.R.",28],
   ["JIRILLO LUIGI",21],
   ["STAIANO",22],
-  ["DEMASI ANTONINO [INT. 8]",27],
+  ["DEMASI ANTONINO INT. 8",27],
   ["RICCI ANGELO",8],
   ["MARASCO",26],
-  ["DEMASI [SCALA B PIANO 2]",25],
+  ["DEMASI - SCALA B PIANO 2",25],
   ["BOVIO",10],
   ["POLITI",23],
   ["MIRIGLIANI ROSA",24],
@@ -30,7 +30,7 @@ const groupA = [
 ];
 
 const groupB = [
-  ["AGOSTO VIOLETTA [3° P.]",34],
+  ["AGOSTO VIOLETTA 3° P.",34],
   ["SANZI",36],
   ["SQUILLACIOTI",2],
   ["PILÒ",35],
@@ -38,7 +38,7 @@ const groupB = [
   ["AVERSA ENRICHETTA",29],
   ["DEMASI FRANCESCO",21],
   ["BARBUTO",30],
-  ["D'AGOSTINO",31],
+  ["D' AGOSTINO",31],
   ["RICCELLI",26],
   ["AVERSA - GEMELLI",28],
   ["MANNO",24],
@@ -48,27 +48,27 @@ const groupB = [
   ["CIANFLONE",32],
   ["MANCUSO",20],
   ["MIRIGLIANI RAFFAELE",33],
-  ["AGOSTO [SEMINT.]",17],
+  ["AGOSTO - SEMINT.",17],
   ["EREDI PUCCIO ANGELA",9],
   ["EREDI SPADARO",19],
   ["SELVAGGIO",37],
   ["JIRILLO QUINTINO",18],
   ["RUSSO",11],
   ["PISTOIA FRANCESCO",15],
-  ["DEMASI [INT.6]",12],
-  ["O [C]",8],
+  ["DEMASI INT.6",12],
+  ["MARASCO [C]",8],
   ["CATRAMBONE",16]
 ];
 
 const smallGroups = {
   A1:[
-    ["TRAPASSO - AVERSA ENRICHETTA",5],
+    ["TRAPASSO-AVERSA ENRICHETTA",5],
     ["PUCCIO MARISA",10],
-    ["CARTOLANO - LOMBARDI",14],
+    ["CARTOLANO-LOMBARDI",14],
     ["LEONE",3],
     ["LE PIANE",13],
     ["MAZZUCA",4],
-    ["ALESSIO CAVARRETTA",1]
+    ["ALESSIO-CAVARRETTA",1]
   ],
   A2:[
     ["SALERNI",10],
@@ -77,28 +77,28 @@ const smallGroups = {
     ["ROMITA",14],
     ["SANZI",13],
     ["MANGONE",4],
-    ["CAMPENNÌ - POLITO",3]
+    ["CAMPENNI - POLITO",3]
   ],
   A3:[
     ["PISTOIA - GEMELLI",13],
     ["MILANO",14],
     ["RICCI DANTE",1],
-    ["AGOSTO [PIANO RIALZ.]",10],
+    ["AGOSTO - PIANO RIALZ.",10],
     ["JIRILLO LUIGI",5],
     ["STAIANO",4],
-    ["DEMASI ANTONINO [INT. 8]",3]
+    ["DEMASI ANTONINO INT.8",3]
   ],
   A4:[
     ["RICCI ANGELO",1],
-    ["MARASCO [B]",5],
-    ["DEMASI [SCALA B PIANO 2]",4],
+    ["MARASCO B",5],
+    ["DEMASI SCALA B PIANO 2",4],
     ["BOVIO",14],
     ["POLITI",13],
     ["MIRIGLIANI ROSA",10],
     ["VERALDI",3]
   ],
   B1:[
-    ["AGOSTO VIOLETTA [3° P.]",5],
+    ["AGOSTO AB 3° PIANO",5],
     ["SANZI",1],
     ["SQUILLACIOTI",3],
     ["PILÒ",9],
@@ -108,7 +108,7 @@ const smallGroups = {
   ],
   B2:[
     ["BARBUTO",1],
-    ["D'AGOSTINO",15],
+    ["D' AGOSTINO",15],
     ["RICCELLI",2],
     ["AVERSA - GEMELLI",4],
     ["MANNO",3],
@@ -129,8 +129,8 @@ const smallGroups = {
     ["JIRILLO QUINTINO",3],
     ["RUSSO",1],
     ["PISTOIA FRANCESCO",4],
-    ["DEMASI [INT.6]",5],
-    ["MARASCO [C]",9],
+    ["DEMASI INT.6",5],
+    ["MARASCO C",9],
     ["PORTIERE",2]
   ]
 };
@@ -191,6 +191,8 @@ function normalizeName(name){
     .replaceAll(".", " ")
     .replaceAll("'", " ")
     .replaceAll('"', " ")
+    .replaceAll("[", " ")
+    .replaceAll("]", " ")
     .split(" ")
     .filter(Boolean)
     .join(" ");
@@ -199,6 +201,10 @@ function normalizeName(name){
 function makeDate(year, mmdd){
   const [month, day] = mmdd.split("-").map(Number);
   return new Date(year, month - 1, day);
+}
+
+function dateFromInput(value){
+  return new Date(value + "T00:00:00");
 }
 
 function isoDate(date){
@@ -372,6 +378,70 @@ function render(period){
   renderMap(mainRows, smallRows);
 }
 
+function findPermanentMainSpot(selectedName){
+  if(!selectedName) return null;
+
+  const target = normalizeName(selectedName);
+
+  const matchA = groupA.find(row => normalizeName(row[0]) === target);
+  if(matchA){
+    return {
+      group:"A",
+      spot:matchA[1],
+      label:`A / ${matchA[1]}`
+    };
+  }
+
+  const matchB = groupB.find(row => normalizeName(row[0]) === target);
+  if(matchB){
+    return {
+      group:"B",
+      spot:matchB[1],
+      label:`B / ${matchB[1]}`
+    };
+  }
+
+  return null;
+}
+
+function findPermanentSmallSpot(selectedName){
+  if(!selectedName) return null;
+
+  const target = normalizeName(selectedName);
+
+  for(const groupName of Object.keys(smallGroups)){
+    const match = smallGroups[groupName].find(row => normalizeName(row[0]) === target);
+
+    if(match){
+      return {
+        group:groupName,
+        spot:match[1],
+        label:`${groupName} / ${match[1]}`
+      };
+    }
+  }
+
+  return null;
+}
+
+function updateResidentFixedInfo(){
+  const selected = byId("residentSelect").value;
+  const mainBox = byId("residentMainSpot");
+  const smallBox = byId("residentSmallSpot");
+
+  if(!selected){
+    mainBox.textContent = "-";
+    smallBox.textContent = "-";
+    return;
+  }
+
+  const permanentMain = findPermanentMainSpot(selected);
+  const permanentSmall = findPermanentSmallSpot(selected);
+
+  mainBox.textContent = permanentMain ? permanentMain.label : "-";
+  smallBox.textContent = permanentSmall ? permanentSmall.label : "-";
+}
+
 function populateResidents(){
   const names = new Set();
 
@@ -391,17 +461,20 @@ function updateResidentResult(){
   const dateValue = byId("residentDateInput").value;
   const result = byId("residentResult");
 
+  updateResidentFixedInfo();
+
   if(!selected || !dateValue){
     result.className = "resident-result";
     result.textContent = "Seleziona una data e un condomino.";
     return;
   }
 
-  const period = findPeriodByDate(new Date(dateValue + "T00:00:00"));
+  const selectedDate = dateFromInput(dateValue);
+  const period = findPeriodByDate(selectedDate);
 
   if(!period){
     result.className = "resident-result out";
-    result.textContent = "Nessun turno trovato.";
+    result.textContent = `Nessun turno trovato nella data ${formatDate(selectedDate)}.`;
     return;
   }
 
@@ -416,15 +489,15 @@ function updateResidentResult(){
   if(smallMatch){
     result.className = "resident-result ok";
     result.textContent =
-      `Il condomino ${cleanName(smallMatch[0])} ha il posto ${smallMatch[1]} nella data ${formatDate(new Date(dateValue))}.`;
+      `Il condomino ${cleanName(smallMatch[0])} è in turnetto e ha diritto al posto ${smallMatch[1]} nella data ${formatDate(selectedDate)}.`;
   }else if(mainMatch){
     result.className = "resident-result ok";
     result.textContent =
-      `Il condomino ${cleanName(mainMatch[0])} ha il posto ${mainMatch[1]} nella data ${formatDate(new Date(dateValue))}.`;
+      `Il condomino ${cleanName(mainMatch[0])} è in turno principale e ha diritto al posto ${mainMatch[1]} nella data ${formatDate(selectedDate)}.`;
   }else{
     result.className = "resident-result out";
     result.textContent =
-      `${selected} è fuori turno nella data ${formatDate(new Date(dateValue))}.`;
+      `${selected} è fuori turno nella data ${formatDate(selectedDate)}.`;
   }
 }
 
@@ -456,15 +529,14 @@ document.addEventListener("DOMContentLoaded", ()=>{
   setupPanel("openMapDate","mapDatePanel");
 
   byId("homeDateInput").addEventListener("change", e=>{
-    render(findPeriodByDate(new Date(e.target.value + "T00:00:00")));
+    render(findPeriodByDate(dateFromInput(e.target.value)));
   });
 
   byId("mapDateInput").addEventListener("change", e=>{
-    render(findPeriodByDate(new Date(e.target.value + "T00:00:00")));
+    render(findPeriodByDate(dateFromInput(e.target.value)));
   });
 
   byId("residentDateInput").addEventListener("change", updateResidentResult);
-
   byId("residentSelect").addEventListener("change", updateResidentResult);
 
   byId("homeTodayBtn").addEventListener("click", ()=>{
@@ -518,4 +590,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
       byId(button.dataset.section).classList.add("active");
     });
   });
+
+  updateResidentFixedInfo();
+  updateResidentResult();
 });
