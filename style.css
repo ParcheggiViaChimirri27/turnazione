@@ -263,10 +263,6 @@ input[type="date"]{
   content:none;
 }
 
-.head-icon{
-  display:none;
-}
-
 .turn-head h2{
   margin:0;
   font-size:clamp(26px,5vw,34px);
@@ -446,6 +442,37 @@ tr:last-child td{
 .legend-empty::before{
   border-color:var(--line) !important;
   background:white !important;
+}
+
+.resident-fixed-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+
+.resident-fixed-info div{
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  text-align:center;
+}
+
+.resident-fixed-info span{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.resident-fixed-info strong{
+  display:block;
+  color:var(--blue);
+  font-size:24px;
+  font-weight:950;
 }
 
 .resident-result{
