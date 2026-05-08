@@ -1,7 +1,7 @@
 const groupA = [
   ["TRAPASSO - AVERSA ENRICHETTA",34],
   ["PUCCIO ANNA MARIA LUISA",35],
-  ["CARTOLANO-LOMBARDI",17],
+  ["CARTOLANO - LOMBARDI",17],
   ["LEONE",30],
   ["LE PIANE",37],
   ["MAZZUCA PATRIZIA",31],
@@ -12,17 +12,17 @@ const groupA = [
   ["ROMITI - MONTILLA",19],
   ["SANZI",36],
   ["MANGONE",14],
-  ["CAMPENNI POLITO",20],
+  ["CAMPENNÌ - POLITO",20],
   ["PISTOIA - GEMELLI",13],
   ["MILANO",29],
   ["RICCI DANTE",32],
-  ["AGOSTO - AB. P.R.",28],
+  ["AGOSTO [AB. P.R.]",28],
   ["JIRILLO LUIGI",21],
   ["STAIANO",22],
-  ["DEMASI ANTONINO INT. 8",27],
+  ["DEMASI ANTONINO [INT. 8]",27],
   ["RICCI ANGELO",8],
   ["MARASCO",26],
-  ["DEMASI - SCALA B PIANO 2",25],
+  ["DEMASI [SCALA B PIANO 2]",25],
   ["BOVIO",10],
   ["POLITI",23],
   ["MIRIGLIANI ROSA",24],
@@ -30,7 +30,7 @@ const groupA = [
 ];
 
 const groupB = [
-  ["AGOSTO VIOLETTA 3° P.",34],
+  ["AGOSTO VIOLETTA [3° P.]",34],
   ["SANZI",36],
   ["SQUILLACIOTI",2],
   ["PILÒ",35],
@@ -38,7 +38,7 @@ const groupB = [
   ["AVERSA ENRICHETTA",29],
   ["DEMASI FRANCESCO",21],
   ["BARBUTO",30],
-  ["D' AGOSTINO",31],
+  ["D'AGOSTINO",31],
   ["RICCELLI",26],
   ["AVERSA - GEMELLI",28],
   ["MANNO",24],
@@ -48,27 +48,27 @@ const groupB = [
   ["CIANFLONE",32],
   ["MANCUSO",20],
   ["MIRIGLIANI RAFFAELE",33],
-  ["AGOSTO - SEMINT.",17],
+  ["AGOSTO [SEMINT.]",17],
   ["EREDI PUCCIO ANGELA",9],
   ["EREDI SPADARO",19],
   ["SELVAGGIO",37],
   ["JIRILLO QUINTINO",18],
   ["RUSSO",11],
   ["PISTOIA FRANCESCO",15],
-  ["DEMASI INT.6",12],
-  ["MARASCO [C]",8],
+  ["DEMASI [INT.6]",12],
+  ["O [C]",8],
   ["CATRAMBONE",16]
 ];
 
 const smallGroups = {
   A1:[
-    ["TRAPASSO-AVERSA ENRICHETTA",5],
+    ["TRAPASSO - AVERSA ENRICHETTA",5],
     ["PUCCIO MARISA",10],
-    ["CARTOLANO-LOMBARDI",14],
+    ["CARTOLANO - LOMBARDI",14],
     ["LEONE",3],
     ["LE PIANE",13],
     ["MAZZUCA",4],
-    ["ALESSIO-CAVARRETTA",1]
+    ["ALESSIO CAVARRETTA",1]
   ],
   A2:[
     ["SALERNI",10],
@@ -77,28 +77,28 @@ const smallGroups = {
     ["ROMITA",14],
     ["SANZI",13],
     ["MANGONE",4],
-    ["CAMPENNI - POLITO",3]
+    ["CAMPENNÌ - POLITO",3]
   ],
   A3:[
     ["PISTOIA - GEMELLI",13],
     ["MILANO",14],
     ["RICCI DANTE",1],
-    ["AGOSTO - PIANO RIALZ.",10],
+    ["AGOSTO [PIANO RIALZ.]",10],
     ["JIRILLO LUIGI",5],
     ["STAIANO",4],
-    ["DEMASI ANTONINO INT.8",3]
+    ["DEMASI ANTONINO [INT. 8]",3]
   ],
   A4:[
     ["RICCI ANGELO",1],
-    ["MARASCO B",5],
-    ["DEMASI SCALA B PIANO 2",4],
+    ["MARASCO [B]",5],
+    ["DEMASI [SCALA B PIANO 2]",4],
     ["BOVIO",14],
     ["POLITI",13],
     ["MIRIGLIANI ROSA",10],
     ["VERALDI",3]
   ],
   B1:[
-    ["AGOSTO AB 3° PIANO",5],
+    ["AGOSTO VIOLETTA [3° P.]",5],
     ["SANZI",1],
     ["SQUILLACIOTI",3],
     ["PILÒ",9],
@@ -108,7 +108,7 @@ const smallGroups = {
   ],
   B2:[
     ["BARBUTO",1],
-    ["D' AGOSTINO",15],
+    ["D'AGOSTINO",15],
     ["RICCELLI",2],
     ["AVERSA - GEMELLI",4],
     ["MANNO",3],
@@ -129,8 +129,8 @@ const smallGroups = {
     ["JIRILLO QUINTINO",3],
     ["RUSSO",1],
     ["PISTOIA FRANCESCO",4],
-    ["DEMASI INT.6",5],
-    ["MARASCO C",9],
+    ["DEMASI [INT.6]",5],
+    ["MARASCO [C]",9],
     ["PORTIERE",2]
   ]
 };
