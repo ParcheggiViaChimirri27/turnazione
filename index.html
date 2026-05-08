@@ -19,12 +19,16 @@
 
 <body>
   <div class="app">
-    <header>
-      <div>
-        <h1>Via Chimirri 27</h1>
-        <p class="subtitle">Turnazione Parcheggi</p>
-      </div>
-    </header>
+<header>
+  <div>
+    <h1>VIA CHIMIRRI 27</h1>
+    <div class="subtitle-line">
+      <span></span>
+      <p class="subtitle">TURNAZIONE PARCHEGGI</p>
+      <span></span>
+    </div>
+  </div>
+</header>
 
     <main>
       <!-- HOME -->
@@ -81,49 +85,45 @@
       </section>
 
       <!-- CONDOMINO -->
-      <section id="condominoSection" class="page-section">
-        <section class="quick-actions">
-          <button id="openResidentDate" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">📅</span>
-            <span>
-              <span class="action-title">Data</span>
-              <span class="action-sub">Scegli la data per controllare il posto</span>
-            </span>
-            <span class="chev">›</span>
-          </button>
+      <button id="openResidentSearch" class="action-card" type="button">
+  <span class="action-icon" aria-hidden="true">🏠</span>
+  <span>
+    <span class="action-title">Cerca condomino</span>
+    <span class="action-sub">Seleziona il condomino e visualizza il posto</span>
+  </span>
+  <span class="chev">›</span>
+</button>
 
-          <div id="residentDatePanel" class="panel">
-            <div class="date-grid">
-              <div>
-                <label for="residentDateInput">Data</label>
-                <input id="residentDateInput" type="date" />
-              </div>
+<div id="residentSearchPanel" class="panel">
+  <label for="residentSelect">Condomino</label>
+  <select id="residentSelect"></select>
 
-              <button id="residentTodayBtn" class="primary-btn" type="button">
-                Mostra data attuale
-              </button>
-            </div>
-          </div>
+  <div id="residentResult" class="resident-result">
+    Seleziona una data e un condomino.
+  </div>
+</div>
 
-          <button id="openResidentSearch" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">🏠</span>
-            <span>
-              <span class="action-title">Cerca condomino</span>
-              <span class="action-sub">Seleziona il condomino e visualizza il posto</span>
-            </span>
-            <span class="chev">›</span>
-          </button>
+<button id="openResidentDate" class="action-card" type="button">
+  <span class="action-icon" aria-hidden="true">📅</span>
+  <span>
+    <span class="action-title">Data</span>
+    <span class="action-sub">Scegli la data per controllare il posto</span>
+  </span>
+  <span class="chev">›</span>
+</button>
 
-          <div id="residentSearchPanel" class="panel">
-            <label for="residentSelect">Condomino</label>
-            <select id="residentSelect"></select>
+<div id="residentDatePanel" class="panel">
+  <div class="date-grid">
+    <div>
+      <label for="residentDateInput">Data</label>
+      <input id="residentDateInput" type="date" />
+    </div>
 
-            <div id="residentResult" class="resident-result">
-              Seleziona una data e un condomino.
-            </div>
-          </div>
-        </section>
-      </section>
+    <button id="residentTodayBtn" class="primary-btn" type="button">
+      Mostra data attuale
+    </button>
+  </div>
+</div>
 
       <!-- MAPPA -->
       <section id="mapSection" class="page-section">
@@ -158,6 +158,11 @@
           </div>
 
           <div id="parkingMap" class="parking-map"></div>
+		  <div class="map-legend">
+  <span class="legend-main">Gruppo principale</span>
+  <span class="legend-small">Gruppetto</span>
+  <span class="legend-empty">Non attivo / libero</span>
+</div>
         </div>
       </section>
     </main>
