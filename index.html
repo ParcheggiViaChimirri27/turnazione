@@ -22,6 +22,7 @@
     <header>
       <div>
         <h1>VIA CHIMIRRI 27</h1>
+
         <div class="subtitle-line">
           <span></span>
           <p class="subtitle">TURNAZIONE PARCHEGGI</p>
@@ -36,10 +37,12 @@
         <section class="quick-actions">
           <button id="openHomeDate" class="action-card" type="button">
             <span class="action-icon" aria-hidden="true">📅</span>
+
             <span>
               <span class="action-title">Cerca per data</span>
               <span class="action-sub">Visualizza i turni in una data specifica</span>
             </span>
+
             <span class="chev">›</span>
           </button>
 
@@ -65,6 +68,7 @@
                 <div id="mainDates" class="dates"></div>
               </div>
             </div>
+
             <div id="mainTable" class="table-wrap"></div>
           </div>
 
@@ -75,6 +79,7 @@
                 <div id="smallDates" class="dates"></div>
               </div>
             </div>
+
             <div id="smallTable" class="table-wrap"></div>
           </div>
         </div>
@@ -84,17 +89,31 @@
       <section id="condominoSection" class="page-section">
         <section class="quick-actions">
           <button id="openResidentSearch" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">🏠</span>
+            <span class="action-icon" aria-hidden="true">👤</span>
+
             <span>
               <span class="action-title">Cerca condomino</span>
               <span class="action-sub">Seleziona il condomino e visualizza il posto</span>
             </span>
+
             <span class="chev">›</span>
           </button>
 
           <div id="residentSearchPanel" class="panel">
             <label for="residentSelect">Condomino</label>
             <select id="residentSelect"></select>
+
+            <div class="resident-fixed-info">
+              <div>
+                <span>Turno</span>
+                <strong id="residentMainSpot">-</strong>
+              </div>
+
+              <div>
+                <span>Turnetto</span>
+                <strong id="residentSmallSpot">-</strong>
+              </div>
+            </div>
 
             <div id="residentResult" class="resident-result">
               Seleziona una data e un condomino.
@@ -103,10 +122,12 @@
 
           <button id="openResidentDate" class="action-card" type="button">
             <span class="action-icon" aria-hidden="true">📅</span>
+
             <span>
               <span class="action-title">Data</span>
               <span class="action-sub">Scegli la data per controllare il posto</span>
             </span>
+
             <span class="chev">›</span>
           </button>
 
@@ -130,10 +151,12 @@
         <section class="quick-actions">
           <button id="openMapDate" class="action-card" type="button">
             <span class="action-icon" aria-hidden="true">📅</span>
+
             <span>
               <span class="action-title">Cerca per data</span>
               <span class="action-sub">Aggiorna la mappa in base alla data</span>
             </span>
+
             <span class="chev">›</span>
           </button>
 
