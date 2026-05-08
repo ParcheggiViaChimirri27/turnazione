@@ -1,644 +1,604 @@
-const groupA = [
-  ["TRAPASSO - AVERSA ENRICHETTA",34],
-  ["PUCCIO ANNA MARIA LUISA",35],
-  ["CARTOLANO-LOMBARDI",17],
-  ["LEONE",30],
-  ["LE PIANE",37],
-  ["MAZZUCA PATRIZIA",31],
-  ["ALESSIO CAVARRETTA",33],
-  ["SALERNI",12],
-  ["SANDULLI",11],
-  ["PRESTA",18],
-  ["ROMITI - MONTILLA",19],
-  ["SANZI",36],
-  ["MANGONE",14],
-  ["CAMPENNI POLITO",20],
-  ["PISTOIA - GEMELLI",13],
-  ["MILANO",29],
-  ["RICCI DANTE",32],
-  ["AGOSTO - AB. P.R.",28],
-  ["JIRILLO LUIGI",21],
-  ["STAIANO",22],
-  ["DEMASI ANTONINO INT. 8",27],
-  ["RICCI ANGELO",8],
-  ["MARASCO",26],
-  ["DEMASI - SCALA B PIANO 2",25],
-  ["BOVIO",10],
-  ["POLITI",23],
-  ["MIRIGLIANI ROSA",24],
-  ["CATRAMBONE",16]
-];
-
-const groupB = [
-  ["AGOSTO VIOLETTA 3° P.",34],
-  ["SANZI",36],
-  ["SQUILLACIOTI",2],
-  ["PILÒ",35],
-  ["ELIA",22],
-  ["AVERSA ENRICHETTA",29],
-  ["DEMASI FRANCESCO",21],
-  ["BARBUTO",30],
-  ["D' AGOSTINO",31],
-  ["RICCELLI",26],
-  ["AVERSA - GEMELLI",28],
-  ["MANNO",24],
-  ["VARANO",27],
-  ["LUCENTE",25],
-  ["COLACINO",23],
-  ["CIANFLONE",32],
-  ["MANCUSO",20],
-  ["MIRIGLIANI RAFFAELE",33],
-  ["AGOSTO - SEMINT.",17],
-  ["EREDI PUCCIO ANGELA",9],
-  ["EREDI SPADARO",19],
-  ["SELVAGGIO",37],
-  ["JIRILLO QUINTINO",18],
-  ["RUSSO",11],
-  ["PISTOIA FRANCESCO",15],
-  ["DEMASI INT.6",12],
-  ["MARASCO [C]",8],
-  ["CATRAMBONE",16]
-];
-
-const smallGroups = {
-  A1:[
-    ["TRAPASSO-AVERSA ENRICHETTA",5],
-    ["PUCCIO MARISA",10],
-    ["CARTOLANO-LOMBARDI",14],
-    ["LEONE",3],
-    ["LE PIANE",13],
-    ["MAZZUCA",4],
-    ["ALESSIO-CAVARRETTA",1]
-  ],
-  A2:[
-    ["SALERNI",10],
-    ["SANDULLI",1],
-    ["PRESTA",5],
-    ["ROMITA",14],
-    ["SANZI",13],
-    ["MANGONE",4],
-    ["CAMPENNI - POLITO",3]
-  ],
-  A3:[
-    ["PISTOIA - GEMELLI",13],
-    ["MILANO",14],
-    ["RICCI DANTE",1],
-    ["AGOSTO - PIANO RIALZ.",10],
-    ["JIRILLO LUIGI",5],
-    ["STAIANO",4],
-    ["DEMASI ANTONINO INT.8",3]
-  ],
-  A4:[
-    ["RICCI ANGELO",1],
-    ["MARASCO B",5],
-    ["DEMASI SCALA B PIANO 2",4],
-    ["BOVIO",14],
-    ["POLITI",13],
-    ["MIRIGLIANI ROSA",10],
-    ["VERALDI",3]
-  ],
-  B1:[
-    ["AGOSTO AB 3° PIANO",5],
-    ["SANZI",1],
-    ["SQUILLACIOTI",3],
-    ["PILÒ",9],
-    ["ELIA",2],
-    ["AVERSA ENRICHETTA",4],
-    ["DE MASI",15]
-  ],
-  B2:[
-    ["BARBUTO",1],
-    ["D' AGOSTINO",15],
-    ["RICCELLI",2],
-    ["AVERSA - GEMELLI",4],
-    ["MANNO",3],
-    ["VARANO",9],
-    ["LUCENTE",5]
-  ],
-  B3:[
-    ["COLACINO",15],
-    ["CIANFLONE",9],
-    ["MANCUSO",1],
-    ["MIRIGLIANI RAFFAELE",3],
-    ["AGOSTO (AMMEZZ.)",2],
-    ["PUCCIO ANGELA",5],
-    ["EREDI SPADARO",4]
-  ],
-  B4:[
-    ["SELVAGGIO",15],
-    ["JIRILLO QUINTINO",3],
-    ["RUSSO",1],
-    ["PISTOIA FRANCESCO",4],
-    ["DEMASI INT.6",5],
-    ["MARASCO C",9],
-    ["PORTIERE",2]
-  ]
-};
-
-const cycle = [
-  ["A","B3"],
-  ["A","B4"],
-  ["B","A3"],
-  ["A","B1"],
-  ["B","A4"],
-  ["B","A1"],
-  ["A","B2"],
-  ["A","B3"],
-  ["B","A2"],
-  ["B","A3"],
-  ["A","B4"],
-  ["B","A4"],
-  ["A","B1"],
-  ["A","B2"],
-  ["B","A1"],
-  ["B","A2"]
-];
-
-const periodTemplates = [
-  ["09-01","10-08"],
-  ["10-09","11-15"],
-  ["11-16","12-23"],
-  ["12-24","01-31"],
-  ["02-01","03-09"],
-  ["03-10","04-15"],
-  ["04-16","05-23"],
-  ["05-24","06-30"],
-  ["09-01","10-08"],
-  ["10-09","11-15"],
-  ["11-16","12-23"],
-  ["12-24","01-31"],
-  ["02-01","03-09"],
-  ["03-10","04-15"],
-  ["04-16","05-23"],
-  ["05-24","06-30"]
-];
-
-let selectedPeriod = null;
-let sortColumn = "name";
-let sortDirection = "asc";
-
-const byId = id => document.getElementById(id);
-
-function cleanName(name){
-  const text = String(name).trim();
-  return text.startsWith(">") ? text.slice(1).trim() : text;
+:root{
+  --bg:#f7fbff;
+  --card:#ffffff;
+  --text:#071735;
+  --muted:#6f7890;
+  --line:#e6edf7;
+  --blue:#0b7ee8;
+  --blue2:#2f6bff;
+  --navy:#071b3f;
+  --soft:#eef6ff;
+  --pill:#edf4ff;
+  --danger:#b91c1c;
+  --ok:#067647;
+  --shadow:0 18px 45px rgba(16,40,86,.10);
+  --radius:24px;
 }
 
-function normalizeName(name){
-  return cleanName(name)
-    .toLowerCase()
-    .replaceAll("-", " ")
-    .replaceAll(".", " ")
-    .replaceAll("'", " ")
-    .replaceAll('"', " ")
-    .replaceAll("[", " ")
-    .replaceAll("]", " ")
-    .replace(/\s+/g, " ")
-    .trim();
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Inter","Segoe UI",Roboto,Arial,sans-serif;
+  background:
+    radial-gradient(circle at top left,#eaf5ff 0,transparent 38%),
+    linear-gradient(180deg,#fbfdff 0%,#f5f9ff 100%);
+  color:var(--text);
+  letter-spacing:-.02em;
 }
 
-function makeDate(year, mmdd){
-  const [month, day] = mmdd.split("-").map(Number);
-  return new Date(year, month - 1, day);
+.app{
+  max-width:980px;
+  margin:0 auto;
+  padding:24px 16px 110px;
 }
 
-function dateFromInput(value){
-  return new Date(value + "T00:00:00");
+header{
+  padding:10px 4px 26px;
+  text-align:center;
 }
 
-function isoDate(date){
-  return date.getFullYear() + "-" +
-    String(date.getMonth() + 1).padStart(2, "0") + "-" +
-    String(date.getDate()).padStart(2, "0");
+h1{
+  margin:0;
+  font-size:clamp(34px,7vw,58px);
+  line-height:.95;
+  font-weight:950;
+  letter-spacing:-.06em;
+  text-transform:uppercase;
 }
 
-function formatDate(date){
-  return date.toLocaleDateString("it-IT", {
-    day:"numeric",
-    month:"long",
-    year:"numeric"
-  });
+.subtitle-line{
+  display:grid;
+  grid-template-columns:1fr auto 1fr;
+  align-items:center;
+  gap:14px;
+  margin-top:12px;
 }
 
-function isSameDate(a,b){
-  return a.getFullYear() === b.getFullYear() &&
-         a.getMonth() === b.getMonth() &&
-         a.getDate() === b.getDate();
+.subtitle-line span{
+  height:3px;
+  border-radius:999px;
+  background:var(--muted);
+  opacity:.75;
 }
 
-function dateLabel(date){
-  return isSameDate(date, new Date())
-    ? `oggi ${formatDate(date)}`
-    : `nella data ${formatDate(date)}`;
+.subtitle{
+  margin:0;
+  font-size:clamp(18px,3.8vw,30px);
+  color:var(--muted);
+  font-weight:650;
+  letter-spacing:-.03em;
+  text-transform:uppercase;
+  white-space:nowrap;
 }
 
-function buildPeriods(){
-  const periods = [];
+.page-section{display:none}
+.page-section.active{display:block}
 
-  for(let bienniumStart = 2027; bienniumStart <= 2033; bienniumStart += 2){
-    for(let i = 0; i < 16; i++){
-      const [main, small] = cycle[i];
-      const [startMD, endMD] = periodTemplates[i];
-
-      const yearOffset = i < 4 ? 0 : i < 12 ? 1 : 2;
-      const startYear = bienniumStart + yearOffset;
-      const endYear = startMD === "12-24" ? startYear + 1 : startYear;
-
-      periods.push({
-        main,
-        small,
-        start: makeDate(startYear, startMD),
-        end: makeDate(endYear, endMD)
-      });
-    }
-  }
-
-  periods.unshift(
-    {main:"B",small:"A4",start:new Date(2026,1,1),end:new Date(2026,2,9)},
-    {main:"B",small:"A1",start:new Date(2026,2,10),end:new Date(2026,3,15)},
-    {main:"A",small:"B2",start:new Date(2026,3,16),end:new Date(2026,4,23)},
-    {main:"A",small:"B3",start:new Date(2026,4,24),end:new Date(2026,5,30)},
-    {main:"B",small:"A2",start:new Date(2026,8,1),end:new Date(2026,9,8)},
-    {main:"B",small:"A3",start:new Date(2026,9,9),end:new Date(2026,10,15)},
-    {main:"A",small:"B4",start:new Date(2026,10,16),end:new Date(2026,11,23)},
-    {main:"B",small:"A4",start:new Date(2026,11,24),end:new Date(2027,0,31)}
-  );
-
-  return periods.sort((a,b)=>a.start-b.start);
+.quick-actions{
+  display:grid;
+  gap:12px;
+  margin-bottom:22px;
 }
 
-const allPeriods = buildPeriods();
-
-function findPeriodByDate(date){
-  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  return allPeriods.find(period => d >= period.start && d <= period.end) || null;
+.action-card{
+  width:100%;
+  border:0;
+  border-radius:20px;
+  background:rgba(255,255,255,.94);
+  box-shadow:var(--shadow);
+  padding:10px 14px;
+  display:grid;
+  grid-template-columns:48px 1fr auto;
+  gap:12px;
+  align-items:center;
+  cursor:pointer;
+  text-align:left;
+  color:var(--text);
+  font:inherit;
 }
 
-function sortRows(rows){
-  return [...rows].sort((a,b)=>{
-    let result;
-
-    if(sortColumn === "spot"){
-      result = Number(a[1]) - Number(b[1]);
-    }else{
-      result = cleanName(a[0]).localeCompare(cleanName(b[0]), "it", {
-        sensitivity:"base"
-      });
-    }
-
-    return sortDirection === "asc" ? result : -result;
-  });
+.action-icon{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:var(--soft);
+  display:grid;
+  place-items:center;
+  font-size:22px;
 }
 
-function table(rows){
-  const sorted = sortRows(rows);
-
-  const nameArrow = sortColumn === "name"
-    ? (sortDirection === "asc" ? "▲" : "▼")
-    : "↕";
-
-  const spotArrow = sortColumn === "spot"
-    ? (sortDirection === "asc" ? "▲" : "▼")
-    : "↕";
-
-  return `
-    <table>
-      <thead>
-        <tr>
-          <th>
-            <button class="sort-btn" data-sort="name">
-              Condomino ${nameArrow}
-            </button>
-          </th>
-
-          <th class="posto">
-            <button class="sort-btn" data-sort="spot">
-              Posto ${spotArrow}
-            </button>
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        ${sorted.map(row => `
-          <tr>
-            <td>${cleanName(row[0])}</td>
-            <td class="posto">
-              <span class="badge">${row[1]}</span>
-            </td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
+.action-title{
+  display:block;
+  font-size:clamp(16px,3.7vw,20px);
+  font-weight:900;
+  letter-spacing:-.03em;
 }
 
-function renderMap(mainRows, smallRows){
-  const occupants = new Map();
-
-  mainRows.forEach(row=>{
-    occupants.set(Number(row[1]), {
-      name: cleanName(row[0]),
-      type: "main"
-    });
-  });
-
-  smallRows.forEach(row=>{
-    occupants.set(Number(row[1]), {
-      name: cleanName(row[0]),
-      type: "small"
-    });
-  });
-
-  let html = "";
-
-  for(let i = 1; i <= 37; i++){
-    const occupant = occupants.get(i);
-
-    html += `
-      <div class="spot ${occupant ? `active-${occupant.type}` : "empty"}">
-        <div class="spot-num">${i}</div>
-        <div class="spot-name">${occupant ? occupant.name : ""}</div>
-      </div>
-    `;
-  }
-
-  byId("parkingMap").innerHTML = html;
+.action-sub{
+  display:block;
+  margin-top:2px;
+  color:var(--muted);
+  font-size:clamp(11px,2.5vw,14px);
+  font-weight:650;
 }
 
-function render(period){
-  selectedPeriod = period;
-
-  if(!period) return;
-
-  const mainRows = period.main === "A" ? groupA : groupB;
-  const smallRows = smallGroups[period.small];
-
-  byId("mainTitle").textContent = `Gruppo principale ${period.main}`;
-  byId("smallTitle").textContent = `Gruppetto ${period.small}`;
-
-  const dateText = `${formatDate(period.start)} – ${formatDate(period.end)}`;
-
-  byId("mainDates").textContent = dateText;
-  byId("smallDates").textContent = dateText;
-  byId("mapDates").textContent = dateText;
-
-  byId("mainTable").innerHTML = table(mainRows);
-  byId("smallTable").innerHTML = table(smallRows);
-
-  renderMap(mainRows, smallRows);
+.chev{
+  font-size:clamp(24px,5vw,34px);
+  line-height:1;
+  color:#6f7890;
 }
 
-function findPermanentMainSpot(selectedName){
-  if(!selectedName) return null;
-
-  const target = normalizeName(selectedName);
-
-  const matchA = groupA.find(row => normalizeName(row[0]) === target);
-  if(matchA){
-    return { group:"A", spot:matchA[1], name:cleanName(matchA[0]) };
-  }
-
-  const matchB = groupB.find(row => normalizeName(row[0]) === target);
-  if(matchB){
-    return { group:"B", spot:matchB[1], name:cleanName(matchB[0]) };
-  }
-
-  return null;
+.panel{
+  display:none;
+  margin-top:-2px;
+  margin-bottom:12px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:22px;
+  box-shadow:var(--shadow);
+  padding:16px;
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
 }
 
-function findPermanentSmallSpot(selectedName){
-  if(!selectedName) return null;
+.panel.open{display:block}
 
-  const target = normalizeName(selectedName);
-
-  for(const groupName of Object.keys(smallGroups)){
-    const match = smallGroups[groupName].find(row => normalizeName(row[0]) === target);
-
-    if(match){
-      return { group:groupName, spot:match[1], name:cleanName(match[0]) };
-    }
-  }
-
-  return null;
+label{
+  display:block;
+  font-weight:900;
+  margin-bottom:8px;
+  font-size:clamp(14px,3vw,17px);
 }
 
-function resetResidentBoxes(){
-  const mainBox = byId("residentMainSpot");
-  const smallBox = byId("residentSmallSpot");
-
-  mainBox.textContent = "-";
-  smallBox.textContent = "-";
-
-  mainBox.parentElement.style.background = "var(--soft)";
-  mainBox.parentElement.style.borderColor = "var(--line)";
-  mainBox.parentElement.style.boxShadow = "none";
-
-  smallBox.parentElement.style.background = "var(--soft)";
-  smallBox.parentElement.style.borderColor = "var(--line)";
-  smallBox.parentElement.style.boxShadow = "none";
+select,
+input{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:15px 16px;
+  background:white;
+  font-size:clamp(16px,3.5vw,19px);
+  font-family:inherit;
+  color:var(--text);
+  box-sizing:border-box;
 }
 
-function highlightResidentBox(type){
-  const mainBox = byId("residentMainSpot");
-  const smallBox = byId("residentSmallSpot");
+input[type="date"]{
+  appearance:none;
+  -webkit-appearance:none;
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  box-sizing:border-box;
+  border-radius:18px;
+}
 
-  if(type === "main"){
-    mainBox.parentElement.style.background = "#ecfdf5";
-    mainBox.parentElement.style.borderColor = "#21a67f";
-    mainBox.parentElement.style.boxShadow = "0 0 0 3px rgba(33,166,127,.18)";
-  }
+.date-grid{
+  display:grid;
+  gap:12px;
+  width:100%;
+}
 
-  if(type === "small"){
-    smallBox.parentElement.style.background = "#ecfdf5";
-    smallBox.parentElement.style.borderColor = "#21a67f";
-    smallBox.parentElement.style.boxShadow = "0 0 0 3px rgba(33,166,127,.18)";
+.date-grid,
+.date-grid > div{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow:hidden;
+}
+
+@media(min-width:760px){
+  .date-grid{
+    grid-template-columns:1fr auto;
+    align-items:end;
   }
 }
 
-function updateResidentFixedInfo(selectedName, activeType){
-  resetResidentBoxes();
-
-  if(!selectedName) return;
-
-  const permanentMain = findPermanentMainSpot(selectedName);
-  const permanentSmall = findPermanentSmallSpot(selectedName);
-
-  byId("residentMainSpot").textContent = permanentMain ? permanentMain.spot : "-";
-  byId("residentSmallSpot").textContent = permanentSmall ? permanentSmall.spot : "-";
-
-  if(activeType){
-    highlightResidentBox(activeType);
-  }
+.primary-btn{
+  border:0;
+  border-radius:18px;
+  background:var(--blue);
+  color:white;
+  padding:16px 20px;
+  font-size:clamp(15px,3vw,18px);
+  font-weight:950;
+  font-family:inherit;
+  cursor:pointer;
+  width:100%;
+  min-width:0;
+  white-space:normal;
 }
 
-function populateResidents(){
-  const names = new Set();
-
-  [...groupA, ...groupB, ...Object.values(smallGroups).flat()]
-    .forEach(row => names.add(cleanName(row[0])));
-
-  byId("residentSelect").innerHTML =
-    `<option value="">Seleziona condomino</option>` +
-    [...names]
-      .sort((a,b)=>a.localeCompare(b,"it",{sensitivity:"base"}))
-      .map(name=>`<option value="${name}">${name}</option>`)
-      .join("");
+.cards-grid{
+  display:grid;
+  gap:20px;
 }
 
-function updateResidentResult(){
-  const selected = byId("residentSelect").value;
-  const dateValue = byId("residentDateInput").value;
-  const result = byId("residentResult");
-
-  if(!selected){
-    updateResidentFixedInfo("", null);
-    result.className = "resident-result";
-    result.textContent = "Seleziona un condomino.";
-    return;
-  }
-
-  if(!dateValue){
-    const today = new Date();
-    byId("residentDateInput").value = isoDate(today);
-  }
-
-  const selectedDate = dateFromInput(byId("residentDateInput").value);
-  const period = findPeriodByDate(selectedDate);
-
-  if(!period){
-    updateResidentFixedInfo(selected, null);
-    result.className = "resident-result out";
-    result.textContent = `Nessun turno trovato ${dateLabel(selectedDate)}.`;
-    return;
-  }
-
-  const target = normalizeName(selected);
-
-  const mainRows = period.main === "A" ? groupA : groupB;
-  const smallRows = smallGroups[period.small];
-
-  const mainMatch = mainRows.find(row => normalizeName(row[0]) === target);
-  const smallMatch = smallRows.find(row => normalizeName(row[0]) === target);
-
-  if(smallMatch){
-    updateResidentFixedInfo(selected, "small");
-    result.className = "resident-result ok";
-    result.textContent =
-      `Il condomino ${cleanName(smallMatch[0])} ${dateLabel(selectedDate)} è in turnetto e ha diritto al posto ${smallMatch[1]}.`;
-  }else if(mainMatch){
-    updateResidentFixedInfo(selected, "main");
-    result.className = "resident-result ok";
-    result.textContent =
-      `Il condomino ${cleanName(mainMatch[0])} ${dateLabel(selectedDate)} è in turno principale e ha diritto al posto ${mainMatch[1]}.`;
-  }else{
-    updateResidentFixedInfo(selected, null);
-    result.className = "resident-result out";
-    result.textContent =
-      `${selected} ${dateLabel(selectedDate)} è fuori turno.`;
-  }
+@media(min-width:950px){
+  .cards-grid{grid-template-columns:1fr 1fr}
 }
 
-function setupPanel(buttonId, panelId){
-  byId(buttonId).addEventListener("click", ()=>{
-    byId(panelId).classList.toggle("open");
-  });
+.turn-card{
+  background:white;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  border:1px solid var(--line);
 }
 
-document.addEventListener("DOMContentLoaded", ()=>{
+.turn-head{
+  min-height:auto;
+  background:
+    linear-gradient(135deg,rgba(7,23,53,.98),rgba(15,45,96,.98)),
+    radial-gradient(circle at right,rgba(11,126,232,.28),transparent 42%);
+  color:white;
+  padding:24px;
+  display:block;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
 
-  populateResidents();
+.turn-head::after{content:none}
 
-  const today = new Date();
-  const currentPeriod =
-    findPeriodByDate(today) ||
-    allPeriods.find(p=>p.start>=today) ||
-    allPeriods[0];
+.turn-head h2{
+  margin:0;
+  font-size:clamp(26px,5vw,34px);
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:-.05em;
+  text-transform:uppercase;
+  text-align:center;
+}
 
-  render(currentPeriod);
+.dates{
+  margin-top:10px;
+  color:#d7deec;
+  font-size:clamp(15px,3vw,19px);
+  font-weight:650;
+  text-align:center;
+}
 
-  byId("homeDateInput").value = isoDate(today);
-  byId("residentDateInput").value = isoDate(today);
-  byId("mapDateInput").value = isoDate(today);
+table{
+  width:100%;
+  border-collapse:collapse;
+}
 
-  setupPanel("openHomeDate","homeDatePanel");
-  setupPanel("openResidentDate","residentDatePanel");
-  setupPanel("openResidentSearch","residentSearchPanel");
-  setupPanel("openMapDate","mapDatePanel");
+th,
+td{
+  border-bottom:1px solid var(--line);
+  padding:16px 18px;
+  text-align:left;
+  vertical-align:middle;
+}
 
-  byId("homeDateInput").addEventListener("change", e=>{
-    render(findPeriodByDate(dateFromInput(e.target.value)));
-  });
+th{
+  background:#fbfdff;
+  color:#6d7489;
+  text-transform:uppercase;
+  font-size:clamp(13px,2.8vw,16px);
+  font-weight:950;
+}
 
-  byId("mapDateInput").addEventListener("change", e=>{
-    render(findPeriodByDate(dateFromInput(e.target.value)));
-  });
+td{
+  font-size:clamp(15px,3.2vw,20px);
+  font-weight:700;
+  text-transform:uppercase;
+}
 
-  byId("residentDateInput").addEventListener("change", updateResidentResult);
-  byId("residentSelect").addEventListener("change", updateResidentResult);
+tr:last-child td{border-bottom:none}
 
-  byId("homeTodayBtn").addEventListener("click", ()=>{
-    const now = new Date();
-    byId("homeDateInput").value = isoDate(now);
-    render(findPeriodByDate(now));
-  });
+.posto{
+  width:110px;
+  text-align:right;
+}
 
-  byId("mapTodayBtn").addEventListener("click", ()=>{
-    const now = new Date();
-    byId("mapDateInput").value = isoDate(now);
-    render(findPeriodByDate(now));
-  });
+.badge{
+  display:inline-grid;
+  place-items:center;
+  min-width:54px;
+  height:38px;
+  border-radius:18px;
+  background:var(--pill);
+  color:var(--blue);
+  font-weight:950;
+}
 
-  byId("residentTodayBtn").addEventListener("click", ()=>{
-    const now = new Date();
-    byId("residentDateInput").value = isoDate(now);
-    updateResidentResult();
-  });
+.sort-btn{
+  border:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  cursor:pointer;
+  font-weight:950;
+}
 
-  document.addEventListener("click", event=>{
-    const button = event.target.closest(".sort-btn");
+.map-card{
+  background:white;
+  border-radius:var(--radius);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
 
-    if(!button) return;
+.map-title{
+  padding:22px;
+  background:var(--navy);
+  color:white;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  font-size:clamp(20px,4vw,28px);
+  font-weight:950;
+}
 
-    const column = button.dataset.sort;
+.map-title small{
+  color:#d7deec;
+  font-size:clamp(13px,2.7vw,16px);
+  font-weight:650;
+}
 
-    if(sortColumn === column){
-      sortDirection = sortDirection === "asc" ? "desc" : "asc";
-    }else{
-      sortColumn = column;
-      sortDirection = "asc";
-    }
+.parking-map{
+  padding:14px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(82px,1fr));
+  gap:8px;
+}
 
-    render(selectedPeriod);
-  });
+.spot{
+  min-height:84px;
+  border:2px solid var(--line);
+  border-radius:16px;
+  background:white;
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
 
-  document.querySelectorAll(".nav-btn").forEach(button=>{
-    button.addEventListener("click", ()=>{
+.spot.active-main{
+  border-color:var(--blue);
+  background:#eef6ff;
+}
 
-      document.querySelectorAll(".nav-btn").forEach(btn=>{
-        btn.classList.remove("active");
-      });
+.spot.active-small{
+  border-color:#21a67f;
+  background:#ecfdf5;
+}
 
-      button.classList.add("active");
+.spot.empty{opacity:.38}
 
-      document.querySelectorAll(".page-section").forEach(section=>{
-        section.classList.remove("active");
-      });
+.spot-num{
+  font-size:clamp(18px,4vw,22px);
+  font-weight:950;
+}
 
-      byId(button.dataset.section).classList.add("active");
-    });
-  });
+.spot-name{
+  font-size:clamp(10px,2vw,12px);
+  line-height:1.1;
+  font-weight:750;
+  word-break:break-word;
+}
 
-  updateResidentResult();
-});
-    .resident-fixed-info div.active-turno{
+.map-legend{
+  padding:0 16px 18px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  color:var(--muted);
+  font-weight:750;
+  font-size:14px;
+}
+
+.map-legend span::before{
+  content:"";
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border-radius:5px;
+  margin-right:6px;
+  vertical-align:-2px;
+  border:2px solid var(--line);
+  background:white;
+}
+
+.legend-main::before{
+  border-color:var(--blue) !important;
+  background:#eef6ff !important;
+}
+
+.legend-small::before{
+  border-color:#21a67f !important;
+  background:#ecfdf5 !important;
+}
+
+.legend-empty::before{
+  border-color:var(--line) !important;
+  background:white !important;
+}
+
+.resident-fixed-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+
+.resident-fixed-info div{
+  background:var(--soft);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:14px;
+  text-align:center;
+  transition:.18s ease;
+}
+
+.resident-fixed-info div.active-turn{
   background:#ecfdf5;
   border-color:#21a67f;
-  box-shadow:0 0 0 3px rgba(33,166,127,.12);
+  box-shadow:0 0 0 3px rgba(33,166,127,.18);
 }
 
-.resident-fixed-info div.active-turnetto{
-  background:#eef6ff;
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px rgba(11,126,232,.12);
+.resident-fixed-info span{
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+
+.resident-fixed-info strong{
+  display:block;
+  color:var(--blue);
+  font-size:24px;
+  font-weight:950;
+}
+
+.resident-fixed-info div.active-turn strong{
+  color:var(--ok);
+}
+
+.resident-result{
+  margin-top:14px;
+  min-height:54px;
+  padding:15px;
+  border-radius:18px;
+  background:#f4f7fb;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-weight:750;
+  font-size:clamp(15px,3vw,18px);
+}
+
+.resident-result.ok{
+  background:#ecfdf5;
+  border-color:#8de0bc;
+  color:var(--ok);
+}
+
+.resident-result.out{
+  background:#fff1f2;
+  border-color:#fca5a5;
+  color:var(--danger);
+}
+
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(18px);
+  border-top:1px solid #dbe6f3;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+  z-index:999;
+}
+
+.nav-btn{
+  border:0;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  color:#6f7890;
+  font-family:inherit;
+  font-size:clamp(11px,2.8vw,14px);
+  font-weight:750;
+  cursor:pointer;
+}
+
+.nav-btn.active{color:var(--blue)}
+
+.nav-icon{font-size:clamp(22px,5vw,28px)}
+
+@media(max-width:560px){
+  .app{
+    padding:20px 12px 110px;
+  }
+
+  h1,
+  .subtitle{
+    text-align:center;
+  }
+
+  .subtitle-line{
+    gap:10px;
+  }
+
+  .subtitle-line span{
+    height:2px;
+  }
+
+  .parking-map{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .turn-head{
+    padding:22px;
+    text-align:center;
+  }
+
+  .turn-head h2,
+  .dates{
+    text-align:center;
+    width:100%;
+  }
+
+  th,
+  td{
+    padding:14px 12px;
+  }
+
+  .posto{
+    width:88px;
+  }
+
+  .date-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+  }
+
+  .panel{
+    padding:16px;
+  }
+
+  input,
+  select,
+  .primary-btn{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+
+  input[type="date"]{
+    font-size:18px;
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .map-title{
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+
+  .map-title span,
+  .map-title small{
+    width:100%;
+    text-align:center;
+  }
 }
