@@ -232,46 +232,54 @@ function dateLabel(date){
     : `nella data ${formatDate(date)}`;
 }
 
-function buildPeriods(){
-  const periods = [];
+function getCycleStartYear(date){
+  const year = date.getFullYear();
+  const afterSeptember = date.getMonth() >= 8;
 
-  for(let bienniumStart = 2027; bienniumStart <= 2033; bienniumStart += 2){
-    for(let i = 0; i < 16; i++){
-      const [main, small] = cycle[i];
-      const [startMD, endMD] = periodTemplates[i];
+  let candidate = afterSeptember ? year : year - 1;
 
-      const yearOffset = i < 4 ? 0 : i < 12 ? 1 : 2;
-      const startYear = bienniumStart + yearOffset;
-      const endYear = startMD === "12-24" ? startYear + 1 : startYear;
-
-      periods.push({
-        main,
-        small,
-        start: makeDate(startYear, startMD),
-        end: makeDate(endYear, endMD)
-      });
-    }
+  if(candidate % 2 === 0){
+    candidate -= 1;
   }
 
-  periods.unshift(
-    {main:"B",small:"A4",start:new Date(2026,1,1),end:new Date(2026,2,9)},
-    {main:"B",small:"A1",start:new Date(2026,2,10),end:new Date(2026,3,15)},
-    {main:"A",small:"B2",start:new Date(2026,3,16),end:new Date(2026,4,23)},
-    {main:"A",small:"B3",start:new Date(2026,4,24),end:new Date(2026,5,30)},
-    {main:"B",small:"A2",start:new Date(2026,8,1),end:new Date(2026,9,8)},
-    {main:"B",small:"A3",start:new Date(2026,9,9),end:new Date(2026,10,15)},
-    {main:"A",small:"B4",start:new Date(2026,10,16),end:new Date(2026,11,23)},
-    {main:"B",small:"A4",start:new Date(2026,11,24),end:new Date(2027,0,31)}
-  );
-
-  return periods.sort((a,b)=>a.start-b.start);
+  return candidate;
 }
 
-const allPeriods = buildPeriods();
+function buildPeriodsForCycle(cycleStartYear){
+  const periods = [];
+
+  for(let i = 0; i < 16; i++){
+    const [main, small] = cycle[i];
+    const [startMD, endMD] = periodTemplates[i];
+
+    const yearOffset = i < 4 ? 0 : i < 12 ? 1 : 2;
+    const startYear = cycleStartYear + yearOffset;
+    const endYear = startMD === "12-24" ? startYear + 1 : startYear;
+
+    periods.push({
+      main,
+      small,
+      start: makeDate(startYear, startMD),
+      end: makeDate(endYear, endMD),
+      cycleStartYear
+    });
+  }
+
+  return periods;
+}
 
 function findPeriodByDate(date){
+  const cycleStartYear = getCycleStartYear(date);
+
+  const possiblePeriods = [
+    ...buildPeriodsForCycle(cycleStartYear - 2),
+    ...buildPeriodsForCycle(cycleStartYear),
+    ...buildPeriodsForCycle(cycleStartYear + 2)
+  ];
+
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  return allPeriods.find(period => d >= period.start && d <= period.end) || null;
+
+  return possiblePeriods.find(period => d >= period.start && d <= period.end) || null;
 }
 
 function sortRows(rows){
@@ -541,10 +549,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
   populateResidents();
 
   const today = new Date();
-  const currentPeriod =
-    findPeriodByDate(today) ||
-    allPeriods.find(p=>p.start>=today) ||
-    allPeriods[0];
+  const currentPeriod = findPeriodByDate(today);
 
   render(currentPeriod);
 
