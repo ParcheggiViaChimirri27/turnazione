@@ -1,6 +1,6 @@
 const groupA = [
   ["TRAPASSO - AVERSA ENRICHETTA",34],
-  ["PUCCIO ANNA MARIA LUISA",35],
+  ["PUCCIO MARISA",35],
   ["CARTOLANO - LOMBARDI",17],
   ["LEONE",30],
   ["LE PIANE",37],
@@ -16,12 +16,12 @@ const groupA = [
   ["PISTOIA - GEMELLI",13],
   ["MILANO",29],
   ["RICCI DANTE",32],
-  ["AGOSTO - PIANO RIALZATO",28],
+  ["AGOSTO - PIANO RIALZ.",28],
   ["JIRILLO LUIGI",21],
   ["STAIANO",22],
-  ["DEMASI ANTONINO - INT. 8",27],
+  ["DEMASI ANTONINO INT. 8",27],
   ["RICCI ANGELO",8],
-  ["MARASCO B",26],
+  ["MARASCO [B]",26],
   ["DEMASI - SCALA B PIANO 2",25],
   ["BOVIO",10],
   ["POLITI",23],
@@ -30,9 +30,9 @@ const groupA = [
 ];
 
 const groupB = [
-  ["AGOSTO - 3° PIANO",34],
+  ["AGOSTO VIOLETTA 3° P.",34],
   ["SANZI",36],
-  ["SQUILLACIOTI",2],
+  ["SQUILLACIOTI - VERALDI",2],
   ["PILÒ",35],
   ["ELIA",22],
   ["AVERSA ENRICHETTA",29],
@@ -48,15 +48,15 @@ const groupB = [
   ["CIANFLONE",32],
   ["MANCUSO",20],
   ["MIRIGLIANI RAFFAELE",33],
-  ["AGOSTO - SEMINT.",17],
+  ["AGOSTO SEMINT.",17],
   ["EREDI PUCCIO ANGELA",9],
   ["EREDI SPADARO",19],
   ["SELVAGGIO",37],
   ["JIRILLO QUINTINO",18],
   ["RUSSO",11],
   ["PISTOIA FRANCESCO",15],
-  ["DEMASI - INT. 6",12],
-  ["MARASCO C",8],
+  ["DEMASI INT. 6",12],
+  ["MARASCO [C]",8],
   ["CATRAMBONE",16]
 ];
 
@@ -67,8 +67,8 @@ const smallGroups = {
     ["CARTOLANO - LOMBARDI",14],
     ["LEONE",3],
     ["LE PIANE",13],
-    ["MAZZUCA",4],
-    ["ALESSIO-CAVARRETTA",1]
+    ["MAZZUCA PATRIZIA",4],
+    ["ALESSIO CAVARRETTA",1]
   ],
   A2:[
     ["SALERNI",10],
@@ -83,28 +83,28 @@ const smallGroups = {
     ["PISTOIA - GEMELLI",13],
     ["MILANO",14],
     ["RICCI DANTE",1],
-    ["AGOSTO - PIANO RIALZATO",10],
+    ["AGOSTO - PIANO RIALZ.",10],
     ["JIRILLO LUIGI",5],
     ["STAIANO",4],
-    ["DEMASI ANTONINO - INT. 8",3]
+    ["DEMASI ANTONINO INT. 8",3]
   ],
   A4:[
     ["RICCI ANGELO",1],
-    ["MARASCO B",5],
+    ["MARASCO [B]",5],
     ["DEMASI - SCALA B PIANO 2",4],
     ["BOVIO",14],
     ["POLITI",13],
     ["MIRIGLIANI ROSA",10],
-    ["VERALDI",3]
+    ["PORTIERE",3]
   ],
   B1:[
-    ["AGOSTO - 3° PIANO",5],
+    ["AGOSTO VIOLETTA 3° P.",5],
     ["SANZI",1],
-    ["SQUILLACIOTI",3],
+    ["SQUILLACIOTI - VERALDI",3],
     ["PILÒ",9],
     ["ELIA",2],
     ["AVERSA ENRICHETTA",4],
-    ["DEMASI - INT. 6",15]
+    ["DEMASI FRANCESCO",15]
   ],
   B2:[
     ["BARBUTO",1],
@@ -120,7 +120,7 @@ const smallGroups = {
     ["CIANFLONE",9],
     ["MANCUSO",1],
     ["MIRIGLIANI RAFFAELE",3],
-    ["AGOSTO - SEMINT.",2],
+    ["AGOSTO SEMINT.",2],
     ["EREDI PUCCIO ANGELA",5],
     ["EREDI SPADARO",4]
   ],
@@ -129,8 +129,8 @@ const smallGroups = {
     ["JIRILLO QUINTINO",3],
     ["RUSSO",1],
     ["PISTOIA FRANCESCO",4],
-    ["DEMASI - INT. 6",5],
-    ["MARASCO C",9],
+    ["DEMASI INT. 6",5],
+    ["MARASCO [C]",9],
     ["PORTIERE",2]
   ]
 };
