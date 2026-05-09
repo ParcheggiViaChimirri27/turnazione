@@ -345,35 +345,29 @@ function buildSpotRights(){
   const rights = new Map();
 
   for(let i = 1; i <= 37; i++){
-    rights.set(i, {
-      main: [],
-      small: []
-    });
+    rights.set(i, []);
   }
 
-  function addUnique(list, name){
+  function addUnique(spot, name){
     const cleaned = cleanName(name);
+
+    if(!rights.has(spot)){
+      rights.set(spot, []);
+    }
+
+    const list = rights.get(spot);
+
     if(!list.some(existing => normalizeName(existing) === normalizeName(cleaned))){
       list.push(cleaned);
     }
   }
 
   [...groupA, ...groupB].forEach(row=>{
-    const spot = Number(row[1]);
-    if(!rights.has(spot)){
-      rights.set(spot, {main:[], small:[]});
-    }
-
-    addUnique(rights.get(spot).main, row[0]);
+    addUnique(Number(row[1]), row[0]);
   });
 
   Object.values(smallGroups).flat().forEach(row=>{
-    const spot = Number(row[1]);
-    if(!rights.has(spot)){
-      rights.set(spot, {main:[], small:[]});
-    }
-
-    addUnique(rights.get(spot).small, row[0]);
+    addUnique(Number(row[1]), row[0]);
   });
 
   return rights;
@@ -383,7 +377,7 @@ const spotRights = buildSpotRights();
 
 function listNames(names){
   if(!names || names.length === 0){
-    return `<span>-</span>`;
+    return `<span>• Nessun condomino</span>`;
   }
 
   return names
@@ -412,7 +406,7 @@ function renderMap(mainRows, smallRows){
 
   for(let i = 1; i <= 37; i++){
     const occupant = occupants.get(i);
-    const rights = spotRights.get(i) || {main:[], small:[]};
+    const rights = spotRights.get(i) || [];
 
     html += `
       <div class="spot-wrap" data-spot="${i}">
@@ -425,16 +419,12 @@ function renderMap(mainRows, smallRows){
           </div>
 
           <div class="spot-back">
-            <div class="back-title">Posto ${i}</div>
-
-            <div class="back-group">
-              <strong>Turno</strong>
-              ${listNames(rights.main)}
+            <div class="back-list">
+              ${listNames(rights)}
             </div>
 
-            <div class="back-group">
-              <strong>Turnetto</strong>
-              ${listNames(rights.small)}
+            <div class="back-footer">
+              Posto ${i}
             </div>
           </div>
         </div>
