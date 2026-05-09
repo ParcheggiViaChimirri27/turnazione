@@ -368,7 +368,7 @@ tr:last-child td{
   transform:rotateY(180deg);
   background:#ffffff;
   border:2px solid var(--blue);
-  padding:9px;
+  padding:8px;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
@@ -376,19 +376,23 @@ tr:last-child td{
 }
 
 .back-list{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
   display:flex;
   flex-direction:column;
-  gap:3px;
-  overflow:hidden;
+  gap:2px;
+  padding-right:2px;
 }
 
 .back-list span{
   display:block;
-  font-size:clamp(8px,1.9vw,10px);
-  line-height:1.08;
+  font-size:9px;
+  line-height:1.1;
   font-weight:800;
   color:var(--text);
   text-transform:uppercase;
+  word-break:break-word;
 }
 
 .back-footer{
@@ -397,7 +401,7 @@ tr:last-child td{
   border-top:1px dashed var(--blue);
   text-align:center;
   color:var(--navy);
-  font-size:clamp(11px,2.4vw,14px);
+  font-size:11px;
   font-weight:950;
 }
 
@@ -495,22 +499,6 @@ tr:last-child td{
   border-radius:18px;
   padding:14px;
   text-align:center;
-  transition:.18s ease;
-}
-
-.resident-fixed-info div.active-turn{
-  background:#ecfdf5;
-  border-color:#21a67f;
-  box-shadow:0 0 0 3px rgba(33,166,127,.18);
-}
-
-.resident-fixed-info span{
-  display:block;
-  color:var(--muted);
-  font-size:13px;
-  font-weight:800;
-  text-transform:uppercase;
-  margin-bottom:6px;
 }
 
 .resident-fixed-info strong{
@@ -530,18 +518,6 @@ tr:last-child td{
   color:var(--muted);
   font-weight:750;
   font-size:clamp(15px,3vw,18px);
-}
-
-.resident-result.ok{
-  background:#ecfdf5;
-  border-color:#8de0bc;
-  color:var(--ok);
-}
-
-.resident-result.out{
-  background:#fff1f2;
-  border-color:#fca5a5;
-  color:var(--danger);
 }
 
 .bottom-nav{
@@ -587,42 +563,21 @@ tr:last-child td{
     padding:20px 12px 110px;
   }
 
-  h1,
-  .subtitle{
-    text-align:center;
-  }
-
-  .subtitle-line{
-    gap:10px;
-  }
-
-  .subtitle-line span{
-    height:2px;
-  }
-
   .parking-map{
     grid-template-columns:repeat(3,1fr);
   }
 
-  .turn-head{
-    padding:22px;
+  .spot-name{
+    font-size:9px;
   }
 
-  th,
-  td{
-    padding:14px 12px;
+  .back-list span{
+    font-size:8px;
+    line-height:1.05;
   }
 
-  .posto{
-    width:88px;
-  }
-
-  .date-grid{
-    grid-template-columns:1fr;
-  }
-
-  .panel{
-    padding:16px;
+  .back-footer{
+    font-size:10px;
   }
 
   .map-title{
@@ -630,19 +585,5 @@ tr:last-child td{
     align-items:center;
     justify-content:center;
     text-align:center;
-  }
-
-  .map-title span,
-  .map-title small{
-    width:100%;
-    text-align:center;
-  }
-
-  .spot-name{
-    font-size:10px;
-  }
-
-  .back-list span{
-    font-size:8.5px;
   }
 }
