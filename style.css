@@ -39,8 +39,6 @@ body{
   padding:24px 16px 110px;
 }
 
-/* HEADER */
-
 header{
   padding:10px 4px 26px;
   text-align:center;
@@ -80,8 +78,6 @@ h1{
   white-space:nowrap;
 }
 
-/* SECTIONS */
-
 .page-section{
   display:none;
 }
@@ -89,8 +85,6 @@ h1{
 .page-section.active{
   display:block;
 }
-
-/* ACTION CARDS */
 
 .quick-actions{
   display:grid;
@@ -145,8 +139,6 @@ h1{
   line-height:1;
   color:#6f7890;
 }
-
-/* PANELS */
 
 .panel{
   display:none;
@@ -213,8 +205,6 @@ input[type="date"]{
   cursor:pointer;
   width:100%;
 }
-
-/* TABLES */
 
 .cards-grid{
   display:grid;
@@ -314,8 +304,6 @@ tr:last-child td{
   font-weight:950;
 }
 
-/* MAP */
-
 .map-card{
   background:white;
   border-radius:var(--radius);
@@ -350,8 +338,6 @@ tr:last-child td{
   perspective:1200px;
 }
 
-/* FLIP CARD */
-
 .spot-wrap{
   aspect-ratio:1/1;
   perspective:1200px;
@@ -381,37 +367,38 @@ tr:last-child td{
 .spot-back{
   transform:rotateY(180deg);
   background:#ffffff;
-  border:2px solid var(--line);
-  padding:10px;
+  border:2px solid var(--blue);
+  padding:9px;
   display:flex;
   flex-direction:column;
-  justify-content:flex-start;
+  justify-content:space-between;
+  box-shadow:0 12px 28px rgba(7,23,53,.12);
 }
 
-.back-title{
-  font-size:13px;
-  font-weight:900;
-  margin-bottom:8px;
-  color:var(--navy);
+.back-list{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  overflow:hidden;
 }
 
-.back-group{
-  margin-bottom:10px;
-}
-
-.back-group strong{
+.back-list span{
   display:block;
-  font-size:11px;
+  font-size:clamp(8px,1.9vw,10px);
+  line-height:1.08;
+  font-weight:800;
+  color:var(--text);
   text-transform:uppercase;
-  color:var(--muted);
-  margin-bottom:4px;
 }
 
-.back-group span{
-  display:block;
-  font-size:11px;
-  line-height:1.2;
-  font-weight:700;
+.back-footer{
+  margin-top:6px;
+  padding-top:6px;
+  border-top:1px dashed var(--blue);
+  text-align:center;
+  color:var(--navy);
+  font-size:clamp(11px,2.4vw,14px);
+  font-weight:950;
 }
 
 .spot{
@@ -495,8 +482,6 @@ tr:last-child td{
   background:white!important;
 }
 
-/* CONDOMINO */
-
 .resident-fixed-info{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -559,8 +544,6 @@ tr:last-child td{
   color:var(--danger);
 }
 
-/* NAV */
-
 .bottom-nav{
   position:fixed;
   left:0;
@@ -597,8 +580,6 @@ tr:last-child td{
 .nav-icon{
   font-size:clamp(22px,5vw,28px);
 }
-
-/* MOBILE */
 
 @media(max-width:560px){
 
@@ -661,7 +642,7 @@ tr:last-child td{
     font-size:10px;
   }
 
-  .back-group span{
-    font-size:10px;
+  .back-list span{
+    font-size:8.5px;
   }
 }
