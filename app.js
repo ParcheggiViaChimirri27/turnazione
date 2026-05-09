@@ -341,6 +341,56 @@ function table(rows){
   `;
 }
 
+function buildSpotRights(){
+  const rights = new Map();
+
+  for(let i = 1; i <= 37; i++){
+    rights.set(i, {
+      main: [],
+      small: []
+    });
+  }
+
+  function addUnique(list, name){
+    const cleaned = cleanName(name);
+    if(!list.some(existing => normalizeName(existing) === normalizeName(cleaned))){
+      list.push(cleaned);
+    }
+  }
+
+  [...groupA, ...groupB].forEach(row=>{
+    const spot = Number(row[1]);
+    if(!rights.has(spot)){
+      rights.set(spot, {main:[], small:[]});
+    }
+
+    addUnique(rights.get(spot).main, row[0]);
+  });
+
+  Object.values(smallGroups).flat().forEach(row=>{
+    const spot = Number(row[1]);
+    if(!rights.has(spot)){
+      rights.set(spot, {main:[], small:[]});
+    }
+
+    addUnique(rights.get(spot).small, row[0]);
+  });
+
+  return rights;
+}
+
+const spotRights = buildSpotRights();
+
+function listNames(names){
+  if(!names || names.length === 0){
+    return `<span>-</span>`;
+  }
+
+  return names
+    .map(name => `<span>• ${name}</span>`)
+    .join("");
+}
+
 function renderMap(mainRows, smallRows){
   const occupants = new Map();
 
@@ -362,11 +412,32 @@ function renderMap(mainRows, smallRows){
 
   for(let i = 1; i <= 37; i++){
     const occupant = occupants.get(i);
+    const rights = spotRights.get(i) || {main:[], small:[]};
 
     html += `
-      <div class="spot ${occupant ? `active-${occupant.type}` : "empty"}">
-        <div class="spot-num">${i}</div>
-        <div class="spot-name">${occupant ? occupant.name : ""}</div>
+      <div class="spot-wrap" data-spot="${i}">
+        <div class="spot-inner">
+          <div class="spot-front">
+            <div class="spot ${occupant ? `active-${occupant.type}` : "empty"}">
+              <div class="spot-num">${i}</div>
+              <div class="spot-name">${occupant ? occupant.name : ""}</div>
+            </div>
+          </div>
+
+          <div class="spot-back">
+            <div class="back-title">Posto ${i}</div>
+
+            <div class="back-group">
+              <strong>Turno</strong>
+              ${listNames(rights.main)}
+            </div>
+
+            <div class="back-group">
+              <strong>Turnetto</strong>
+              ${listNames(rights.small)}
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -594,18 +665,25 @@ document.addEventListener("DOMContentLoaded", ()=>{
   document.addEventListener("click", event=>{
     const button = event.target.closest(".sort-btn");
 
-    if(!button) return;
+    if(button){
+      const column = button.dataset.sort;
 
-    const column = button.dataset.sort;
+      if(sortColumn === column){
+        sortDirection = sortDirection === "asc" ? "desc" : "asc";
+      }else{
+        sortColumn = column;
+        sortDirection = "asc";
+      }
 
-    if(sortColumn === column){
-      sortDirection = sortDirection === "asc" ? "desc" : "asc";
-    }else{
-      sortColumn = column;
-      sortDirection = "asc";
+      render(selectedPeriod);
+      return;
     }
 
-    render(selectedPeriod);
+    const spotCard = event.target.closest(".spot-wrap");
+
+    if(spotCard){
+      spotCard.classList.toggle("flipped");
+    }
   });
 
   document.querySelectorAll(".nav-btn").forEach(button=>{
