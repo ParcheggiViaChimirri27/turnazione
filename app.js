@@ -1,7 +1,7 @@
 const groupA = [
   ["TRAPASSO - AVERSA ENRICHETTA",34],
   ["PUCCIO ANNA MARIA LUISA",35],
-  ["CARTOLANO-LOMBARDI",17],
+  ["CARTOLANO - LOMBARDI",17],
   ["LEONE",30],
   ["LE PIANE",37],
   ["MAZZUCA PATRIZIA",31],
@@ -12,16 +12,16 @@ const groupA = [
   ["ROMITI - MONTILLA",19],
   ["SANZI",36],
   ["MANGONE",14],
-  ["CAMPENNI POLITO",20],
+  ["CAMPENNÌ - POLITO",20],
   ["PISTOIA - GEMELLI",13],
   ["MILANO",29],
   ["RICCI DANTE",32],
-  ["AGOSTO - AB. P.R.",28],
+  ["AGOSTO - PIANO RIALZATO",28],
   ["JIRILLO LUIGI",21],
   ["STAIANO",22],
-  ["DEMASI ANTONINO INT. 8",27],
+  ["DEMASI ANTONINO - INT. 8",27],
   ["RICCI ANGELO",8],
-  ["MARASCO",26],
+  ["MARASCO B",26],
   ["DEMASI - SCALA B PIANO 2",25],
   ["BOVIO",10],
   ["POLITI",23],
@@ -30,7 +30,7 @@ const groupA = [
 ];
 
 const groupB = [
-  ["AGOSTO VIOLETTA 3° P.",34],
+  ["AGOSTO - 3° PIANO",34],
   ["SANZI",36],
   ["SQUILLACIOTI",2],
   ["PILÒ",35],
@@ -38,7 +38,7 @@ const groupB = [
   ["AVERSA ENRICHETTA",29],
   ["DEMASI FRANCESCO",21],
   ["BARBUTO",30],
-  ["D' AGOSTINO",31],
+  ["D'AGOSTINO",31],
   ["RICCELLI",26],
   ["AVERSA - GEMELLI",28],
   ["MANNO",24],
@@ -55,16 +55,16 @@ const groupB = [
   ["JIRILLO QUINTINO",18],
   ["RUSSO",11],
   ["PISTOIA FRANCESCO",15],
-  ["DEMASI INT.6",12],
-  ["MARASCO [C]",8],
+  ["DEMASI - INT. 6",12],
+  ["MARASCO C",8],
   ["CATRAMBONE",16]
 ];
 
 const smallGroups = {
   A1:[
-    ["TRAPASSO-AVERSA ENRICHETTA",5],
+    ["TRAPASSO - AVERSA ENRICHETTA",5],
     ["PUCCIO MARISA",10],
-    ["CARTOLANO-LOMBARDI",14],
+    ["CARTOLANO - LOMBARDI",14],
     ["LEONE",3],
     ["LE PIANE",13],
     ["MAZZUCA",4],
@@ -74,41 +74,41 @@ const smallGroups = {
     ["SALERNI",10],
     ["SANDULLI",1],
     ["PRESTA",5],
-    ["ROMITA",14],
+    ["ROMITI - MONTILLA",14],
     ["SANZI",13],
     ["MANGONE",4],
-    ["CAMPENNI - POLITO",3]
+    ["CAMPENNÌ - POLITO",3]
   ],
   A3:[
     ["PISTOIA - GEMELLI",13],
     ["MILANO",14],
     ["RICCI DANTE",1],
-    ["AGOSTO - PIANO RIALZ.",10],
+    ["AGOSTO - PIANO RIALZATO",10],
     ["JIRILLO LUIGI",5],
     ["STAIANO",4],
-    ["DEMASI ANTONINO INT.8",3]
+    ["DEMASI ANTONINO - INT. 8",3]
   ],
   A4:[
     ["RICCI ANGELO",1],
     ["MARASCO B",5],
-    ["DEMASI SCALA B PIANO 2",4],
+    ["DEMASI - SCALA B PIANO 2",4],
     ["BOVIO",14],
     ["POLITI",13],
     ["MIRIGLIANI ROSA",10],
     ["VERALDI",3]
   ],
   B1:[
-    ["AGOSTO AB 3° PIANO",5],
+    ["AGOSTO - 3° PIANO",5],
     ["SANZI",1],
     ["SQUILLACIOTI",3],
     ["PILÒ",9],
     ["ELIA",2],
     ["AVERSA ENRICHETTA",4],
-    ["DE MASI",15]
+    ["DEMASI - INT. 6",15]
   ],
   B2:[
     ["BARBUTO",1],
-    ["D' AGOSTINO",15],
+    ["D'AGOSTINO",15],
     ["RICCELLI",2],
     ["AVERSA - GEMELLI",4],
     ["MANNO",3],
@@ -120,8 +120,8 @@ const smallGroups = {
     ["CIANFLONE",9],
     ["MANCUSO",1],
     ["MIRIGLIANI RAFFAELE",3],
-    ["AGOSTO (AMMEZZ.)",2],
-    ["PUCCIO ANGELA",5],
+    ["AGOSTO - SEMINT.",2],
+    ["EREDI PUCCIO ANGELA",5],
     ["EREDI SPADARO",4]
   ],
   B4:[
@@ -129,48 +129,24 @@ const smallGroups = {
     ["JIRILLO QUINTINO",3],
     ["RUSSO",1],
     ["PISTOIA FRANCESCO",4],
-    ["DEMASI INT.6",5],
+    ["DEMASI - INT. 6",5],
     ["MARASCO C",9],
     ["PORTIERE",2]
   ]
 };
 
 const cycle = [
-  ["A","B3"],
-  ["A","B4"],
-  ["B","A3"],
-  ["A","B1"],
-  ["B","A4"],
-  ["B","A1"],
-  ["A","B2"],
-  ["A","B3"],
-  ["B","A2"],
-  ["B","A3"],
-  ["A","B4"],
-  ["B","A4"],
-  ["A","B1"],
-  ["A","B2"],
-  ["B","A1"],
-  ["B","A2"]
+  ["A","B3"], ["A","B4"], ["B","A3"], ["A","B1"],
+  ["B","A4"], ["B","A1"], ["A","B2"], ["A","B3"],
+  ["B","A2"], ["B","A3"], ["A","B4"], ["B","A4"],
+  ["A","B1"], ["A","B2"], ["B","A1"], ["B","A2"]
 ];
 
 const periodTemplates = [
-  ["09-01","10-08"],
-  ["10-09","11-15"],
-  ["11-16","12-23"],
-  ["12-24","01-31"],
-  ["02-01","03-09"],
-  ["03-10","04-15"],
-  ["04-16","05-23"],
-  ["05-24","06-30"],
-  ["09-01","10-08"],
-  ["10-09","11-15"],
-  ["11-16","12-23"],
-  ["12-24","01-31"],
-  ["02-01","03-09"],
-  ["03-10","04-15"],
-  ["04-16","05-23"],
-  ["05-24","06-30"]
+  ["09-01","10-08"], ["10-09","11-15"], ["11-16","12-23"], ["12-24","01-31"],
+  ["02-01","03-09"], ["03-10","04-15"], ["04-16","05-23"], ["05-24","06-30"],
+  ["09-01","10-08"], ["10-09","11-15"], ["11-16","12-23"], ["12-24","01-31"],
+  ["02-01","03-09"], ["03-10","04-15"], ["04-16","05-23"], ["05-24","06-30"]
 ];
 
 let selectedPeriod = null;
@@ -180,8 +156,7 @@ let sortDirection = "asc";
 const byId = id => document.getElementById(id);
 
 function cleanName(name){
-  const text = String(name).trim();
-  return text.startsWith(">") ? text.slice(1).trim() : text;
+  return String(name).trim().replace(/^>\s*/, "");
 }
 
 function normalizeName(name){
@@ -235,7 +210,6 @@ function dateLabel(date){
 function getCycleStartYear(date){
   const year = date.getFullYear();
   const afterSeptember = date.getMonth() >= 8;
-
   let candidate = afterSeptember ? year : year - 1;
 
   if(candidate % 2 === 0){
@@ -548,7 +522,6 @@ function populateResidents(){
 
 function updateResidentResult(){
   const selected = byId("residentSelect").value;
-  const dateValue = byId("residentDateInput").value;
   const result = byId("residentResult");
 
   if(!selected){
@@ -558,7 +531,7 @@ function updateResidentResult(){
     return;
   }
 
-  if(!dateValue){
+  if(!byId("residentDateInput").value){
     const today = new Date();
     byId("residentDateInput").value = isoDate(today);
   }
@@ -606,7 +579,6 @@ function setupPanel(buttonId, panelId){
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
-
   populateResidents();
 
   const today = new Date();
@@ -678,7 +650,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   document.querySelectorAll(".nav-btn").forEach(button=>{
     button.addEventListener("click", ()=>{
-
       document.querySelectorAll(".nav-btn").forEach(btn=>{
         btn.classList.remove("active");
       });
