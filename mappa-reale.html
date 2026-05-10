@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+  <title>Mappa Reale Parcheggi</title>
+
+  <link rel="stylesheet" href="mappa-reale.css">
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <h1>Mappa reale</h1>
+      <p>Prova con planimetria e posti dinamici</p>
+    </header>
+
+    <section class="tools">
+      <label for="mapDateInput">Data</label>
+      <input id="mapDateInput" type="date">
+      <button id="todayBtn" type="button">Mostra data attuale</button>
+    </section>
+
+    <section class="real-map-wrap">
+      <div class="real-map" id="realMap">
+        <img src="mappa-reale.jpg" class="real-map-img" alt="Mappa parcheggi">
+
+        <div id="spotsLayer"></div>
+      </div>
+    </section>
+
+    <p class="note">
+      Tocca un posto per vedere chi ha diritto a quel parcheggio.
+    </p>
+  </main>
+
+  <script src="mappa-reale.js"></script>
+</body>
+</html>
