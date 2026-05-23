@@ -14,184 +14,134 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
   <div class="app">
-    <header>
-      <div>
-        <h1>VIA CHIMIRRI 27</h1>
-
-        <div class="subtitle-line">
-          <span></span>
-          <p class="subtitle">TURNAZIONE PARCHEGGI</p>
-          <span></span>
-        </div>
-      </div>
-    </header>
-
     <main>
       <section id="homeSection" class="page-section active">
-        <section class="quick-actions">
-          <button id="openHomeDate" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">📅</span>
-
-            <span>
-              <span class="action-title">Cerca per data</span>
-              <span class="action-sub">Visualizza i turni in una data specifica</span>
-            </span>
-
-            <span class="chev">›</span>
-          </button>
-
-          <div id="homeDatePanel" class="panel">
-            <div class="date-grid">
-              <div>
-                <label for="homeDateInput">Data</label>
-                <input id="homeDateInput" type="date" />
+        <div class="sticky-top">
+          <header class="compact-header">
+            <div>
+              <h1>VIA CHIMIRRI 27</h1>
+              <div class="subtitle-line">
+                <span></span>
+                <p class="subtitle">TURNAZIONE PARCHEGGI</p>
+                <span></span>
               </div>
-
-              <button id="homeTodayBtn" class="primary-btn" type="button">
-                Mostra data attuale
-              </button>
             </div>
+          </header>
+
+          <section class="smart-toolbar" aria-label="Controlli periodo">
+            <button id="homePrevPeriodBtn" class="toolbar-btn" type="button" aria-label="Periodo precedente">‹</button>
+
+            <label class="date-pill" for="homeDateInput">
+              <span class="date-pill-icon">📅</span>
+              <input id="homeDateInput" type="text" inputmode="numeric" placeholder="gg/mm/aaaa" />
+            </label>
+
+            <button id="homeNextPeriodBtn" class="toolbar-btn" type="button" aria-label="Prossimo turno">›</button>
+            <button id="homeTodayBtn" class="today-pill" type="button">Oggi</button>
+          </section>
+        </div>
+
+        <div class="map-card home-map-card">
+          <div class="map-title compact-map-title">
+            <span>MAPPA POSTI</span>
+            <small id="mapDates">periodo corrente</small>
           </div>
-        </section>
 
-        <div class="cards-grid">
-          <div class="turn-card">
-            <div class="turn-head">
-              <h2 id="mainTitle">Gruppo principale</h2>
-              <div id="mainDates" class="dates"></div>
-            </div>
+          <div id="freeParkingBanner" class="free-message" hidden></div>
 
-            <div id="mainTable" class="table-wrap"></div>
+          <div class="map-legend compact-legend">
+            <span class="legend-main">Turno</span>
+            <span class="legend-small">Turnetto</span>
+            <span class="legend-empty">Libero</span>
           </div>
 
-          <div class="turn-card">
-            <div class="turn-head">
-              <h2 id="smallTitle">Gruppetto</h2>
-              <div id="smallDates" class="dates"></div>
-            </div>
+          <div class="smart-section-title">Posti del periodo</div>
+          <div id="parkingMap" class="parking-map smart-parking-map"></div>
+          <div class="map-touch-note">👆 Tocca un posto sulla mappa per vedere l’assegnatario.</div>
 
-            <div id="smallTable" class="table-wrap"></div>
+          <div class="smart-section-title real-map-section-title">Mappa reale</div>
+          <div id="realMapBox" class="real-map-box open">
+            <div class="real-map-scroll">
+              <div class="real-map" id="realMap">
+                <div id="realParkingMap"></div>
+              </div>
+            </div>
+            <div class="real-map-note">Tocca un posto sulla mappa per vedere l’assegnatario.</div>
           </div>
         </div>
       </section>
 
       <section id="condominoSection" class="page-section">
-        <section class="quick-actions">
-          <button id="openResidentSearch" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">👤</span>
-
-            <span>
-              <span class="action-title">Cerca condomino</span>
-              <span class="action-sub">Seleziona il condomino e visualizza il posto</span>
-            </span>
-
-            <span class="chev">›</span>
-          </button>
-
-          <div id="residentSearchPanel" class="panel">
-            <label for="residentSelect">Condomino</label>
-            <select id="residentSelect"></select>
-
-            <div class="resident-fixed-info">
-              <div>
-                <span>Turno</span>
-                <strong id="residentMainSpot">-</strong>
-              </div>
-
-              <div>
-                <span>Turnetto</span>
-                <strong id="residentSmallSpot">-</strong>
+        <div class="sticky-top">
+          <header class="compact-header">
+            <div>
+              <h1>VIA CHIMIRRI 27</h1>
+              <div class="subtitle-line">
+                <span></span>
+                <p class="subtitle">TURNAZIONE PARCHEGGI</p>
+                <span></span>
               </div>
             </div>
+          </header>
 
-            <div id="residentResult" class="resident-result">
-              Seleziona una data e un condomino.
-            </div>
+          <section class="smart-toolbar" aria-label="Controlli periodo condomino">
+            <button id="residentPrevPeriodBtn" class="toolbar-btn" type="button" aria-label="Periodo precedente">‹</button>
+
+            <label class="date-pill" for="residentDateInput">
+              <span class="date-pill-icon">📅</span>
+              <input id="residentDateInput" type="text" inputmode="numeric" placeholder="gg/mm/aaaa" />
+            </label>
+
+            <button id="residentNextPeriodBtn" class="toolbar-btn" type="button" aria-label="Prossimo turno">›</button>
+            <button id="residentTodayBtn" class="today-pill" type="button">Oggi</button>
+          </section>
+        </div>
+
+        <section class="smart-search-card">
+          <div class="resident-search-wrap">
+            <label class="search-box" for="residentSearchInput">
+              <span>🔍</span>
+              <input id="residentSearchInput" type="search" placeholder="Cerca condomino..." autocomplete="off" />
+            </label>
+
+            <div id="residentSearchResults" class="search-results" hidden></div>
           </div>
 
-          <button id="openResidentDate" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">📅</span>
+          <select id="residentSelect" hidden></select>
 
-            <span>
-              <span class="action-title">Data</span>
-              <span class="action-sub">Scegli la data per controllare il posto</span>
-            </span>
-
-            <span class="chev">›</span>
-          </button>
-
-          <div id="residentDatePanel" class="panel">
-            <div class="date-grid">
-              <div>
-                <label for="residentDateInput">Data</label>
-                <input id="residentDateInput" type="date" />
-              </div>
-
-              <button id="residentTodayBtn" class="primary-btn" type="button">
-                Mostra data attuale
-              </button>
-            </div>
-          </div>
-        </section>
-      </section>
-
-      <section id="mapSection" class="page-section">
-        <section class="quick-actions">
-          <button id="openMapDate" class="action-card" type="button">
-            <span class="action-icon" aria-hidden="true">📅</span>
-
-            <span>
-              <span class="action-title">Cerca per data</span>
-              <span class="action-sub">Aggiorna la mappa in base alla data</span>
-            </span>
-
-            <span class="chev">›</span>
-          </button>
-
-          <div id="mapDatePanel" class="panel">
-            <div class="date-grid">
-              <div>
-                <label for="mapDateInput">Data</label>
-                <input id="mapDateInput" type="date" />
-              </div>
-
-              <button id="mapTodayBtn" class="primary-btn" type="button">
-                Mostra data attuale
-              </button>
-            </div>
+          <div id="residentResult" class="resident-result compact-result">
+            Cerca un condomino oppure scorri l’elenco sotto.
           </div>
         </section>
 
-        <div class="map-card">
-          <div class="map-title">
-            <span>Mappa posti</span>
-            <small id="mapDates">periodo corrente</small>
+        <div class="turn-card resident-list-card">
+          <div class="turn-head compact-turn-head">
+            <h2>Condomini</h2>
+            <div id="residentListDates" class="dates"></div>
           </div>
+          <div id="residentList" class="resident-list"></div>
+        </div>
 
-          <div id="parkingMap" class="parking-map"></div>
-
-          <div class="map-touch-note">
-            👆 Tocca una card per vedere chi ha diritto a quel posto negli anni.
+        <div class="turn-card spot-rights-card">
+          <div class="turn-head compact-turn-head">
+            <h2>Diritti per posto</h2>
+            <div class="dates">Elenco statico: chi ha diritto a ciascun posto nel tempo</div>
           </div>
-
-          <div class="map-legend">
-            <span class="legend-main">Gruppo principale</span>
-            <span class="legend-small">Gruppetto</span>
-            <span class="legend-empty">Non attivo / libero</span>
-          </div>
+          <div id="spotRightsList" class="spot-rights-list"></div>
         </div>
       </section>
     </main>
   </div>
 
-  <nav class="bottom-nav">
+  <nav class="bottom-nav two-tabs">
     <button class="nav-btn active" data-section="homeSection" type="button">
-      <span class="nav-icon">🏠</span>
+      <span class="nav-icon">🅿️</span>
       <span>Home</span>
     </button>
 
@@ -199,13 +149,10 @@
       <span class="nav-icon">👤</span>
       <span>Condomino</span>
     </button>
-
-    <button class="nav-btn" data-section="mapSection" type="button">
-      <span class="nav-icon">🅿️</span>
-      <span>Mappa</span>
-    </button>
   </nav>
 
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/it.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

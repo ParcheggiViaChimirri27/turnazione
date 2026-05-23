@@ -149,14 +149,65 @@ const periodTemplates = [
   ["02-01","03-09"], ["03-10","04-15"], ["04-16","05-23"], ["05-24","06-30"]
 ];
 
+const realSpotPositions = [
+  [1,15.43,13.93],
+  [2,14.94,19.00],
+  [3,14.45,24.20],
+  [4,14.16,29.20],
+  [5,13.77,34.30],
+  [8,11.62,52.50],
+  [9,11.52,57.72],
+  [10,11.90,77.71],
+  [11,25.27,87.17],
+  [12,25.27,91.60],
+  [13,33.58,91.60],
+  [14,33.58,87.17],
+  [15,47.00,82.00],
+  [16,47.00,76.20],
+  [17,46.47,64.77],
+  [18,46.47,59.54],
+  [19,46.47,54.51],
+  [20,46.47,49.71],
+  [21,46.07,39.70],
+  [22,46.07,35.09],
+  [23,46.07,30.00],
+  [24,46.07,25.15],
+  [25,46.07,20.85],
+  [26,62.83,25.55],
+  [27,62.83,30.00],
+  [28,63.83,35.09],
+  [29,63.83,39.70],
+  [30,63.83,44.65],
+  [31,64.00,49.71],
+  [32,64.84,54.51],
+  [33,64.84,59.54],
+  [34,64.84,64.77],
+  [35,65.80,76.20],
+  [36,65.90,82.00],
+  [37,66.00,88.05]
+];
+
+
 let selectedPeriod = null;
+let selectedDate = new Date();
 let sortColumn = "name";
 let sortDirection = "asc";
+let homePicker = null;
+let residentPicker = null;
 
 const byId = id => document.getElementById(id);
 
 function cleanName(name){
   return String(name).trim().replace(/^>\s*/, "");
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function normalizeName(name){
@@ -178,491 +229,659 @@ function makeDate(year, mmdd){
 }
 
 function dateFromInput(value){
+  if(!value) return new Date();
+
+  if(value.includes("/")){
+    const [day, month, year] = value.split("/").map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   return new Date(value + "T00:00:00");
 }
 
-function isoDate(date){
-  return date.getFullYear() + "-" +
-    String(date.getMonth() + 1).padStart(2, "0") + "-" +
-    String(date.getDate()).padStart(2, "0");
+function italianInputDate(date){
+  if(window.flatpickr){
+    return flatpickr.formatDate(date, "d/m/Y");
+  }
+  return String(date.getDate()).padStart(2,"0") + "/" + String(date.getMonth()+1).padStart(2,"0") + "/" + date.getFullYear();
 }
 
 function formatDate(date){
-  return date.toLocaleDateString("it-IT", {
-    day:"numeric",
-    month:"long",
-    year:"numeric"
-  });
+  return date.toLocaleDateString("it-IT", { day:"numeric", month:"long", year:"numeric" });
 }
 
 function isSameDate(a,b){
-  return a.getFullYear() === b.getFullYear() &&
-         a.getMonth() === b.getMonth() &&
-         a.getDate() === b.getDate();
+  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
 
 function dateLabel(date){
-  return isSameDate(date, new Date())
-    ? `oggi ${formatDate(date)}`
-    : `nella data ${formatDate(date)}`;
+  return isSameDate(date, new Date()) ? `oggi ${formatDate(date)}` : `nella data ${formatDate(date)}`;
+}
+
+function isFreeParkingPeriod(date){
+  const month = date.getMonth() + 1;
+  return month === 7 || month === 8;
+}
+
+function freeParkingText(year){
+  return `Dal 1 luglio al 31 agosto ${year} il parcheggio è libero: ogni condomino può parcheggiare dove vuole.`;
+}
+
+function skipFreeForward(date){
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  while(isFreeParkingPeriod(d)) d.setDate(d.getDate() + 1);
+  return d;
+}
+
+function skipFreeBackward(date){
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  while(isFreeParkingPeriod(d)) d.setDate(d.getDate() - 1);
+  return d;
 }
 
 function getCycleStartYear(date){
   const year = date.getFullYear();
   const afterSeptember = date.getMonth() >= 8;
   let candidate = afterSeptember ? year : year - 1;
-
-  if(candidate % 2 === 0){
-    candidate -= 1;
-  }
-
+  if(candidate % 2 === 0) candidate -= 1;
   return candidate;
 }
 
 function buildPeriodsForCycle(cycleStartYear){
   const periods = [];
-
   for(let i = 0; i < 16; i++){
     const [main, small] = cycle[i];
     const [startMD, endMD] = periodTemplates[i];
-
     const yearOffset = i < 4 ? 0 : i < 12 ? 1 : 2;
     const startYear = cycleStartYear + yearOffset;
     const endYear = startMD === "12-24" ? startYear + 1 : startYear;
-
-    periods.push({
-      main,
-      small,
-      start: makeDate(startYear, startMD),
-      end: makeDate(endYear, endMD),
-      cycleStartYear
-    });
+    periods.push({ main, small, start:makeDate(startYear,startMD), end:makeDate(endYear,endMD), cycleStartYear });
   }
-
   return periods;
 }
 
 function findPeriodByDate(date){
+  if(isFreeParkingPeriod(date)) return null;
   const cycleStartYear = getCycleStartYear(date);
-
   const possiblePeriods = [
     ...buildPeriodsForCycle(cycleStartYear - 2),
     ...buildPeriodsForCycle(cycleStartYear),
     ...buildPeriodsForCycle(cycleStartYear + 2)
   ];
-
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-
   return possiblePeriods.find(period => d >= period.start && d <= period.end) || null;
 }
 
-function sortRows(rows){
-  return [...rows].sort((a,b)=>{
-    let result;
-
-    if(sortColumn === "spot"){
-      result = Number(a[1]) - Number(b[1]);
-    }else{
-      result = cleanName(a[0]).localeCompare(cleanName(b[0]), "it", {
-        sensitivity:"base"
-      });
-    }
-
-    return sortDirection === "asc" ? result : -result;
-  });
+function periodDateText(period){
+  return `${formatDate(period.start)} – ${formatDate(period.end)}`;
 }
 
-function table(rows){
-  const sorted = sortRows(rows);
-
-  const nameArrow = sortColumn === "name"
-    ? (sortDirection === "asc" ? "▲" : "▼")
-    : "↕";
-
-  const spotArrow = sortColumn === "spot"
-    ? (sortDirection === "asc" ? "▲" : "▼")
-    : "↕";
-
-  return `
-    <table>
-      <thead>
-        <tr>
-          <th>
-            <button class="sort-btn" data-sort="name">
-              Condomino ${nameArrow}
-            </button>
-          </th>
-
-          <th class="posto">
-            <button class="sort-btn" data-sort="spot">
-              Posto ${spotArrow}
-            </button>
-          </th>
-        </tr>
-      </thead>
-
-      <tbody>
-        ${sorted.map(row => `
-          <tr>
-            <td>${cleanName(row[0])}</td>
-            <td class="posto">
-              <span class="badge">${row[1]}</span>
-            </td>
-          </tr>
-        `).join("")}
-      </tbody>
-    </table>
-  `;
-}
-
-function buildSpotRights(){
-  const rights = new Map();
-
-  for(let i = 1; i <= 37; i++){
-    rights.set(i, []);
-  }
-
-  function addUnique(spot, name){
-    const cleaned = cleanName(name);
-
-    if(!rights.has(spot)){
-      rights.set(spot, []);
-    }
-
-    const list = rights.get(spot);
-
-    if(!list.some(existing => normalizeName(existing) === normalizeName(cleaned))){
-      list.push(cleaned);
-    }
-  }
-
-  [...groupA, ...groupB].forEach(row=>{
-    addUnique(Number(row[1]), row[0]);
-  });
-
-  Object.values(smallGroups).flat().forEach(row=>{
-    addUnique(Number(row[1]), row[0]);
-  });
-
-  return rights;
-}
-
-const spotRights = buildSpotRights();
-
-function listNames(names){
-  if(!names || names.length === 0){
-    return `<span>• Nessun condomino</span>`;
-  }
-
-  return names
-    .map(name => `<span>• ${name}</span>`)
-    .join("");
-}
-
-function renderMap(mainRows, smallRows){
+function buildOccupants(mainRows, smallRows){
   const occupants = new Map();
-
-  mainRows.forEach(row=>{
-    occupants.set(Number(row[1]), {
-      name: cleanName(row[0]),
-      type: "main"
-    });
-  });
-
-  smallRows.forEach(row=>{
-    occupants.set(Number(row[1]), {
-      name: cleanName(row[0]),
-      type: "small"
-    });
-  });
-
-  let html = "";
-
-  for(let i = 1; i <= 37; i++){
-    const occupant = occupants.get(i);
-    const rights = spotRights.get(i) || [];
-
-    html += `
-      <div class="spot-wrap" data-spot="${i}">
-        <div class="spot-inner">
-          <div class="spot-front">
-            <div class="spot ${occupant ? `active-${occupant.type}` : "empty"}">
-              <div class="spot-num">${i}</div>
-              <div class="spot-name">${occupant ? occupant.name : ""}</div>
-            </div>
-          </div>
-
-          <div class="spot-back">
-            <div class="back-list">
-              ${listNames(rights)}
-            </div>
-
-            <div class="back-footer">
-              Posto ${i}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }
-
-  byId("parkingMap").innerHTML = html;
+  mainRows.forEach(row=> occupants.set(Number(row[1]), { name:cleanName(row[0]), type:"main" }));
+  smallRows.forEach(row=> occupants.set(Number(row[1]), { name:cleanName(row[0]), type:"small" }));
+  return occupants;
 }
 
-function render(period){
-  selectedPeriod = period;
+function getRowsForPeriod(period){
+  if(!period) return { mainRows:[], smallRows:[] };
+  return {
+    mainRows: period.main === "A" ? groupA : groupB,
+    smallRows: smallGroups[period.small] || []
+  };
+}
 
-  if(!period) return;
-
-  const mainRows = period.main === "A" ? groupA : groupB;
-  const smallRows = smallGroups[period.small];
-
-  byId("mainTitle").textContent = `Gruppo principale ${period.main}`;
-  byId("smallTitle").textContent = `Gruppetto ${period.small}`;
-
-  const dateText = `${formatDate(period.start)} – ${formatDate(period.end)}`;
-
-  byId("mainDates").textContent = dateText;
-  byId("smallDates").textContent = dateText;
-  byId("mapDates").textContent = dateText;
-
-  byId("mainTable").innerHTML = table(mainRows);
-  byId("smallTable").innerHTML = table(smallRows);
-
-  renderMap(mainRows, smallRows);
+function getCurrentOccupants(){
+  if(!selectedPeriod) return new Map();
+  const {mainRows, smallRows} = getRowsForPeriod(selectedPeriod);
+  return buildOccupants(mainRows, smallRows);
 }
 
 function findPermanentMainSpot(selectedName){
   if(!selectedName) return null;
-
   const target = normalizeName(selectedName);
-
   const matchA = groupA.find(row => normalizeName(row[0]) === target);
-  if(matchA){
-    return { group:"A", spot:matchA[1], name:cleanName(matchA[0]) };
-  }
-
+  if(matchA) return { group:"A", spot:matchA[1], name:cleanName(matchA[0]) };
   const matchB = groupB.find(row => normalizeName(row[0]) === target);
-  if(matchB){
-    return { group:"B", spot:matchB[1], name:cleanName(matchB[0]) };
-  }
-
+  if(matchB) return { group:"B", spot:matchB[1], name:cleanName(matchB[0]) };
   return null;
 }
 
 function findPermanentSmallSpot(selectedName){
   if(!selectedName) return null;
-
   const target = normalizeName(selectedName);
-
   for(const groupName of Object.keys(smallGroups)){
     const match = smallGroups[groupName].find(row => normalizeName(row[0]) === target);
-
-    if(match){
-      return { group:groupName, spot:match[1], name:cleanName(match[0]) };
-    }
+    if(match) return { group:groupName, spot:match[1], name:cleanName(match[0]) };
   }
-
   return null;
 }
 
-function resetResidentBoxes(){
-  const mainBox = byId("residentMainSpot");
-  const smallBox = byId("residentSmallSpot");
-
-  mainBox.textContent = "-";
-  smallBox.textContent = "-";
-
-  mainBox.parentElement.classList.remove("active-turn");
-  smallBox.parentElement.classList.remove("active-turn");
+function getAllResidents(){
+  const names = new Set();
+  [...groupA, ...groupB, ...Object.values(smallGroups).flat()].forEach(row => names.add(cleanName(row[0])));
+  return [...names].sort((a,b)=>a.localeCompare(b,"it",{sensitivity:"base"}));
 }
 
-function highlightResidentBox(type){
-  const mainBox = byId("residentMainSpot");
-  const smallBox = byId("residentSmallSpot");
-
-  if(type === "main"){
-    mainBox.parentElement.classList.add("active-turn");
-  }
-
-  if(type === "small"){
-    smallBox.parentElement.classList.add("active-turn");
-  }
-}
-
-function updateResidentFixedInfo(selectedName, activeType){
-  resetResidentBoxes();
-
-  if(!selectedName) return;
-
-  const permanentMain = findPermanentMainSpot(selectedName);
-  const permanentSmall = findPermanentSmallSpot(selectedName);
-
-  byId("residentMainSpot").textContent = permanentMain ? permanentMain.spot : "-";
-  byId("residentSmallSpot").textContent = permanentSmall ? permanentSmall.spot : "-";
-
-  if(activeType){
-    highlightResidentBox(activeType);
-  }
+function getResidentActiveInfo(name){
+  if(!selectedPeriod) return { activeType:null, activeSpot:null, activeName:cleanName(name) };
+  const target = normalizeName(name);
+  const {mainRows, smallRows} = getRowsForPeriod(selectedPeriod);
+  const mainMatch = mainRows.find(row => normalizeName(row[0]) === target);
+  const smallMatch = smallRows.find(row => normalizeName(row[0]) === target);
+  if(smallMatch) return { activeType:"small", activeSpot:Number(smallMatch[1]), activeName:cleanName(smallMatch[0]) };
+  if(mainMatch) return { activeType:"main", activeSpot:Number(mainMatch[1]), activeName:cleanName(mainMatch[0]) };
+  return { activeType:null, activeSpot:null, activeName:cleanName(name) };
 }
 
 function populateResidents(){
-  const names = new Set();
+  const residents = getAllResidents();
+  const select = byId("residentSelect");
 
-  [...groupA, ...groupB, ...Object.values(smallGroups).flat()]
-    .forEach(row => names.add(cleanName(row[0])));
+  if(select){
+    select.innerHTML = `<option value="">Seleziona condomino</option>` +
+      residents.map(name=>`<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join("");
+  }
+}
 
-  byId("residentSelect").innerHTML =
-    `<option value="">Seleziona condomino</option>` +
-    [...names]
-      .sort((a,b)=>a.localeCompare(b,"it",{sensitivity:"base"}))
-      .map(name=>`<option value="${name}">${name}</option>`)
-      .join("");
+function closeResidentSuggestions(){
+  const box = byId("residentSearchResults");
+  if(box){
+    box.hidden = true;
+    box.innerHTML = "";
+  }
+}
+
+function renderResidentSuggestions(query = ""){
+  const box = byId("residentSearchResults");
+  if(!box) return;
+
+  const normalizedQuery = normalizeName(query);
+  const residents = getAllResidents()
+    .filter(name => !normalizedQuery || normalizeName(name).includes(normalizedQuery));
+
+  if(residents.length === 0){
+    box.innerHTML = `<div class="search-empty">Nessun condomino trovato</div>`;
+    box.hidden = false;
+    return;
+  }
+
+  box.innerHTML = residents.map(name=>{
+    const active = getResidentActiveInfo(name);
+    const status = isFreeParkingPeriod(selectedDate)
+      ? "Parcheggio libero"
+      : active.activeType === "main"
+        ? `Dentro adesso · turno posto ${active.activeSpot}`
+        : active.activeType === "small"
+          ? `Dentro adesso · turnetto posto ${active.activeSpot}`
+          : "Fuori turno in questa data";
+
+    return `
+      <button class="search-result-item" type="button" data-resident-choice="${escapeHtml(name)}">
+        <strong>${escapeHtml(name)}</strong>
+        <span>${escapeHtml(status)}</span>
+      </button>
+    `;
+  }).join("");
+
+  box.hidden = false;
+}
+
+function selectResidentFromSearch(name){
+  const input = byId("residentSearchInput");
+  const select = byId("residentSelect");
+
+  if(input) input.value = name;
+  if(select) select.value = name;
+
+  closeResidentSuggestions();
+  updateResidentResult();
+}
+
+function renderRealMap(){
+  const realParkingMap = byId("realParkingMap");
+  if(!realParkingMap) return;
+
+  const occupants = getCurrentOccupants();
+  const isFree = isFreeParkingPeriod(selectedDate);
+  let html = "";
+
+  realSpotPositions.forEach(([num,x,y])=>{
+    const occupant = occupants.get(num);
+    const name = isFree ? "Parcheggio libero" : occupant ? occupant.name : "Fuori turno / libero";
+    const typeLabel = isFree ? "Luglio e agosto" : occupant?.type === "small" ? "Turnetto" : occupant?.type === "main" ? "Turno principale" : "Non assegnato";
+    html += `
+      <button
+        class="real-spot-button ${occupant ? `active-${occupant.type}` : "empty"}"
+        style="left:${x}%; top:${y}%;"
+        type="button"
+        data-spot="${num}"
+        data-name="${escapeHtml(name)}"
+        data-type="${escapeHtml(typeLabel)}"
+        aria-label="Posto ${num}: ${escapeHtml(name)}"
+      ></button>
+    `;
+  });
+  html += `<div id="realSpotPopup" class="real-spot-popup" aria-live="polite"></div>`;
+  realParkingMap.innerHTML = html;
+}
+
+function closeRealSpotPopup(){
+  const popup = byId("realSpotPopup");
+  if(popup) popup.classList.remove("open");
+  document.querySelectorAll(".real-spot-button.selected").forEach(button=>button.classList.remove("selected"));
+}
+
+function openRealSpotPopup(button){
+  const popup = byId("realSpotPopup");
+  const realMap = byId("realMap");
+  if(!popup || !realMap) return;
+
+  if(button.classList.contains("selected") && popup.classList.contains("open")){
+    closeRealSpotPopup();
+    return;
+  }
+
+  document.querySelectorAll(".real-spot-button.selected").forEach(item=>item.classList.remove("selected"));
+  button.classList.add("selected");
+
+  popup.innerHTML = `<strong>Posto ${escapeHtml(button.dataset.spot)}</strong><span>${escapeHtml(button.dataset.name)}</span><small>${escapeHtml(button.dataset.type)}</small>`;
+
+  const mapRect = realMap.getBoundingClientRect();
+  const buttonRect = button.getBoundingClientRect();
+  const left = ((buttonRect.left + buttonRect.width / 2 - mapRect.left) / mapRect.width) * 100;
+  const top = ((buttonRect.top - mapRect.top) / mapRect.height) * 100;
+  popup.style.left = `${Math.min(Math.max(left, 14), 86)}%`;
+  popup.style.top = `${Math.max(top - 1.5, 6)}%`;
+  popup.classList.add("open");
+}
+
+function renderParkingCards(){
+  const map = byId("parkingMap");
+  if(!map) return;
+
+  const occupants = getCurrentOccupants();
+  const isFree = isFreeParkingPeriod(selectedDate);
+  let html = "";
+
+  for(let i = 1; i <= 37; i++){
+    const occupant = occupants.get(i);
+    const name = isFree ? "Parcheggio libero" : occupant ? occupant.name : "";
+    html += `
+      <button class="spot-card-button ${occupant ? `active-${occupant.type}` : "empty"}" type="button" data-show-map-spot="${i}" data-spot-name="${escapeHtml(name || 'Posizione sulla mappa')}">
+        <span class="spot-num">${i}</span>
+        <span class="spot-name">${escapeHtml(name)}</span>
+      </button>
+    `;
+  }
+  map.innerHTML = html;
+}
+
+function renderSpotRightsList(){
+  const container = byId("spotRightsList");
+  if(!container) return;
+
+  let html = "";
+
+  for(let i = 1; i <= 37; i++){
+    const names = spotRights.get(i) || [];
+    html += `
+      <div class="spot-right-row">
+        <button type="button" class="spot-right-num" data-show-map-spot="${i}" data-spot-name="Posto ${i}">${i}</button>
+        <div class="spot-right-names">
+          ${names.length ? names.map(name => `<span>${escapeHtml(name)}</span>`).join("") : `<span>Nessun condomino</span>`}
+        </div>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function renderResidentList(){
+  const container = byId("residentList");
+  if(!container) return;
+
+  const isFree = isFreeParkingPeriod(selectedDate);
+  const residents = getAllResidents();
+
+  let html = `
+    <div class="resident-row resident-row-head">
+      <div>Condomino</div>
+      <div>Turno</div>
+      <div>Turnetto</div>
+    </div>
+  `;
+
+  residents.forEach(name=>{
+    const main = findPermanentMainSpot(name);
+    const small = findPermanentSmallSpot(name);
+    const active = isFree ? {activeType:null, activeSpot:null} : getResidentActiveInfo(name);
+    const rowClass = active.activeType ? `resident-active-${active.activeType}` : "resident-inactive";
+
+    html += `
+      <div class="resident-row ${rowClass}" data-resident-name="${escapeHtml(name)}">
+        <div class="resident-name-cell">${escapeHtml(name)}</div>
+        <div>
+          ${main ? `<button type="button" class="resident-spot-chip ${active.activeType === 'main' ? 'chip-main active' : 'muted'}" data-show-map-spot="${main.spot}" data-spot-name="${escapeHtml(name)}">${main.spot}</button>` : `<span class="resident-spot-chip muted">-</span>`}
+        </div>
+        <div>
+          ${small ? `<button type="button" class="resident-spot-chip ${active.activeType === 'small' ? 'chip-small active' : 'muted'}" data-show-map-spot="${small.spot}" data-spot-name="${escapeHtml(name)}">${small.spot}</button>` : `<span class="resident-spot-chip muted">-</span>`}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  const dateLabel = isFree ? freeParkingText(selectedDate.getFullYear()) : selectedPeriod ? periodDateText(selectedPeriod) : "Nessun periodo trovato";
+  const residentListDates = byId("residentListDates");
+  if(residentListDates) residentListDates.textContent = dateLabel;
+}
+
+function getSelectedResidentName(){
+  const searchInput = byId("residentSearchInput");
+  if(searchInput) return searchInput.value.trim();
+  return byId("residentSelect")?.value || "";
 }
 
 function updateResidentResult(){
-  const selected = byId("residentSelect").value;
+  const selected = getSelectedResidentName();
   const result = byId("residentResult");
+  if(!result) return;
+
+  document.querySelectorAll(".resident-row.selected-resident").forEach(row=>row.classList.remove("selected-resident"));
 
   if(!selected){
-    updateResidentFixedInfo("", null);
     result.className = "resident-result";
-    result.textContent = "Seleziona un condomino.";
+    result.textContent = isFreeParkingPeriod(selectedDate) ? freeParkingText(selectedDate.getFullYear()) : "Seleziona un condomino o scorri l’elenco sotto.";
     return;
   }
 
-  if(!byId("residentDateInput").value){
-    const today = new Date();
-    byId("residentDateInput").value = isoDate(today);
+  const row = [...document.querySelectorAll(".resident-row[data-resident-name]")].find(item=>normalizeName(item.dataset.residentName) === normalizeName(selected));
+  if(row){
+    row.classList.add("selected-resident");
   }
 
-  const selectedDate = dateFromInput(byId("residentDateInput").value);
-  const period = findPeriodByDate(selectedDate);
-
-  if(!period){
-    updateResidentFixedInfo(selected, null);
+  if(isFreeParkingPeriod(selectedDate)){
     result.className = "resident-result out";
-    result.textContent = `Nessun turno trovato ${dateLabel(selectedDate)}.`;
+    result.textContent = `${selected}: ${freeParkingText(selectedDate.getFullYear())}`;
     return;
   }
 
-  const target = normalizeName(selected);
-
-  const mainRows = period.main === "A" ? groupA : groupB;
-  const smallRows = smallGroups[period.small];
-
-  const mainMatch = mainRows.find(row => normalizeName(row[0]) === target);
-  const smallMatch = smallRows.find(row => normalizeName(row[0]) === target);
-
-  if(smallMatch){
-    updateResidentFixedInfo(selected, "small");
+  const active = getResidentActiveInfo(selected);
+  if(active.activeType === "main"){
     result.className = "resident-result ok";
-    result.textContent =
-      `Il condomino ${cleanName(smallMatch[0])} ${dateLabel(selectedDate)} è in turnetto e ha diritto al posto ${smallMatch[1]}.`;
-  }else if(mainMatch){
-    updateResidentFixedInfo(selected, "main");
+    result.textContent = `${selected} ${dateLabel(selectedDate)} è in turno principale e ha diritto al posto ${active.activeSpot}.`;
+  }else if(active.activeType === "small"){
     result.className = "resident-result ok";
-    result.textContent =
-      `Il condomino ${cleanName(mainMatch[0])} ${dateLabel(selectedDate)} è in turno principale e ha diritto al posto ${mainMatch[1]}.`;
+    result.textContent = `${selected} ${dateLabel(selectedDate)} è in turnetto e ha diritto al posto ${active.activeSpot}.`;
   }else{
-    updateResidentFixedInfo(selected, null);
     result.className = "resident-result out";
-    result.textContent =
-      `${selected} ${dateLabel(selectedDate)} è fuori turno.`;
+    result.textContent = `${selected} ${dateLabel(selectedDate)} è fuori turno.`;
   }
 }
 
+function ensureSpotMapModal(){
+  let modal = byId("spotMapModal");
+  if(modal) return modal;
+
+  modal = document.createElement("div");
+  modal.id = "spotMapModal";
+  modal.className = "spot-map-modal";
+  modal.innerHTML = `
+    <div class="spot-map-dialog" role="dialog" aria-modal="true" aria-labelledby="spotMapTitle">
+      <div class="spot-map-head">
+        <div>
+          <div id="spotMapTitle" class="spot-map-title">Posto</div>
+          <div id="spotMapSubtitle" class="spot-map-subtitle"></div>
+        </div>
+        <button id="spotMapClose" class="spot-map-close" type="button" aria-label="Chiudi">×</button>
+      </div>
+      <div class="spot-map-body">
+        <div class="spot-map-preview">
+          <div id="spotMapHighlight" class="spot-map-highlight"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  byId("spotMapClose").addEventListener("click", closeSpotMapModal);
+  modal.addEventListener("click", event=>{ if(event.target === modal) closeSpotMapModal(); });
+  return modal;
+}
+
+function closeSpotMapModal(){
+  const modal = byId("spotMapModal");
+  if(modal) modal.classList.remove("open");
+}
+
+function openSpotMapModal(spot, name){
+  const modal = ensureSpotMapModal();
+  const position = realSpotPositions.find(item => Number(item[0]) === Number(spot));
+  if(!position) return;
+  const [,x,y] = position;
+  byId("spotMapTitle").textContent = `Posto ${spot}`;
+  byId("spotMapSubtitle").textContent = name || "Posizione sulla mappa reale";
+  const highlight = byId("spotMapHighlight");
+  highlight.style.left = `${x}%`;
+  highlight.style.top = `${y}%`;
+  modal.classList.add("open");
+}
+
+function renderByDate(date, showFreePopup = false){
+  selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  selectedPeriod = findPeriodByDate(selectedDate);
+  const isFree = isFreeParkingPeriod(selectedDate);
+  const freeBanner = byId("freeParkingBanner");
+
+  if(isFree){
+    byId("mapDates").textContent = "Parcheggio libero";
+    if(freeBanner){
+      freeBanner.hidden = false;
+      freeBanner.textContent = freeParkingText(selectedDate.getFullYear());
+    }
+    if(showFreePopup) openFreeParkingModal(selectedDate);
+  }else{
+    const text = selectedPeriod ? periodDateText(selectedPeriod) : "Nessun periodo trovato";
+    byId("mapDates").textContent = text;
+    if(freeBanner) freeBanner.hidden = true;
+  }
+
+  closeRealSpotPopup();
+  renderRealMap();
+  renderParkingCards();
+  renderResidentList();
+  renderSpotRightsList();
+  updateResidentResult();
+
+  const suggestions = byId("residentSearchResults");
+  const input = byId("residentSearchInput");
+  if(suggestions && input && !suggestions.hidden){
+    renderResidentSuggestions(input.value);
+  }
+}
+
+function ensureFreeParkingModal(){
+  let modal = byId("freeParkingModal");
+  if(modal) return modal;
+  modal = document.createElement("div");
+  modal.id = "freeParkingModal";
+  modal.className = "free-parking-modal";
+  modal.innerHTML = `<div class="free-parking-dialog" role="dialog" aria-modal="true"><h3>Parcheggio libero</h3><p id="freeParkingModalText"></p><button id="freeParkingModalClose" type="button">Ho capito</button></div>`;
+  document.body.appendChild(modal);
+  byId("freeParkingModalClose").addEventListener("click", closeFreeParkingModal);
+  modal.addEventListener("click", event=>{ if(event.target === modal) closeFreeParkingModal(); });
+  return modal;
+}
+
+function openFreeParkingModal(date){
+  const modal = ensureFreeParkingModal();
+  byId("freeParkingModalText").textContent = freeParkingText(date.getFullYear());
+  modal.classList.add("open");
+}
+
+function closeFreeParkingModal(){
+  const modal = byId("freeParkingModal");
+  if(modal) modal.classList.remove("open");
+}
+
+function setAllPickers(date, trigger = false){
+  if(homePicker) homePicker.setDate(date, trigger);
+  if(residentPicker) residentPicker.setDate(date, trigger);
+}
+
+function setDateAndRender(date, showFreePopup = false){
+  setAllPickers(date, false);
+  renderByDate(date, showFreePopup);
+}
+
+function goToPeriod(direction){
+  let target;
+  if(selectedPeriod){
+    target = direction === "next" ? new Date(selectedPeriod.end) : new Date(selectedPeriod.start);
+    target.setDate(target.getDate() + (direction === "next" ? 1 : -1));
+  }else{
+    target = new Date(selectedDate);
+    target.setDate(target.getDate() + (direction === "next" ? 1 : -1));
+  }
+  target = direction === "next" ? skipFreeForward(target) : skipFreeBackward(target);
+  setDateAndRender(target, false);
+}
+
 function setupPanel(buttonId, panelId){
-  byId(buttonId).addEventListener("click", ()=>{
-    byId(panelId).classList.toggle("open");
-  });
+  const button = byId(buttonId);
+  const panel = byId(panelId);
+  if(!button || !panel) return;
+  button.addEventListener("click", ()=>panel.classList.toggle("open"));
 }
 
 document.addEventListener("DOMContentLoaded", ()=>{
   populateResidents();
-
   const today = new Date();
-  const currentPeriod = findPeriodByDate(today);
 
-  render(currentPeriod);
-
-  byId("homeDateInput").value = isoDate(today);
-  byId("residentDateInput").value = isoDate(today);
-  byId("mapDateInput").value = isoDate(today);
-
-  setupPanel("openHomeDate","homeDatePanel");
-  setupPanel("openResidentDate","residentDatePanel");
-  setupPanel("openResidentSearch","residentSearchPanel");
-  setupPanel("openMapDate","mapDatePanel");
-
-  byId("homeDateInput").addEventListener("change", e=>{
-    render(findPeriodByDate(dateFromInput(e.target.value)));
+  homePicker = flatpickr("#homeDateInput",{
+    locale:"it",
+    dateFormat:"d/m/Y",
+    defaultDate:today,
+    allowInput:true,
+    disableMobile:true,
+    onChange:function(selectedDates){
+      if(selectedDates[0]) setDateAndRender(selectedDates[0], isFreeParkingPeriod(selectedDates[0]));
+    }
   });
 
-  byId("mapDateInput").addEventListener("change", e=>{
-    render(findPeriodByDate(dateFromInput(e.target.value)));
+  residentPicker = flatpickr("#residentDateInput",{
+    locale:"it",
+    dateFormat:"d/m/Y",
+    defaultDate:today,
+    allowInput:true,
+    disableMobile:true,
+    onChange:function(selectedDates){
+      if(selectedDates[0]) setDateAndRender(selectedDates[0], isFreeParkingPeriod(selectedDates[0]));
+    }
   });
 
-  byId("residentDateInput").addEventListener("change", updateResidentResult);
-  byId("residentSelect").addEventListener("change", updateResidentResult);
 
-  byId("homeTodayBtn").addEventListener("click", ()=>{
-    const now = new Date();
-    byId("homeDateInput").value = isoDate(now);
-    render(findPeriodByDate(now));
+  ["homeDateInput", "residentDateInput"].forEach(id=>{
+    const input = byId(id);
+    if(input){
+      input.addEventListener("change", e=>{
+        const date = dateFromInput(e.target.value);
+        if(!isNaN(date)) setDateAndRender(date, isFreeParkingPeriod(date));
+      });
+    }
   });
 
-  byId("mapTodayBtn").addEventListener("click", ()=>{
-    const now = new Date();
-    byId("mapDateInput").value = isoDate(now);
-    render(findPeriodByDate(now));
+  byId("homeTodayBtn").addEventListener("click", ()=>setDateAndRender(new Date(), false));
+  byId("residentTodayBtn").addEventListener("click", ()=>setDateAndRender(new Date(), false));
+
+  ["homeNextPeriodBtn", "residentNextPeriodBtn"].forEach(id=>{
+    const button = byId(id);
+    if(button) button.addEventListener("click", ()=>goToPeriod("next"));
+  });
+  ["homePrevPeriodBtn", "residentPrevPeriodBtn"].forEach(id=>{
+    const button = byId(id);
+    if(button) button.addEventListener("click", ()=>goToPeriod("prev"));
   });
 
-  byId("residentTodayBtn").addEventListener("click", ()=>{
-    const now = new Date();
-    byId("residentDateInput").value = isoDate(now);
-    updateResidentResult();
-  });
+  const residentSelect = byId("residentSelect");
+  if(residentSelect){
+    residentSelect.addEventListener("change", event=>{
+      const searchInput = byId("residentSearchInput");
+      if(searchInput) searchInput.value = event.target.value;
+      updateResidentResult();
+    });
+  }
+
+  const residentSearchInput = byId("residentSearchInput");
+  if(residentSearchInput){
+    function openResidentMenu(){
+      renderResidentSuggestions("");
+      residentSearchInput.select();
+    }
+
+    residentSearchInput.addEventListener("focus", openResidentMenu);
+    residentSearchInput.addEventListener("click", openResidentMenu);
+
+    residentSearchInput.addEventListener("input", ()=>{
+      const select = byId("residentSelect");
+      if(select) select.value = residentSearchInput.value;
+      renderResidentSuggestions(residentSearchInput.value);
+      updateResidentResult();
+    });
+
+    residentSearchInput.addEventListener("change", ()=>{
+      const select = byId("residentSelect");
+      if(select) select.value = residentSearchInput.value;
+      updateResidentResult();
+    });
+  }
 
   document.addEventListener("click", event=>{
-    const button = event.target.closest(".sort-btn");
-
-    if(button){
-      const column = button.dataset.sort;
-
-      if(sortColumn === column){
-        sortDirection = sortDirection === "asc" ? "desc" : "asc";
-      }else{
-        sortColumn = column;
-        sortDirection = "asc";
-      }
-
-      render(selectedPeriod);
+    const residentChoice = event.target.closest("[data-resident-choice]");
+    if(residentChoice){
+      selectResidentFromSearch(residentChoice.dataset.residentChoice);
       return;
     }
 
-    const spotCard = event.target.closest(".spot-wrap");
+    if(!event.target.closest(".resident-search-wrap")){
+      closeResidentSuggestions();
+    }
 
-    if(spotCard){
-      spotCard.classList.toggle("flipped");
+    const realSpotButton = event.target.closest(".real-spot-button");
+    if(realSpotButton){
+      openRealSpotPopup(realSpotButton);
+      return;
+    }
+
+    const mapSpotButton = event.target.closest("[data-show-map-spot]");
+    if(mapSpotButton){
+      openSpotMapModal(mapSpotButton.dataset.showMapSpot, mapSpotButton.dataset.spotName);
+      return;
+    }
+
+    if(!event.target.closest(".real-spot-popup") && !event.target.closest(".real-map")){
+      closeRealSpotPopup();
+    }
+  });
+
+  document.addEventListener("keydown", event=>{
+    if(event.key === "Escape"){
+      closeRealSpotPopup();
+      closeSpotMapModal();
+      closeFreeParkingModal();
     }
   });
 
   document.querySelectorAll(".nav-btn").forEach(button=>{
     button.addEventListener("click", ()=>{
-      document.querySelectorAll(".nav-btn").forEach(btn=>{
-        btn.classList.remove("active");
-      });
-
+      document.querySelectorAll(".nav-btn").forEach(btn=>btn.classList.remove("active"));
       button.classList.add("active");
-
-      document.querySelectorAll(".page-section").forEach(section=>{
-        section.classList.remove("active");
-      });
-
+      document.querySelectorAll(".page-section").forEach(section=>section.classList.remove("active"));
       byId(button.dataset.section).classList.add("active");
     });
   });
 
-  updateResidentResult();
+  setDateAndRender(today, false);
 });
