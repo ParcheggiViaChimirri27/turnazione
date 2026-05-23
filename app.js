@@ -228,15 +228,50 @@ function makeDate(year, mmdd){
   return new Date(year, month - 1, day);
 }
 
-function dateFromInput(value){
-  if(!value) return new Date();
+function parseItalianDateStrict(value){
+  const raw = String(value || "").trim();
 
-  if(value.includes("/")){
-    const [day, month, year] = value.split("/").map(Number);
-    return new Date(year, month - 1, day);
+  if(!raw){
+    return { date:null, error:"INSERISCI UNA DATA." };
   }
 
-  return new Date(value + "T00:00:00");
+  const match = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+  if(!match){
+    return {
+      date:null,
+      error:"DATA NON VALIDA: USA IL FORMATO GG/MM/AAAA, PER ESEMPIO 24/05/2026."
+    };
+  }
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+
+  if(month < 1 || month > 12){
+    return { date:null, error:"DATA NON VALIDA: IL MESE DEVE ESSERE COMPRESO TRA 1 E 12." };
+  }
+
+  if(day < 1 || day > 31){
+    return { date:null, error:"DATA NON VALIDA: IL GIORNO NON È CORRETTO." };
+  }
+
+  const date = new Date(year, month - 1, day);
+
+  if(
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ){
+    return { date:null, error:"DATA NON VALIDA: QUESTO GIORNO NON ESISTE NEL CALENDARIO." };
+  }
+
+  return { date, error:null };
+}
+
+function dateFromInput(value){
+  const parsed = parseItalianDateStrict(value);
+  return parsed.date || new Date(NaN);
 }
 
 function italianInputDate(date){
@@ -605,10 +640,13 @@ function updateResidentResult(){
   document.querySelectorAll(".resident-row.selected-resident").forEach(row=>row.classList.remove("selected-resident"));
 
   if(!selected){
-    result.className = "resident-result";
-    result.textContent = isFreeParkingPeriod(selectedDate) ? freeParkingText(selectedDate.getFullYear()) : "Seleziona un condomino o scorri l’elenco sotto.";
+    result.hidden = true;
+    result.className = "resident-result compact-result";
+    result.textContent = "";
     return;
   }
+
+  result.hidden = false;
 
   const row = [...document.querySelectorAll(".resident-row[data-resident-name]")].find(item=>normalizeName(item.dataset.residentName) === normalizeName(selected));
   if(row){
@@ -772,14 +810,95 @@ document.addEventListener("DOMContentLoaded", ()=>{
   populateResidents();
   const today = new Date();
 
+  function showDateError(message){
+    window.alert(message);
+  }
+
+  function applyDateFromInput(inputId, picker){
+    const input = byId(inputId);
+    if(!input) return false;
+
+    const parsed = parseItalianDateStrict(input.value);
+
+    if(parsed.error){
+      showDateError(parsed.error);
+      input.focus();
+      return false;
+    }
+
+    setDateAndRender(parsed.date, isFreeParkingPeriod(parsed.date));
+    if(picker) picker.close();
+    return true;
+  }
+
+  function addCalendarConfirmButton(picker, inputId){
+    if(!picker || !picker.calendarContainer) return;
+
+    let footer = picker.calendarContainer.querySelector(".calendar-confirm-footer");
+
+    if(!footer){
+      footer = document.createElement("div");
+      footer.className = "calendar-confirm-footer";
+      picker.calendarContainer.appendChild(footer);
+    }
+
+    footer.innerHTML = "";
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "calendar-confirm-btn";
+    button.textContent = "CERCA DATA";
+
+    button.addEventListener("click", ()=>{
+      applyDateFromInput(inputId, picker);
+    });
+
+    footer.appendChild(button);
+  }
+
+  function setupDateInputToggle(inputId, getPicker){
+    const input = byId(inputId);
+    if(!input) return;
+
+    input.addEventListener("click", event=>{
+      const picker = getPicker();
+      if(!picker) return;
+
+      event.preventDefault();
+
+      if(picker.isOpen){
+        picker.close();
+      }else{
+        picker.open();
+        input.focus();
+        input.select();
+      }
+    });
+
+    input.addEventListener("keydown", event=>{
+      if(event.key === "Enter"){
+        event.preventDefault();
+        applyDateFromInput(inputId, getPicker());
+      }
+    });
+  }
+
   homePicker = flatpickr("#homeDateInput",{
     locale:"it",
     dateFormat:"d/m/Y",
     defaultDate:today,
     allowInput:true,
     disableMobile:true,
+    clickOpens:false,
+    closeOnSelect:false,
+    onReady:function(){
+      addCalendarConfirmButton(homePicker, "homeDateInput");
+    },
+    onOpen:function(){
+      addCalendarConfirmButton(homePicker, "homeDateInput");
+    },
     onChange:function(){
-      // La data viene applicata solo quando premi “Cerca”.
+      addCalendarConfirmButton(homePicker, "homeDateInput");
     }
   });
 
@@ -789,35 +908,21 @@ document.addEventListener("DOMContentLoaded", ()=>{
     defaultDate:today,
     allowInput:true,
     disableMobile:true,
+    clickOpens:false,
+    closeOnSelect:false,
+    onReady:function(){
+      addCalendarConfirmButton(residentPicker, "residentDateInput");
+    },
+    onOpen:function(){
+      addCalendarConfirmButton(residentPicker, "residentDateInput");
+    },
     onChange:function(){
-      // La data viene applicata solo quando premi “Cerca”.
+      addCalendarConfirmButton(residentPicker, "residentDateInput");
     }
   });
 
-
-  function applyDateFromInput(inputId){
-    const input = byId(inputId);
-    if(!input) return;
-    const date = dateFromInput(input.value);
-    if(!isNaN(date)){
-      setDateAndRender(date, isFreeParkingPeriod(date));
-    }
-  }
-
-  byId("homeSearchDateBtn").addEventListener("click", ()=>applyDateFromInput("homeDateInput"));
-  byId("residentSearchDateBtn").addEventListener("click", ()=>applyDateFromInput("residentDateInput"));
-
-  ["homeDateInput", "residentDateInput"].forEach(id=>{
-    const input = byId(id);
-    if(input){
-      input.addEventListener("keydown", event=>{
-        if(event.key === "Enter"){
-          event.preventDefault();
-          applyDateFromInput(id);
-        }
-      });
-    }
-  });
+  setupDateInputToggle("homeDateInput", ()=>homePicker);
+  setupDateInputToggle("residentDateInput", ()=>residentPicker);
 
   byId("homeTodayBtn").addEventListener("click", ()=>setDateAndRender(new Date(), false));
   byId("residentTodayBtn").addEventListener("click", ()=>setDateAndRender(new Date(), false));
@@ -826,6 +931,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
     const button = byId(id);
     if(button) button.addEventListener("click", ()=>goToPeriod("next"));
   });
+
   ["homePrevPeriodBtn", "residentPrevPeriodBtn"].forEach(id=>{
     const button = byId(id);
     if(button) button.addEventListener("click", ()=>goToPeriod("prev"));
@@ -842,13 +948,19 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
   const residentSearchInput = byId("residentSearchInput");
   if(residentSearchInput){
-    function openResidentMenu(){
-      renderResidentSuggestions("");
-      residentSearchInput.select();
-    }
+    residentSearchInput.addEventListener("click", event=>{
+      event.preventDefault();
+      const box = byId("residentSearchResults");
 
-    residentSearchInput.addEventListener("focus", openResidentMenu);
-    residentSearchInput.addEventListener("click", openResidentMenu);
+      if(box && !box.hidden){
+        closeResidentSuggestions();
+        return;
+      }
+
+      renderResidentSuggestions("");
+      residentSearchInput.focus();
+      residentSearchInput.select();
+    });
 
     residentSearchInput.addEventListener("input", ()=>{
       const select = byId("residentSelect");
@@ -897,6 +1009,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
       closeRealSpotPopup();
       closeSpotMapModal();
       closeFreeParkingModal();
+      closeResidentSuggestions();
+      if(homePicker) homePicker.close();
+      if(residentPicker) residentPicker.close();
     }
   });
 
@@ -906,6 +1021,9 @@ document.addEventListener("DOMContentLoaded", ()=>{
       button.classList.add("active");
       document.querySelectorAll(".page-section").forEach(section=>section.classList.remove("active"));
       byId(button.dataset.section).classList.add("active");
+      closeResidentSuggestions();
+      if(homePicker) homePicker.close();
+      if(residentPicker) residentPicker.close();
     });
   });
 
