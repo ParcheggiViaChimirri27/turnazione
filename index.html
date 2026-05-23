@@ -43,13 +43,14 @@
             </label>
 
             <button id="homeNextPeriodBtn" class="toolbar-btn" type="button" aria-label="Prossimo turno">›</button>
+            <button id="homeSearchDateBtn" class="search-date-pill" type="button">Cerca</button>
             <button id="homeTodayBtn" class="today-pill" type="button">Oggi</button>
           </section>
         </div>
 
         <div class="map-card home-map-card">
           <div class="map-title compact-map-title">
-            <span>MAPPA POSTI</span>
+            <span>Home / Mappa posti</span>
             <small id="mapDates">periodo corrente</small>
           </div>
 
@@ -63,7 +64,7 @@
 
           <div class="smart-section-title">Posti del periodo</div>
           <div id="parkingMap" class="parking-map smart-parking-map"></div>
-          <div class="map-touch-note">👆 Tocca un posto sulla mappa per vedere l’assegnatario.</div>
+          <div class="map-touch-note">👆 Tocca una card per vedere la posizione sulla mappa reale.</div>
 
           <div class="smart-section-title real-map-section-title">Mappa reale</div>
           <div id="realMapBox" class="real-map-box open">
@@ -99,6 +100,7 @@
             </label>
 
             <button id="residentNextPeriodBtn" class="toolbar-btn" type="button" aria-label="Prossimo turno">›</button>
+            <button id="residentSearchDateBtn" class="search-date-pill" type="button">Cerca</button>
             <button id="residentTodayBtn" class="today-pill" type="button">Oggi</button>
           </section>
         </div>
@@ -126,14 +128,6 @@
             <div id="residentListDates" class="dates"></div>
           </div>
           <div id="residentList" class="resident-list"></div>
-        </div>
-
-        <div class="turn-card spot-rights-card">
-          <div class="turn-head compact-turn-head">
-            <h2>Diritti per posto</h2>
-            <div class="dates">Elenco statico: chi ha diritto a ciascun posto nel tempo</div>
-          </div>
-          <div id="spotRightsList" class="spot-rights-list"></div>
         </div>
       </section>
     </main>

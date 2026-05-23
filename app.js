@@ -486,13 +486,25 @@ function openRealSpotPopup(button){
   button.classList.add("selected");
 
   popup.innerHTML = `<strong>Posto ${escapeHtml(button.dataset.spot)}</strong><span>${escapeHtml(button.dataset.name)}</span><small>${escapeHtml(button.dataset.type)}</small>`;
+  popup.classList.remove("side-popup");
 
   const mapRect = realMap.getBoundingClientRect();
   const buttonRect = button.getBoundingClientRect();
   const left = ((buttonRect.left + buttonRect.width / 2 - mapRect.left) / mapRect.width) * 100;
+  const topCenter = ((buttonRect.top + buttonRect.height / 2 - mapRect.top) / mapRect.height) * 100;
   const top = ((buttonRect.top - mapRect.top) / mapRect.height) * 100;
-  popup.style.left = `${Math.min(Math.max(left, 14), 86)}%`;
-  popup.style.top = `${Math.max(top - 1.5, 6)}%`;
+  const sidePopupSpots = [1,2,3,4,5,8,9,10,25];
+  const spotNum = Number(button.dataset.spot);
+
+  if(sidePopupSpots.includes(spotNum)){
+    popup.classList.add("side-popup");
+    popup.style.left = `${Math.min(left + 5.5, 82)}%`;
+    popup.style.top = `${Math.min(Math.max(topCenter, 8), 92)}%`;
+  }else{
+    popup.style.left = `${Math.min(Math.max(left, 14), 86)}%`;
+    popup.style.top = `${Math.max(top - 1.5, 6)}%`;
+  }
+
   popup.classList.add("open");
 }
 
@@ -766,8 +778,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
     defaultDate:today,
     allowInput:true,
     disableMobile:true,
-    onChange:function(selectedDates){
-      if(selectedDates[0]) setDateAndRender(selectedDates[0], isFreeParkingPeriod(selectedDates[0]));
+    onChange:function(){
+      // La data viene applicata solo quando premi “Cerca”.
     }
   });
 
@@ -777,18 +789,32 @@ document.addEventListener("DOMContentLoaded", ()=>{
     defaultDate:today,
     allowInput:true,
     disableMobile:true,
-    onChange:function(selectedDates){
-      if(selectedDates[0]) setDateAndRender(selectedDates[0], isFreeParkingPeriod(selectedDates[0]));
+    onChange:function(){
+      // La data viene applicata solo quando premi “Cerca”.
     }
   });
 
 
+  function applyDateFromInput(inputId){
+    const input = byId(inputId);
+    if(!input) return;
+    const date = dateFromInput(input.value);
+    if(!isNaN(date)){
+      setDateAndRender(date, isFreeParkingPeriod(date));
+    }
+  }
+
+  byId("homeSearchDateBtn").addEventListener("click", ()=>applyDateFromInput("homeDateInput"));
+  byId("residentSearchDateBtn").addEventListener("click", ()=>applyDateFromInput("residentDateInput"));
+
   ["homeDateInput", "residentDateInput"].forEach(id=>{
     const input = byId(id);
     if(input){
-      input.addEventListener("change", e=>{
-        const date = dateFromInput(e.target.value);
-        if(!isNaN(date)) setDateAndRender(date, isFreeParkingPeriod(date));
+      input.addEventListener("keydown", event=>{
+        if(event.key === "Enter"){
+          event.preventDefault();
+          applyDateFromInput(id);
+        }
       });
     }
   });
