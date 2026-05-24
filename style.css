@@ -726,15 +726,17 @@ tr:last-child td{
   display:block;
 }
 
-.real-map-scroll{
-  overflow:auto;
+..real-map-scroll{
+  overflow:hidden;
   background:#dce4ef;
-  border-radius:20px;
   border:1px solid var(--line);
-  padding:12px;
-  -webkit-overflow-scrolling:touch;
-}
+  border-radius:20px;
+  padding:8px;
 
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
 .real-map{
   position:relative;
 
@@ -1826,6 +1828,7 @@ tr:last-child td{
 ========================= */
 .real-map-section-title{
   padding-top:22px;
+  text-align:center;
 }
 
 .spot-rights-card{
@@ -2879,7 +2882,7 @@ textarea{
 }
 
 .page-section.active{
-  padding-top:110px!important;
+  padding-top:100px!important;
 }
 
 /* Header fisso vero: titolo + toolbar sono un unico blocco */
@@ -3197,7 +3200,7 @@ textarea{
   }
 
   .page-section.active{
-   padding-top:98px!important;
+   padding-top:80px!important;
   }
 
   .sticky-top{
@@ -3743,57 +3746,4 @@ body #rightsSection .static-rights-card{
   body #rightsSection .static-rights-card{
     margin-top:0 !important;
   }
-}
-/* =====================================================
-   FIX DEFINITIVO SPAZIO SOTTO HEADER
-   VIA CHIMIRRI 27
-===================================================== */
-
-/* RESET SPAZI PAGINE */
-.page-section{
-  padding-top:0 !important;
-  margin-top:0 !important;
-}
-
-/* TUTTE LE PAGINE */
-.page-section.active{
-  padding-top:18px !important;
-  margin-top:0 !important;
-}
-
-/* HEADER */
-.sticky-top{
-  margin-bottom:0 !important;
-  padding-bottom:0 !important;
-}
-
-/* BOX BLU */
-.turn-card,
-.static-rights-card{
-  margin-top:0 !important;
-}
-
-/* CONTENITORE PRINCIPALE */
-main{
-  margin-top:0 !important;
-  padding-top:0 !important;
-}
-
-/* MOBILE */
-@media(max-width:560px){
-
-  .page-section.active{
-    padding-top:12px !important;
-  }
-
-  .sticky-top{
-    margin-bottom:0 !important;
-    padding-bottom:0 !important;
-  }
-
-  .turn-card,
-  .static-rights-card{
-    margin-top:0 !important;
-  }
-
 }
