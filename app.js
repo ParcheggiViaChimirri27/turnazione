@@ -188,6 +188,32 @@ const realSpotPositions = [
 ];
 
 
+
+function buildSpotRights(){
+  const rights = new Map();
+
+  function add(spot, name){
+    const key = Number(spot);
+    if(!rights.has(key)) rights.set(key, []);
+    const clean = cleanName(name);
+    if(!rights.get(key).some(existing => normalizeName(existing) === normalizeName(clean))){
+      rights.get(key).push(clean);
+    }
+  }
+
+  [...groupA, ...groupB].forEach(([name, spot]) => add(spot, name));
+  Object.values(smallGroups).flat().forEach(([name, spot]) => add(spot, name));
+
+  for(const names of rights.values()){
+    names.sort((a,b)=>a.localeCompare(b,"it",{sensitivity:"base"}));
+  }
+
+  return rights;
+}
+
+const spotRights = buildSpotRights();
+
+
 let selectedPeriod = null;
 let selectedDate = new Date();
 let sortColumn = "name";
@@ -568,16 +594,27 @@ function renderSpotRightsList(){
   const container = byId("spotRightsList");
   if(!container) return;
 
+  const occupants = getCurrentOccupants();
   let html = "";
 
-  for(let i = 1; i <= 37; i++){
-    const names = spotRights.get(i) || [];
+  for(let spot = 1; spot <= 37; spot++){
+    const names = spotRights.get(spot) || [];
+    const occupant = occupants.get(spot);
+    const activeName = occupant ? normalizeName(occupant.name) : "";
+    const activeType = occupant ? occupant.type : "";
+
+    const namesHtml = names.length
+      ? names.map(name => {
+          const isActive = activeName && normalizeName(name) === activeName;
+          const cls = isActive ? `spot-right-name active-${activeType}` : "spot-right-name inactive";
+          return `<span class="${cls}">${escapeHtml(name)}</span>`;
+        }).join("")
+      : `<span class="spot-right-name inactive">NESSUN AVENTE DIRITTO</span>`;
+
     html += `
       <div class="spot-right-row">
-        <button type="button" class="spot-right-num" data-show-map-spot="${i}" data-spot-name="Posto ${i}">${i}</button>
-        <div class="spot-right-names">
-          ${names.length ? names.map(name => `<span>${escapeHtml(name)}</span>`).join("") : `<span>Nessun condomino</span>`}
-        </div>
+        <div class="spot-right-num">${spot}</div>
+        <div class="spot-right-names">${namesHtml}</div>
       </div>
     `;
   }
@@ -808,6 +845,7 @@ function setupPanel(buttonId, panelId){
 
 document.addEventListener("DOMContentLoaded", ()=>{
   populateResidents();
+  renderSpotRightsList();
   const today = new Date();
 
   function showDateError(message){
@@ -1021,6 +1059,8 @@ document.addEventListener("DOMContentLoaded", ()=>{
       button.classList.add("active");
       document.querySelectorAll(".page-section").forEach(section=>section.classList.remove("active"));
       byId(button.dataset.section).classList.add("active");
+
+      window.scrollTo({ top:0, behavior:"smooth" });
       closeResidentSuggestions();
       if(homePicker) homePicker.close();
       if(residentPicker) residentPicker.close();

@@ -14,6 +14,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
 
+  <link rel="preload" href="mappa-posti-numeri.webp" as="image" type="image/webp">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -126,10 +127,34 @@
           <div id="residentList" class="resident-list"></div>
         </div>
       </section>
+
+      <section id="rightsSection" class="page-section">
+        <div class="sticky-top">
+          <header class="compact-header">
+            <div>
+              <h1>VIA CHIMIRRI 27</h1>
+              <div class="subtitle-line">
+                <span></span>
+                <p class="subtitle">LISTA POSTI</p>
+                <span></span>
+              </div>
+            </div>
+          </header>
+        </div>
+
+        <div class="turn-card static-rights-card">
+          <div class="turn-head compact-turn-head">
+            <h2>LISTA POSTI</h2>
+            <div class="dates">REPERTORIO DEGLI AVENTI DIRITTO</div>
+          </div>
+          <div id="spotRightsList" class="spot-rights-list"></div>
+        </div>
+      </section>
+
     </main>
   </div>
 
-  <nav class="bottom-nav two-tabs">
+  <nav class="bottom-nav three-tabs">
     <button class="nav-btn active" data-section="homeSection" type="button">
       <span class="nav-icon">🅿️</span>
       <span>MAPPA POSTI</span>
@@ -139,10 +164,20 @@
       <span class="nav-icon">👤</span>
       <span>CONDOMINO</span>
     </button>
+
+    <button class="nav-btn" data-section="rightsSection" type="button">
+      <span class="nav-icon">📋</span>
+      <span>LISTA POSTI</span>
+    </button>
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/it.js"></script>
   <script src="app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(() => {}));
+    }
+  </script>
 </body>
 </html>

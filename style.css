@@ -3578,3 +3578,169 @@ main,
     border-radius:18px !important;
   }
 }
+
+
+/* =========================
+   LISTA POSTI + OTTIMIZZAZIONE LEGGERA
+   Aggiunto senza rompere la versione corretta esistente
+========================= */
+
+.bottom-nav.three-tabs{
+  grid-template-columns:repeat(3,1fr)!important;
+}
+
+.static-rights-card{
+  display:block!important;
+  margin-top:0!important;
+  margin-bottom:24px!important;
+}
+
+#rightsSection.page-section.active{
+  padding-top:60px;
+}
+
+.spot-rights-list{
+  width:100%;
+}
+
+.spot-right-row{
+  display:grid;
+  grid-template-columns:64px minmax(0,1fr);
+  gap:12px;
+  align-items:start;
+  padding:13px 14px;
+  border-bottom:1px solid var(--line);
+}
+
+.spot-right-row:last-child{
+  border-bottom:0;
+}
+
+.spot-right-num{
+  width:50px;
+  height:42px;
+  border:0;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:#eef6ff;
+  color:var(--blue);
+  font-size:20px;
+  font-weight:950;
+}
+
+.spot-right-names{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.spot-right-name{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  font-size:12px;
+  line-height:1.05;
+  font-weight:850;
+  transition:background .12s ease, color .12s ease, border-color .12s ease, opacity .12s ease;
+}
+
+.spot-right-name.inactive{
+  opacity:.52;
+  background:#f5f7fb;
+  color:#6f7890;
+  border-color:#e6edf7;
+}
+
+.spot-right-name.active-main{
+  opacity:1;
+  background:#eef6ff;
+  color:#0b7ee8;
+  border-color:#0b7ee8;
+  box-shadow:0 0 0 3px rgba(11,126,232,.12);
+}
+
+.spot-right-name.active-small{
+  opacity:1;
+  background:#ecfdf5;
+  color:#067647;
+  border-color:#21a67f;
+  box-shadow:0 0 0 3px rgba(33,166,127,.12);
+}
+
+/* Mappa più veloce: usa WEBP se disponibile, PNG fallback */
+.real-map,
+.spot-map-preview{
+  background-image:url("mappa-posti-numeri.webp"), url("mappa-posti-numeri.png")!important;
+}
+
+/* Footer a 3 icone leggibile */
+.bottom-nav.three-tabs .nav-btn{
+  font-size:clamp(10px,2.4vw,13px);
+}
+
+/* Se cambio pagina, niente stato scroll ereditato visivamente */
+.page-section{
+  scroll-margin-top:0;
+}
+
+@media(max-width:560px){
+  #rightsSection.page-section.active{
+    padding-top:35px;
+  }
+
+  .spot-right-row{
+    grid-template-columns:54px minmax(0,1fr);
+    gap:8px;
+    padding:11px 10px;
+  }
+
+  .spot-right-num{
+    width:44px;
+    height:38px;
+    border-radius:14px;
+    font-size:18px;
+  }
+
+  .spot-right-names{
+    gap:5px;
+  }
+
+  .spot-right-name{
+    font-size:10.5px;
+    padding:5px 8px;
+    min-height:27px;
+  }
+
+  .bottom-nav.three-tabs .nav-btn{
+    font-size:10px;
+  }
+
+/* =====================================================
+   FIX DEFINITIVO SPAZIO PAGINA LISTA POSTI
+   Da lasciare come ULTIMA COSA del file
+===================================================== */
+
+/* La pagina LISTA POSTI ha solo titolo, non toolbar:
+   quindi deve avere meno spazio sopra rispetto alle altre pagine. */
+body #rightsSection.page-section.active{
+  padding-top:78px !important;
+}
+
+body #rightsSection .static-rights-card{
+  margin-top:0 !important;
+}
+
+/* Su cellulare ancora più compatto */
+@media(max-width:560px){
+  body #rightsSection.page-section.active{
+    padding-top:68px !important;
+  }
+
+  body #rightsSection .static-rights-card{
+    margin-top:0 !important;
+  }
+}
