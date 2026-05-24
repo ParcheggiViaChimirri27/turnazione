@@ -3519,7 +3519,7 @@ main,
 /* il campo ricerca deve stare sopra il resto */
 .smart-search-card{
   position:relative !important;
-  z-index:20000 !important;
+  z-index:2 !important;
   overflow:visible !important;
   margin-top:8px !important;
 }
