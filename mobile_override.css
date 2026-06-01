@@ -1,0 +1,224 @@
+
+/* =========================================================
+   MOBILE STABILITY PATCH - iOS / Safari
+   Obiettivo: niente overflow, dropdown sempre davanti,
+   popup mappa contenuti nello schermo, tabbar non copre.
+========================================================= */
+:root{
+  --ios-card: rgba(255,255,255,.94);
+  --ios-shadow: 0 10px 30px rgba(7,23,53,.10);
+  --ios-shadow-strong: 0 18px 55px rgba(7,23,53,.22);
+}
+html,body{max-width:100%;overflow-x:hidden;}
+.app-shell{width:100%;max-width:980px;overflow-x:hidden;padding-bottom:calc(138px + env(safe-area-inset-bottom));}
+.page{min-width:0;}
+.content-card,.favorites-card,.search-card,.date-card,.countdown-card{max-width:100%;}
+
+/* Header compatto e coerente su telefono */
+.hero,.hero.compact{padding:6px 0 10px;min-height:auto;}
+.header-logo{width:min(76vw,460px);height:auto;filter:drop-shadow(0 10px 18px rgba(7,23,53,.16));}
+
+/* Barra data: più compatta su mobile */
+.date-card{z-index:500;}
+@media(max-width:680px){
+  .app-shell{padding-left:10px;padding-right:10px;padding-bottom:calc(142px + env(safe-area-inset-bottom));}
+  .date-card{grid-template-columns:1fr 1.35fr 1fr;gap:6px;padding:7px;border-radius:24px;margin-bottom:10px;}
+  .period-btn{min-height:46px;border-radius:17px;padding:0 7px;gap:5px;}
+  .period-btn span{font-size:11px;max-width:none;}
+  .period-btn strong{font-size:24px;}
+  .today-btn{grid-column:1/-1;min-height:44px;border-radius:18px;font-size:16px;}
+  .date-input-wrap{min-height:46px;border-radius:17px;padding:0 8px;}
+  .date-input-wrap .date-display{font-size:clamp(15px,4.7vw,19px);line-height:1.02;white-space:normal;}
+}
+
+/* Header mappa: toggle icone in alto a destra, meno altezza */
+.map-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:10px;padding:16px 16px 12px;}
+.map-head.simple{display:block;text-align:center;}
+.map-head h2{font-size:clamp(24px,6vw,34px);line-height:1.02;}
+.map-head p{font-size:13px;line-height:1.1;margin-top:5px;}
+.view-toggle{align-self:start;display:grid;grid-template-columns:1fr 1fr;width:86px;height:42px;gap:4px;padding:4px;border-radius:16px;background:#eef3f9;border:1px solid rgba(223,233,246,.95);}
+.view-toggle button{min-width:0;padding:0;border-radius:12px;font-size:0;color:transparent;display:grid;place-items:center;}
+.view-toggle button::before{font-size:20px;line-height:1;color:#6f7890;}
+#gridViewBtn::before{content:"▦";}
+#realViewBtn::before{content:"⌖";}
+.view-toggle button.active{background:var(--blue);box-shadow:0 8px 18px rgba(11,126,232,.25);}
+.view-toggle button.active::before{color:#fff;}
+@media(max-width:420px){.view-toggle{width:78px;height:38px}.view-toggle button::before{font-size:18px}}
+
+/* Legenda compatta */
+.legend{padding:12px 14px 8px;gap:10px 12px;font-size:11px;line-height:1.1;}
+.legend span::before{width:12px;height:12px;border-radius:4px;margin-right:5px;}
+
+/* Griglia: mai fuori dallo schermo */
+.parking-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:10px;overflow:hidden;}
+.spot-card{min-width:0;aspect-ratio:1/.96;border-radius:18px;padding:7px 4px 8px;}
+.spot-number{font-size:clamp(28px,9vw,42px);}
+.spot-name{font-size:clamp(8.5px,2.7vw,11px);min-height:24px;line-height:1.04;max-width:100%;}
+.star-btn{font-size:18px;right:3px;bottom:3px;}
+@media(max-width:390px){
+  .parking-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:9px;}
+  .spot-card{aspect-ratio:1/.88;}
+  .spot-name{font-size:10px;}
+}
+
+/* Mappa reale responsive */
+#mapPanel .real-map-frame{overflow:auto;-webkit-overflow-scrolling:touch;max-width:100%;}
+#mapPanel .real-map{width:100%;max-width:100%;min-width:0;}
+.modal-map-scroll{overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;}
+.modal-map{width:min(100%,460px);max-width:100%;}
+@media(max-width:680px){
+  .modal{padding:6px;align-items:flex-start;padding-top:max(10px,env(safe-area-inset-top));}
+  .modal-dialog{width:100%;max-height:calc(100dvh - 20px);border-radius:30px;}
+  .modal-head{padding:14px 16px;}
+  .modal-head h2{font-size:22px;}
+  .modal-map-scroll{max-height:calc(100dvh - 190px);padding:8px;border-radius:20px;}
+  .modal-map{width:100%;}
+}
+
+/* Popup sulla mappa: sempre dentro, più piccolo su iPhone */
+.real-popup{width:clamp(118px,34vw,164px);max-width:42vw;padding:9px 10px;border-radius:16px;box-shadow:0 14px 36px rgba(0,0,0,.24);}
+.real-popup strong{font-size:clamp(15px,4vw,18px);}
+.real-popup span{font-size:clamp(10px,3vw,12px);line-height:1.12;}
+.real-popup small{font-size:clamp(10px,2.8vw,12px);}
+.real-popup.left-side{transform:translate(12px,-112%);}
+.real-popup.left-side.below{transform:translate(12px,10px);}
+.real-popup.left-edge{transform:translate(8px,-112%);}
+.real-popup.left-edge.below{transform:translate(8px,10px);}
+.real-popup.right-edge{transform:translate(calc(-100% - 8px),-112%);}
+.real-popup.right-edge.below{transform:translate(calc(-100% - 8px),10px);}
+@media(max-width:390px){.real-popup{width:124px;max-width:48vw;padding:8px}.real-popup span{font-size:10px}}
+
+/* Ricerca: dropdown sopra tutto e non dietro la lista */
+#condominoSection .search-card{position:sticky;top:72px;z-index:3000;overflow:visible;margin-bottom:12px;}
+.search-suggestions{z-index:4000;box-shadow:0 22px 65px rgba(7,23,53,.24);}
+#condominoSection .content-card{position:relative;z-index:1;}
+@media(max-width:680px){
+  #condominoSection .search-card{top:70px;border-radius:26px;}
+  .search-box{height:52px;border-radius:20px;}
+  .search-box input{font-size:16px;}
+  .search-suggestions{left:6px;right:6px;top:64px;max-height:min(56dvh,430px);border-radius:22px;padding:6px;background:rgba(255,255,255,.98);backdrop-filter:blur(18px);}
+  .suggestion-item{grid-template-columns:42px minmax(0,1fr);padding:10px;border-radius:17px;}
+}
+
+/* Lista condomini mobile: più leggibile, non schiacciata */
+@media(max-width:680px){
+  .resident-list{padding:6px;}
+  .resident-row{grid-template-columns:minmax(0,1fr) 54px 54px 36px;gap:6px;padding:8px 6px;min-height:70px;border-radius:18px;}
+  .resident-main{grid-template-columns:44px minmax(0,1fr);gap:8px;}
+  .avatar{width:38px;height:38px;font-size:14px;}
+  .resident-name{font-size:13px;line-height:1.02;}
+  .resident-chip{height:38px;border-radius:14px;font-size:16px;}
+  .row-star{font-size:22px;}
+}
+
+/* Popup condomino mobile: più pulito e cliccabile sul cerchio */
+#residentModal .selected-status{gap:12px;}
+#residentModal .parking-status-label{margin-bottom:6px;}
+#residentModal .parking-number-circle{cursor:pointer;user-select:none;display:grid;place-items:center;text-align:center;}
+#residentModal .parking-number-circle:active{transform:scale(.96);}
+#residentModal .resident-info-tile span{display:none;}
+#residentModal .resident-info-tile strong{font-size:clamp(24px,7vw,36px);}
+#residentModal .resident-info-tile.main strong{color:var(--blue);}
+#residentModal .resident-info-tile.small strong{color:var(--green);}
+#residentModal .resident-info-tile.scale strong{color:var(--navy);}
+#residentModal .story-alert .remember-title{color:var(--danger);}
+#residentModal .days-highlight,#residentModal .spot-highlight,#residentModal .date-highlight{background:transparent;box-shadow:none;min-width:0;min-height:0;padding:0;border-radius:0;display:inline;color:var(--blue);}
+#residentModal .date-highlight{color:var(--green);}
+@media(max-width:680px){
+  #residentModal .modal-dialog.info-dialog{width:100%;max-height:calc(100dvh - 20px);overflow:auto;border-radius:30px;}
+  #residentModal .modal-body.info-body{padding:10px;}
+  #residentModal .resident-pop-header.clean{grid-template-columns:50px minmax(0,1fr) 38px;gap:9px;padding:9px;border-radius:22px;}
+  #residentModal .resident-pop-header.clean strong{font-size:18px;line-height:1.02;}
+  #residentModal .resident-pop-header.clean small{font-size:10px;}
+  #residentModal .resident-large{width:44px;height:44px;font-size:16px;}
+  #residentModal .resident-inline-close{width:36px;height:36px;font-size:24px;}
+  #residentModal .resident-focus-card{min-height:0;padding:14px 10px;border-radius:22px;}
+  #residentModal .resident-focus-card span:first-child{font-size:10px;margin-bottom:6px;}
+  #residentModal .parking-number-circle{width:74px;height:74px;font-size:34px;line-height:1;}
+  #residentModal .parking-status-label{font-size:18px;}
+  #residentModal .resident-dashboard{grid-template-columns:1fr 1fr 1fr;gap:7px;}
+  #residentModal .resident-info-tile{min-height:72px;border-radius:18px;padding:8px 4px;}
+  #residentModal .resident-info-tile strong{font-size:22px;line-height:1;}
+  #residentModal .story-alert{padding:14px 10px;border-radius:20px;}
+  #residentModal .story-alert .remember-title{font-size:23px;}
+  #residentModal .story-alert p{font-size:14px;line-height:1.22;margin-top:6px;}
+}
+
+/* Preferiti e lista posti: non tagliati dalla bottom bar */
+.favorites-page-card,.rights-card{margin-bottom:28px;}
+@media(max-width:680px){
+  .favorites-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;overflow:visible;}
+  .favorite-card{min-width:0;}
+  .bottom-nav{z-index:5000;}
+}
+
+/* =========================================================
+   PATCH V11 - mappa, footer e sticky date
+========================================================= */
+/* Fumetti dei posti 1 e 2: stessa altezza visiva del posto 3 */
+.real-popup.left-side{
+  transform:translate(12px,-112%);
+}
+@media(max-width:680px){
+  .real-popup.left-side{
+    transform:translate(10px,-108%);
+  }
+}
+
+/* Footer davvero fisso e opaco: non deve far vedere contenuti dietro */
+.bottom-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:10000;
+  background:#ffffff;
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
+  box-shadow:0 -10px 30px rgba(7,23,53,.10);
+  transform:translateZ(0);
+  will-change:transform;
+}
+.app-shell{
+  padding-bottom:calc(170px + env(safe-area-inset-bottom));
+}
+@media(max-width:680px){
+  .app-shell{
+    padding-bottom:calc(180px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Barra data fissa allo scroll, ma con comportamento più stabile su iOS */
+.date-card{
+  position:sticky;
+  top:max(0px, env(safe-area-inset-top));
+  z-index:6000;
+  transform:translateZ(0);
+}
+
+/* Il cerchio centrale della scheda condomino deve indicare che è cliccabile */
+#residentModal .parking-number-circle[data-open-current-spot]{
+  cursor:pointer;
+  box-shadow:0 0 0 8px rgba(11,126,232,.12), 0 14px 34px rgba(11,126,232,.22);
+}
+#residentModal .parking-number-circle[data-open-current-spot]::after{
+  content:"TOCCA PER VEDERE LA MAPPA";
+  position:absolute;
+  left:50%;
+  top:calc(100% + 8px);
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font-size:9px;
+  font-weight:900;
+  color:#7d8799;
+  letter-spacing:.03em;
+}
+#residentModal .selected-status{
+  position:relative;
+}
+@media(max-width:680px){
+  #residentModal .parking-number-circle[data-open-current-spot]::after{
+    font-size:8px;
+    top:calc(100% + 6px);
+  }
+}

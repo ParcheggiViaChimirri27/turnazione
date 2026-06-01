@@ -1,5 +1,18 @@
-const CACHE_NAME="parcheggi-v21-json-data";
-const ASSETS=["./","./index.html","./style.css","./app.js","./data.json","./mappa-posti-numeri.webp","./mappa-posti-numeri.png"];
-self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(ASSETS).catch(()=>null)));self.skipWaiting()});
-self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim()});
-self.addEventListener("fetch",event=>{if(event.request.method!=="GET")return;event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request).then(response=>{const clone=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(event.request,clone)).catch(()=>null);return response}).catch(()=>cached)))});
+const CACHE_NAME = "parcheggi-mobile-stabile-v17";
+const ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./mappa-posti-numeri.webp", "./mappa-posti-numeri.png","./via.webp", "./icon.svg", "./manifest.webmanifest"];
+self.addEventListener("install", event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS).catch(() => null)));
+  self.skipWaiting();
+});
+self.addEventListener("activate", event => {
+  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))));
+  self.clients.claim();
+});
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+  event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
+    const clone = response.clone();
+    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone)).catch(() => null);
+    return response;
+  }).catch(() => cached)));
+});
