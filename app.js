@@ -59,6 +59,36 @@ const RESIDENT_SCALES = {
   "trapasso aversa enrichetta": "SCALA D",
   "varano": "SCALA C"
 };
+
+/* Reset all'avvio:
+   - conserva SOLO i preferiti
+   - cancella cookie/sessionStorage/localStorage non essenziali
+   - evita che una vecchia sessione riapra una pagina diversa dalla home
+*/
+function resetVolatileStateOnOpen(){
+  const keepFavorites = localStorage.getItem('parkingFavorites');
+  const keepFavoriteResidents = localStorage.getItem('parkingFavoriteResidents') || keepFavorites;
+
+  try{ sessionStorage.clear(); }catch(_){}
+
+  try{
+    localStorage.clear();
+    if(keepFavorites) localStorage.setItem('parkingFavorites', keepFavorites);
+    if(keepFavoriteResidents) localStorage.setItem('parkingFavoriteResidents', keepFavoriteResidents);
+  }catch(_){}
+
+  try{
+    document.cookie.split(';').forEach(cookie=>{
+      const name = cookie.split('=')[0].trim();
+      if(!name) return;
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+      document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${location.pathname}`;
+    });
+  }catch(_){}
+}
+
+resetVolatileStateOnOpen();
+
 let selectedDate = stripTime(new Date());
 let selectedPeriod = null;
 let currentView = 'map';
@@ -609,6 +639,24 @@ function applyModalDate(){
   closeDateModal();
 }
 
+
+function forceHomeMapOnOpen(){
+  currentView = 'map';
+
+  document.querySelectorAll('.page').forEach(page=>page.classList.remove('active'));
+  byId('homeSection')?.classList.add('active');
+
+  document.querySelectorAll('.nav-btn').forEach(btn=>btn.classList.remove('active'));
+  document.querySelector('.nav-btn[data-section="homeSection"]')?.classList.add('active');
+
+  closeAllMapPopups();
+  setView('map');
+
+  requestAnimationFrame(()=>{
+    window.scrollTo({top:0,left:0,behavior:'auto'});
+  });
+}
+
 function bindEvents(){
   ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput'].forEach(id=>{
     const input = byId(id);
@@ -655,4 +703,4 @@ function bindEvents(){
     window.scrollTo({top:0,behavior:'smooth'});
   }));
 }
-document.addEventListener('DOMContentLoaded',()=>{ bindEvents(); setDate(new Date()); });
+document.addEventListener('DOMContentLoaded',()=>{ bindEvents(); setDate(new Date()); forceHomeMapOnOpen(); });
