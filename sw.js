@@ -1,4 +1,4 @@
-const CACHE_NAME = "parcheggi-mobile-stabile-v18";
+const CACHE_NAME = "parcheggi-mobile-stabile-v19";
 const ASSETS = [
   "./",
   "./index.html",
