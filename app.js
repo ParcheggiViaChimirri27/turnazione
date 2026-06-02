@@ -125,8 +125,12 @@ function buildPeriodsForCycle(cycleStartYear){
 }
 function findPeriodByDate(date){
   if(isFreeParkingPeriod(date)) return null;
+  const key = toInputDate(date);
+  if(_periodCache.has(key)) return _periodCache.get(key);
   const start = getCycleStartYear(date);
-  return [...buildPeriodsForCycle(start-2),...buildPeriodsForCycle(start),...buildPeriodsForCycle(start+2)].find(p => date >= p.start && date <= p.end) || null;
+  const result = [...buildPeriodsForCycle(start-2),...buildPeriodsForCycle(start),...buildPeriodsForCycle(start+2)].find(p => date >= p.start && date <= p.end) || null;
+  _periodCache.set(key, result);
+  return result;
 }
 function getNextPeriodStart(date){
   const period = findPeriodByDate(date);
@@ -155,7 +159,12 @@ function buildOccupants(mainRows, smallRows){
   smallRows.forEach(([name,spot]) => map.set(Number(spot), {name:cleanName(name), type:'small'}));
   return map;
 }
-function getCurrentOccupants(){ const rows = rowsForPeriod(selectedPeriod); return isFreeParkingPeriod(selectedDate) ? new Map() : buildOccupants(rows.mainRows, rows.smallRows); }
+function getCurrentOccupants(){
+  if(_cachedOccupants) return _cachedOccupants;
+  const rows = rowsForPeriod(selectedPeriod);
+  _cachedOccupants = isFreeParkingPeriod(selectedDate) ? new Map() : buildOccupants(rows.mainRows, rows.smallRows);
+  return _cachedOccupants;
+}
 function buildSpotRights(){
   const rights = new Map();
   const add = (spot,name) => { const key=Number(spot); if(!rights.has(key)) rights.set(key, []); const clean=cleanName(name); if(!rights.get(key).some(n=>normalizeName(n)===normalizeName(clean))) rights.get(key).push(clean); };
@@ -164,12 +173,36 @@ function buildSpotRights(){
   return rights;
 }
 const spotRights = buildSpotRights();
-function getAllResidents(){
-  return [...new Set([...DATA.groupA, ...DATA.groupB, ...Object.values(DATA.smallGroups).flat()].map(([name])=>cleanName(name)))]
-    .sort((a,b)=>a.localeCompare(b,'it',{sensitivity:'base'}));
+
+// ── CACHE: lista condomini (dati statici, calcolata una sola volta) ──
+const ALL_RESIDENTS = [...new Set([...DATA.groupA, ...DATA.groupB, ...Object.values(DATA.smallGroups).flat()].map(([name])=>cleanName(name)))]
+  .sort((a,b)=>a.localeCompare(b,'it',{sensitivity:'base'}));
+function getAllResidents(){ return ALL_RESIDENTS; }
+
+// ── CACHE: occupanti del periodo corrente (invalidata ad ogni cambio data) ──
+let _cachedOccupants = null;
+
+// ── CACHE: periodi per data (invalidata ad ogni cambio anno ciclico) ──
+const _periodCache = new Map();
+// ── CACHE: posti permanenti per residente (dati statici) ──
+const _permMainSpotCache = new Map();
+const _permSmallSpotCache = new Map();
+function findPermanentMainSpot(name){
+  const t = normalizeName(name);
+  if(_permMainSpotCache.has(t)) return _permMainSpotCache.get(t);
+  const row = [...DATA.groupA,...DATA.groupB].find(([n])=>normalizeName(n)===t);
+  const result = row ? Number(row[1]) : null;
+  _permMainSpotCache.set(t, result);
+  return result;
 }
-function findPermanentMainSpot(name){ const t=normalizeName(name); const row=[...DATA.groupA,...DATA.groupB].find(([n])=>normalizeName(n)===t); return row ? Number(row[1]) : null; }
-function findPermanentSmallSpot(name){ const t=normalizeName(name); for(const rows of Object.values(DATA.smallGroups)){ const row=rows.find(([n])=>normalizeName(n)===t); if(row) return Number(row[1]); } return null; }
+function findPermanentSmallSpot(name){
+  const t = normalizeName(name);
+  if(_permSmallSpotCache.has(t)) return _permSmallSpotCache.get(t);
+  let result = null;
+  for(const rows of Object.values(DATA.smallGroups)){ const row=rows.find(([n])=>normalizeName(n)===t); if(row){ result=Number(row[1]); break; } }
+  _permSmallSpotCache.set(t, result);
+  return result;
+}
 function getResidentActiveInfo(name){
   const target = normalizeName(name);
   const {mainRows,smallRows} = rowsForPeriod(selectedPeriod);
@@ -179,7 +212,9 @@ function getResidentActiveInfo(name){
   if(main) return {type:'main', spot:Number(main[1])};
   return {type:null, spot:null};
 }
+const _initialsCache = new Map();
 function initials(name){
+  if(_initialsCache.has(name)) return _initialsCache.get(name);
   const clean = cleanName(name)
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
@@ -192,9 +227,12 @@ function initials(name){
     .split(/\s+/)
     .filter(Boolean);
 
-  if(!words.length) return '?';
-  if(words.length === 1) return words[0].slice(0, 2);
-  return (words[0][0] || '') + (words[1][0] || '');
+  let result;
+  if(!words.length) result = '?';
+  else if(words.length === 1) result = words[0].slice(0, 2);
+  else result = (words[0][0] || '') + (words[1][0] || '');
+  _initialsCache.set(name, result);
+  return result;
 }
 function residentHue(name){
   const text = normalizeName(name) || 'condomino';
@@ -202,9 +240,13 @@ function residentHue(name){
   for(let i=0;i<text.length;i++) hash = (hash * 31 + text.charCodeAt(i)) >>> 0;
   return hash % 360;
 }
+const _colorStyleCache = new Map();
 function residentColorStyle(name){
+  if(_colorStyleCache.has(name)) return _colorStyleCache.get(name);
   const h = residentHue(name);
-  return `--resident-color:hsl(${h} 72% 42%);--resident-soft:hsl(${h} 82% 94%);--resident-border:hsl(${h} 72% 84%);`;
+  const style = `--resident-color:hsl(${h} 72% 42%);--resident-soft:hsl(${h} 82% 94%);--resident-border:hsl(${h} 72% 84%);`;
+  _colorStyleCache.set(name, style);
+  return style;
 }
 function normalizeFavoriteName(name){ return cleanName(name); }
 function loadFavorites(){
@@ -586,8 +628,26 @@ function renderPeriodTexts(){
   updateMapTitle();
   const banner = byId('freeParkingBanner'); if(banner){ banner.hidden = !isFreeParkingPeriod(selectedDate); banner.textContent = freeParkingText(selectedDate.getFullYear()); }
 }
-function renderAllDynamic(){ updateCountdowns(); renderPeriodTexts(); renderFavorites(); renderParkingGrid(); renderRealMap('realMap'); renderResidents(); renderRights(); }
+function renderAllDynamic(){
+  updateCountdowns();
+  renderPeriodTexts();
+  // Render lazy: solo la sezione visibile + preferiti (sempre visibili nei badge)
+  const activeId = document.querySelector('.page.active')?.id;
+  if(activeId === 'homeSection'){
+    if(currentView === 'grid') renderParkingGrid();
+    else renderRealMap('realMap');
+  } else if(activeId === 'condominoSection'){
+    renderResidents();
+  } else if(activeId === 'rightsSection'){
+    renderRights();
+  } else if(activeId === 'favoritesSection'){
+    renderFavorites();
+  }
+  // I preferiti nella nav badge non esistono, ma le stelle nella griglia/lista
+  // si aggiornano già dentro le singole render. Nessun render aggiuntivo necessario.
+}
 function setDate(date){
+  _cachedOccupants = null; // invalida cache occupanti
   selectedDate = stripTime(date); selectedPeriod = findPeriodByDate(selectedDate);
   ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput'].forEach(id=>{ const el=byId(id); if(el) el.value = toInputDate(selectedDate); });
   [['homeDateLabel'],['residentDateLabel'],['rightsDateLabel'],['favoritesDateLabel']].forEach(([labelId])=>{ const label=byId(labelId); if(label) label.textContent = fullFmt(selectedDate); });
@@ -678,7 +738,7 @@ function bindEvents(){
   ['homeNextPeriodBtn','residentNextPeriodBtn','rightsNextPeriodBtn','favoritesNextPeriodBtn'].forEach(id=>byId(id)?.addEventListener('click',()=>goToPeriod('next')));
   ['homePrevPeriodBtn','residentPrevPeriodBtn','rightsPrevPeriodBtn','favoritesPrevPeriodBtn'].forEach(id=>byId(id)?.addEventListener('click',()=>goToPeriod('prev')));
   byId('gridViewBtn').addEventListener('click',()=>setView('grid')); byId('realViewBtn').addEventListener('click',()=>setView('map'));
-  byId('clearFavoritesBtn').addEventListener('click',()=>{ favorites=[]; saveFavorites(); renderAllDynamic(); });
+  byId('clearFavoritesBtn').addEventListener('click',()=>{ favorites=[]; saveFavorites(); renderFavorites(); renderAllDynamic(); });
   byId('residentSearchInput').addEventListener('input', ()=>{ closeResidentSuggestions(); renderResidents(); });
   byId('residentSearchInput').addEventListener('focus', closeResidentSuggestions);
   byId('spotModalClose').addEventListener('click', closeSpotModal); byId('spotModal').addEventListener('click', e=>{ if(e.target.id==='spotModal') closeSpotModal(); });
@@ -701,6 +761,12 @@ function bindEvents(){
     document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); byId(btn.dataset.section).classList.add('active');
     window.scrollTo({top:0,behavior:'smooth'});
+    // Render della sezione appena attivata (lazy: prima non veniva renderizzata se non era attiva)
+    const sec = btn.dataset.section;
+    if(sec === 'homeSection'){ if(currentView === 'grid') renderParkingGrid(); else renderRealMap('realMap'); }
+    else if(sec === 'condominoSection') renderResidents();
+    else if(sec === 'rightsSection') renderRights();
+    else if(sec === 'favoritesSection') renderFavorites();
   }));
 }
 document.addEventListener('DOMContentLoaded',()=>{ bindEvents(); setDate(new Date()); forceHomeMapOnOpen(); });
