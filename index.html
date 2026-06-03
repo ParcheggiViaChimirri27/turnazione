@@ -5,17 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Turnazione Parcheggi Via Chimirri 27</title>
   <meta name="theme-color" content="#071b3f" />
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Parcheggi" />
-  <link rel="manifest" href="manifest.webmanifest?v=19" />
-  <link rel="icon" href="icon.svg?v=19" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="preload" href="mappa-posti-numeri.webp" as="image" type="image/webp" />
   <link rel="preload" href="via.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="style.css?v=19" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -198,7 +195,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=19"></script>
+  <script src="app.js"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
