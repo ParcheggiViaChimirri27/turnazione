@@ -670,6 +670,11 @@ function setView(view){
   byId('gridViewBtn').classList.toggle('active', view==='grid');
   byId('realViewBtn').classList.toggle('active', view==='map');
   updateMapTitle();
+
+  // IMPORTANTE: la griglia viene renderizzata solo quando serve.
+  // Prima, cliccando su "griglia", il pannello diventava visibile
+  // ma restava vuoto perché renderParkingGrid() non veniva chiamata.
+  if(view==='grid') renderParkingGrid();
   if(view==='map') renderRealMap('realMap');
 }
 
