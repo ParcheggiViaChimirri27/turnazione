@@ -1644,6 +1644,7 @@ body.modal-open{
 }
 .date-modal-card{
   width:min(92vw,420px);
+  box-sizing:border-box; /* evita sforamento del campo a destra */
   border-radius:28px;
   padding:16px;
   background:rgba(255,255,255,.96);
@@ -1674,6 +1675,7 @@ body.modal-open{
 }
 .modal-date-input{
   width:100%;
+  box-sizing:border-box;
   height:56px;
   border:1px solid var(--line);
   border-radius:18px;
@@ -1683,6 +1685,12 @@ body.modal-open{
   font-weight:900;
   text-align:center;
   padding:0 14px;
+  /* override delle regole globali input[type="date"] che lo nascondono */
+  position:relative;
+  opacity:1 !important;
+  -webkit-appearance:auto;
+  appearance:auto;
+  cursor:pointer;
 }
 .date-modal-actions{
   display:grid;
