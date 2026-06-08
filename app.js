@@ -439,9 +439,13 @@ function residentStoryHtml(name){
 
   <div class="resident-focus-card ${pickedText.cls}">
     <span>${fullFmt(picked).toUpperCase()}</span>
-    <div class="selected-status">
-      <strong class="parking-status-label">${centralLabel}</strong>
-      <span class="parking-number-circle" ${pickedStatus.info.type ? `data-open-current-spot="${centralNumber}"` : ''}>${centralNumber}</span>
+    <div class="selected-status with-period-nav">
+      <button class="resident-period-nav prev" type="button" data-resident-step="prev" data-resident-name="${escapeHtml(name)}" aria-label="Turno precedente">‹</button>
+      <div class="selected-status-core">
+        <strong class="parking-status-label">${centralLabel}</strong>
+        <span class="parking-number-circle" ${pickedStatus.info.type ? `data-open-current-spot="${centralNumber}"` : ''}>${centralNumber}</span>
+      </div>
+      <button class="resident-period-nav next" type="button" data-resident-step="next" data-resident-name="${escapeHtml(name)}" aria-label="Turno Prossimo">›</button>
     </div>
   </div>
 
@@ -469,16 +473,19 @@ function renderFavorites(){
     const status = active.type ? typeLabel(active.type).toUpperCase() : 'FUORI';
     const statusKind = active.type === 'main' ? 'main' : active.type === 'small' ? 'small' : 'out';
     const shownSpot = active.type ? String(active.spot) : '—';
+    const mainSpot = findPermanentMainSpot(name) || '-';
+    const smallSpot = findPermanentSmallSpot(name) || '-';
     return `<article class="favorite-card ${statusKind}" data-resident="${escapeHtml(name)}" style="${residentColorStyle(name)}">
       <button class="fav-remove" type="button" data-fav-remove-name="${escapeHtml(name)}" aria-label="Rimuovi preferito">×</button>
-      <div class="fav-person">
+      <div class="fav-left">
         <span class="fav-initials">${escapeHtml(initials(name).toUpperCase())}</span>
-        <strong>${escapeHtml(name)}</strong>
+        <div class="fav-text"><strong>${escapeHtml(name)}</strong></div>
       </div>
-      <div class="fav-status">
+      <div class="fav-right">
         <span class="fav-status-circle">${escapeHtml(shownSpot)}</span>
         <small>${escapeHtml(status)}</small>
       </div>
+      <span class="fav-chevron" aria-hidden="true">›</span>
     </article>`;
   }).join('');
 }
@@ -642,6 +649,8 @@ function renderAllDynamic(){
     renderRights();
   } else if(activeId === 'favoritesSection'){
     renderFavorites();
+  } else if(activeId === 'pdfSection'){
+    renderPdfControls();
   }
   // I preferiti nella nav badge non esistono, ma le stelle nella griglia/lista
   // si aggiornano già dentro le singole render. Nessun render aggiuntivo necessario.
@@ -649,8 +658,8 @@ function renderAllDynamic(){
 function setDate(date){
   _cachedOccupants = null; // invalida cache occupanti
   selectedDate = stripTime(date); selectedPeriod = findPeriodByDate(selectedDate);
-  ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput'].forEach(id=>{ const el=byId(id); if(el) el.value = toInputDate(selectedDate); });
-  [['homeDateLabel'],['residentDateLabel'],['rightsDateLabel'],['favoritesDateLabel']].forEach(([labelId])=>{ const label=byId(labelId); if(label) label.textContent = fullFmt(selectedDate); });
+  ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput','pdfDateInput'].forEach(id=>{ const el=byId(id); if(el) el.value = toInputDate(selectedDate); });
+  [['homeDateLabel'],['residentDateLabel'],['rightsDateLabel'],['favoritesDateLabel'],['pdfDateLabel']].forEach(([labelId])=>{ const label=byId(labelId); if(label) label.textContent = fullFmt(selectedDate); });
   renderAllDynamic();
 }
 function goToPeriod(direction){
@@ -722,8 +731,354 @@ function forceHomeMapOnOpen(){
   });
 }
 
+/* ─────────────────────────────────────────────
+   GENERAZIONE PDF A4
+───────────────────────────────────────────── */
+const PDF_BASE_IMAGE = 'mappa-pdf-base.png';
+const PDF_PAGE = {w:1240, h:1754};
+const PDF_PAGE_A4 = {w:595.28, h:841.89};
+const PDF_COORDS = {
+  1:{x:18.7, numberY:9.5}, 2:{x:18.7, numberY:15.3}, 3:{x:18.7, numberY:21.2}, 4:{x:18.7, numberY:27.3}, 5:{x:18.7, numberY:33.0},
+  8:{x:18.7, numberY:58.0}, 9:{x:18.7, numberY:64.5}, 10:{x:18.7, numberY:81.2},
+  11:{x:31.0, numberY:91.3}, 12:{x:31.0, numberY:96.5}, 13:{x:41.9, numberY:96.5}, 14:{x:41.9, numberY:91.3},
+  15:{x:52.8, numberY:82.8}, 16:{x:52.8, numberY:76.7},
+  17:{x:52.8, numberY:63.8}, 18:{x:52.8, numberY:57.8}, 19:{x:52.8, numberY:51.6}, 20:{x:52.8, numberY:46.0},
+  21:{x:52.8, numberY:33.0}, 22:{x:52.8, numberY:27.7}, 23:{x:52.8, numberY:21.6}, 24:{x:52.8, numberY:15.5}, 25:{x:52.8, numberY:9.5},
+  26:{x:67.7, numberY:15.5}, 27:{x:67.7, numberY:21.6}, 28:{x:67.7, numberY:27.3}, 29:{x:67.7, numberY:33.3}, 30:{x:67.7, numberY:39.6},
+  31:{x:67.7, numberY:45.0}, 32:{x:67.7, numberY:51.0}, 33:{x:67.7, numberY:56.9}, 34:{x:67.7, numberY:62.5},
+  35:{x:67.7, numberY:76.3}, 36:{x:67.7, numberY:82.1}, 37:{x:67.7, numberY:88.3}
+};
+let pdfSelectedPeriodKey = null;
+let pdfSelectedYear = null;
+let pdfSpecificYear = null;
+let pdfBaseImagePromise = null;
+function loadPdfBaseImage(){
+  if(pdfBaseImagePromise) return pdfBaseImagePromise;
+  pdfBaseImagePromise = new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.onload = ()=>resolve(img);
+    img.onerror = err => {
+      console.error('Immagine base PDF non caricata', err);
+      reject(err);
+    };
+    img.src = PDF_BASE_IMAGE + '?v=pdf6';
+  });
+  return pdfBaseImagePromise;
+}
+function pdfPeriodKey(period){ return `${toInputDate(period.start)}_${period.index}_${period.cycleStartYear}`; }
+function pdfAllPeriodsAroundYear(year){
+  year = Number(year);
+  // Il ciclo parte sempre da anni dispari, ma i periodi possono iniziare
+  // sia in anni pari che in anni dispari. Per questo non possiamo usare
+  // year-5/year-3... quando l'anno scelto è dispari: produrrebbe solo anni pari.
+  const cycleStarts = [];
+  for(let y = year - 8; y <= year + 8; y++){
+    if(y % 2 !== 0) cycleStarts.push(y);
+  }
+  const seen = new Set();
+  return cycleStarts.flatMap(buildPeriodsForCycle).filter(p=>{
+    const key = `${toInputDate(p.start)}_${toInputDate(p.end)}_${p.main}_${p.small}`;
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).sort((a,b)=>a.start-b.start);
+}
+function pdfPeriodsForYear(year){
+  year = Number(year);
+  return pdfAllPeriodsAroundYear(year).filter(p => p.start.getFullYear() === year);
+}
+function pdfAvailableYears(){
+  const nowYear = new Date().getFullYear();
+  const selectedYear = selectedDate?.getFullYear?.() || nowYear;
+  const min = Math.min(nowYear, selectedYear) - 2;
+  const max = Math.max(nowYear, selectedYear) + 6;
+  return Array.from({length:max-min+1},(_,i)=>min+i);
+}
+function pdfCurrentPeriod(){
+  const today = stripTime(new Date());
+  return findPeriodByDate(today) || findPeriodByDate(skipFree(today, 1));
+}
+function periodFromPdfSelect(){
+  const select = byId('pdfPeriodSelect');
+  const yearSelect = byId('pdfSpecificYearSelect');
+  const year = Number(yearSelect?.value || pdfSpecificYear || new Date().getFullYear());
+  const periods = pdfPeriodsForYear(year);
+  const key = select?.value || pdfSelectedPeriodKey;
+  return periods.find(p=>pdfPeriodKey(p)===key) || periods[0] || selectedPeriod || null;
+}
+function renderYearSelect(selectId, selected){
+  const select = byId(selectId);
+  if(!select) return null;
+  const years = pdfAvailableYears();
+  const currentYear = Number(selected || select.value || new Date().getFullYear());
+  select.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  select.value = years.includes(currentYear) ? String(currentYear) : String(new Date().getFullYear());
+  return Number(select.value);
+}
+function renderPdfControls(){
+  const current = pdfCurrentPeriod();
+  const selectedYearDefault = pdfSelectedYear || current?.start.getFullYear() || new Date().getFullYear();
+  pdfSelectedYear = renderYearSelect('pdfYearSelect', selectedYearDefault);
+  pdfSpecificYear = renderYearSelect('pdfSpecificYearSelect', pdfSpecificYear || selectedYearDefault);
+
+  const select = byId('pdfPeriodSelect');
+  if(select){
+    const periods = pdfPeriodsForYear(pdfSpecificYear);
+    const wantedKey = pdfSelectedPeriodKey || (current ? pdfPeriodKey(current) : '');
+    select.innerHTML = periods.map(p=>`<option value="${pdfPeriodKey(p)}">${periodDateText(p)} · ${p.main} + ${p.small}</option>`).join('');
+    select.value = periods.some(p=>pdfPeriodKey(p)===wantedKey) ? wantedKey : (periods[0] ? pdfPeriodKey(periods[0]) : '');
+    pdfSelectedPeriodKey = select.value;
+  }
+
+  const currentText = byId('pdfCurrentPeriodText');
+  if(currentText) currentText.textContent = current ? `${periodDateText(current)} · ${current.main} + ${current.small}` : 'Nessun periodo attuale disponibile';
+
+  const label = byId('pdfPeriodText');
+  const p = periodFromPdfSelect();
+  if(label) label.textContent = p ? `${periodDateText(p)}` : 'Nessun periodo selezionato';
+  setPdfStatus('');
+}
+function displayPdfName(name){
+  return cleanName(name).replace(/\s+-\s+/g,' - ').replace(/\s+/g,' ').trim().toUpperCase();
+}
+function wrapCanvasText(ctx, text, maxWidth, maxLines){
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let line = '';
+  for(const word of words){
+    const test = line ? `${line} ${word}` : word;
+    if(ctx.measureText(test).width <= maxWidth || !line){ line = test; }
+    else { lines.push(line); line = word; }
+  }
+  if(line) lines.push(line);
+  if(lines.length > maxLines){
+    const trimmed = lines.slice(0,maxLines);
+    while(ctx.measureText(trimmed[maxLines-1] + '…').width > maxWidth && trimmed[maxLines-1].length > 2){
+      trimmed[maxLines-1] = trimmed[maxLines-1].slice(0,-1);
+    }
+    trimmed[maxLines-1] += '…';
+    return trimmed;
+  }
+  return lines;
+}
+function drawFittedName(ctx, text, x, y, maxWidth, maxHeight){
+  let size = 12;
+  let lines = [];
+  while(size >= 12){
+    ctx.font = `900 ${size}px Arial, sans-serif`;
+    lines = wrapCanvasText(ctx, text, maxWidth, 3);
+    const lineHeight = size * 1.04;
+    const total = lines.length * lineHeight;
+    const tooWide = lines.some(l=>ctx.measureText(l).width > maxWidth + 1);
+    if(!tooWide && total <= maxHeight) break;
+    size -= 1;
+  }
+  const lineHeight = size * 1.04;
+  ctx.font = `900 ${size}px Arial, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const startY = y - ((lines.length-1)*lineHeight)/2;
+  lines.forEach((line,i)=>ctx.fillText(line, x, startY + i*lineHeight));
+}
+async function drawPdfCanvas(canvas, period){
+  const img = await loadPdfBaseImage();
+  const W = PDF_PAGE.w, H = PDF_PAGE.h;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.drawImage(img, 0, 0, W, H);
+  ctx.fillStyle = '#071735';
+  ctx.textAlign = 'right';
+  const titleX = W - 40;
+  ctx.textBaseline = 'middle';
+  ctx.font = '900 34px Arial, sans-serif';
+  ctx.fillText('PARCHEGGI VIA B. CHIMIRRI 27', titleX, 66);
+  if(period){
+    ctx.font = '900 30px Arial, sans-serif';
+    ctx.fillText(`${periodDateText(period)}`, titleX, 120);
+    ctx.fillText(`TURNO: ${period.main}  ·  TURNETTO: ${period.small}`, titleX, 172);
+  }
+  const rows = rowsForPeriod(period);
+  const occupants = buildOccupants(rows.mainRows, rows.smallRows);
+  Object.entries(PDF_COORDS).forEach(([spotStr,pos])=>{
+    const spot = Number(spotStr);
+    const x = W * pos.x / 100;
+    const numberY = H * pos.numberY / 100;
+    const nameY = numberY + 35;
+    const occ = occupants.get(spot);
+    ctx.fillStyle = '#000';
+    ctx.font = '900 44px Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(String(spot), x, numberY);
+    if(occ?.name){
+      ctx.fillStyle = '#000';
+      drawFittedName(ctx, displayPdfName(occ.name), x, nameY, 105, 58);
+    }
+  });
+}
+function bytesFromDataUrl(dataUrl){
+  const b64 = String(dataUrl).split(',')[1] || '';
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+function asciiBytes(str){
+  const out = new Uint8Array(str.length);
+  for(let i=0;i<str.length;i++) out[i] = str.charCodeAt(i) & 0xff;
+  return out;
+}
+function concatBytes(parts){
+  const total = parts.reduce((sum,p)=>sum+p.length,0);
+  const out = new Uint8Array(total);
+  let offset = 0;
+  parts.forEach(p=>{ out.set(p, offset); offset += p.length; });
+  return out;
+}
+function makePdfFromJpegDataUrl(jpegDataUrl, pageW=PDF_PAGE_A4.w, pageH=PDF_PAGE_A4.h){
+  return makePdfFromJpegDataUrls([jpegDataUrl], pageW, pageH);
+}
+function makePdfFromJpegDataUrls(jpegDataUrls, pageW=PDF_PAGE_A4.w, pageH=PDF_PAGE_A4.h){
+  const images = jpegDataUrls.map(bytesFromDataUrl);
+  const pageCount = images.length;
+  const parts = [];
+  const offsets = [];
+  let length = 0;
+  const pushBytes = bytes => { parts.push(bytes); length += bytes.length; };
+  const pushAscii = str => pushBytes(asciiBytes(str));
+  const addObj = (id, body) => { offsets[id] = length; pushAscii(`${id} 0 obj\n${body}\nendobj\n`); };
+
+  pushAscii('%PDF-1.4\n%\xFF\xFF\xFF\xFF\n');
+  const pageIds = Array.from({length:pageCount},(_,i)=>3+i);
+  const imageIds = Array.from({length:pageCount},(_,i)=>3+pageCount+i);
+  const contentIds = Array.from({length:pageCount},(_,i)=>3+(pageCount*2)+i);
+  const size = 3 + pageCount * 3;
+
+  addObj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  addObj(2, `<< /Type /Pages /Kids [${pageIds.map(id=>`${id} 0 R`).join(' ')}] /Count ${pageCount} >>`);
+
+  for(let i=0;i<pageCount;i++){
+    addObj(pageIds[i], `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im${i} ${imageIds[i]} 0 R >> >> /Contents ${contentIds[i]} 0 R >>`);
+  }
+
+  for(let i=0;i<pageCount;i++){
+    const imgBytes = images[i];
+    offsets[imageIds[i]] = length;
+    pushAscii(`${imageIds[i]} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${PDF_PAGE.w} /Height ${PDF_PAGE.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${imgBytes.length} >>\nstream\n`);
+    pushBytes(imgBytes);
+    pushAscii('\nendstream\nendobj\n');
+  }
+
+  for(let i=0;i<pageCount;i++){
+    const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im${i} Do\nQ\n`;
+    addObj(contentIds[i], `<< /Length ${content.length} >>\nstream\n${content}endstream`);
+  }
+
+  const xrefPos = length;
+  let xref = `xref\n0 ${size}\n0000000000 65535 f \n`;
+  for(let id=1; id<size; id++) xref += `${String(offsets[id] || 0).padStart(10,'0')} 00000 n \n`;
+  pushAscii(xref + `trailer\n<< /Size ${size} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`);
+  return new Blob([concatBytes(parts)], {type:'application/pdf'});
+}
+function setPdfStatus(message){
+  const el = byId('pdfDownloadStatus');
+  if(el) el.textContent = message || '';
+}
+async function saveBlob(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>{
+    try{ window.open(url, '_blank', 'noopener'); }catch(_){ }
+  }, 350);
+  setTimeout(()=>URL.revokeObjectURL(url), 30000);
+}
+async function canvasJpegForPeriod(period){
+  const canvas = document.createElement('canvas');
+  await drawPdfCanvas(canvas, period);
+  return canvas.toDataURL('image/jpeg', .96);
+}
+async function downloadPeriodPdf(period, filenamePrefix='parcheggi'){
+  if(!period){ alert('Nessun periodo disponibile.'); return; }
+  const jpeg = await canvasJpegForPeriod(period);
+  const blob = makePdfFromJpegDataUrl(jpeg);
+  const filename = `${filenamePrefix}_${toInputDate(period.start)}_${toInputDate(period.end)}.pdf`;
+  await saveBlob(blob, filename);
+}
+async function downloadSelectedPdf(){
+  const btn = byId('downloadPdfBtn');
+  try{
+    const period = periodFromPdfSelect();
+    if(btn) btn.disabled = true;
+    setPdfStatus('Creo il PDF del periodo selezionato...');
+    await downloadPeriodPdf(period, 'parcheggi_periodo');
+    setPdfStatus('PDF pronto. Se non parte il download, controlla la scheda/apertura del browser.');
+  }catch(err){
+    console.error('Errore download PDF', err);
+    setPdfStatus('Errore: PDF non creato. Ricarica la pagina e riprova.');
+    alert('Non sono riuscito a creare il PDF: ' + (err && err.message ? err.message : err));
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+async function downloadCurrentPdf(){
+  const btn = byId('downloadCurrentPdfBtn');
+  try{
+    const period = pdfCurrentPeriod();
+    if(btn) btn.disabled = true;
+    setPdfStatus('Creo il PDF del periodo attuale...');
+    await downloadPeriodPdf(period, 'parcheggi_attuale');
+    setPdfStatus('PDF periodo attuale pronto.');
+  }catch(err){
+    console.error('Errore download PDF attuale', err);
+    setPdfStatus('Errore: PDF attuale non creato.');
+    alert('Non sono riuscito a creare il PDF attuale: ' + (err && err.message ? err.message : err));
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+async function downloadYearPdf(){
+  const btn = byId('downloadYearPdfBtn');
+  try{
+    const year = Number(byId('pdfYearSelect')?.value || new Date().getFullYear());
+    const periods = pdfPeriodsForYear(year);
+    if(!periods.length){ alert('Nessun periodo trovato per questo anno.'); return; }
+    if(btn) btn.disabled = true;
+    setPdfStatus(`Creo il PDF anno ${year}: ${periods.length} pagine...`);
+    const jpegs = [];
+    for(let i=0;i<periods.length;i++){
+      setPdfStatus(`Creo pagina ${i+1} di ${periods.length}...`);
+      jpegs.push(await canvasJpegForPeriod(periods[i]));
+    }
+    const blob = makePdfFromJpegDataUrls(jpegs);
+    await saveBlob(blob, `parcheggi_anno_${year}.pdf`);
+    setPdfStatus(`PDF anno ${year} pronto (${periods.length} pagine).`);
+  }catch(err){
+    console.error('Errore download PDF anno', err);
+    setPdfStatus('Errore: PDF annuale non creato.');
+    alert('Non sono riuscito a creare il PDF annuale: ' + (err && err.message ? err.message : err));
+  }finally{
+    if(btn) btn.disabled = false;
+  }
+}
+function goToPdfCurrentPeriod(){
+  const current = pdfCurrentPeriod();
+  if(!current){ alert('Nessun periodo attuale disponibile.'); return; }
+  pdfSelectedYear = current.start.getFullYear();
+  pdfSpecificYear = current.start.getFullYear();
+  pdfSelectedPeriodKey = pdfPeriodKey(current);
+  renderPdfControls();
+}
+
 function bindEvents(){
-  ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput'].forEach(id=>{
+  ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput','pdfDateInput'].forEach(id=>{
     const input = byId(id);
     if(!input) return;
     input.tabIndex = -1;
@@ -740,10 +1095,22 @@ function bindEvents(){
   byId('modalApplyDateBtn')?.addEventListener('click', applyModalDate);
   byId('dateModalClose')?.addEventListener('click', closeDateModal);
   byId('datePickerModal')?.addEventListener('click', e=>{ if(e.target.id==='datePickerModal') closeDateModal(); });
-  ['homeNextPeriodBtn','residentNextPeriodBtn','rightsNextPeriodBtn','favoritesNextPeriodBtn'].forEach(id=>byId(id)?.addEventListener('click',()=>goToPeriod('next')));
-  ['homePrevPeriodBtn','residentPrevPeriodBtn','rightsPrevPeriodBtn','favoritesPrevPeriodBtn'].forEach(id=>byId(id)?.addEventListener('click',()=>goToPeriod('prev')));
+  ['homeNextPeriodBtn','residentNextPeriodBtn','rightsNextPeriodBtn','favoritesNextPeriodBtn','pdfNextPeriodBtn'].forEach(id=>byId(id)?.addEventListener('click',()=>goToPeriod('next')));
+  ['homePrevPeriodBtn','residentPrevPeriodBtn','rightsPrevPeriodBtn','favoritesPrevPeriodBtn','pdfPrevPeriodBtn'].forEach(id=>byId(id)?.addEventListener('click',()=>goToPeriod('prev')));
   byId('gridViewBtn').addEventListener('click',()=>setView('grid')); byId('realViewBtn').addEventListener('click',()=>setView('map'));
   byId('clearFavoritesBtn').addEventListener('click',()=>{ favorites=[]; saveFavorites(); renderFavorites(); renderAllDynamic(); });
+  byId('pdfPeriodSelect')?.addEventListener('change', e=>{ pdfSelectedPeriodKey = e.target.value; renderPdfControls(); });
+  byId('pdfSpecificYearSelect')?.addEventListener('change', e=>{ pdfSpecificYear = Number(e.target.value); pdfSelectedPeriodKey = null; renderPdfControls(); });
+  byId('pdfYearSelect')?.addEventListener('change', e=>{
+    pdfSelectedYear = Number(e.target.value);
+    pdfSpecificYear = pdfSelectedYear;
+    pdfSelectedPeriodKey = null;
+    renderPdfControls();
+  });
+  byId('pdfTodayPeriodBtn')?.addEventListener('click', goToPdfCurrentPeriod);
+  byId('downloadCurrentPdfBtn')?.addEventListener('click', downloadCurrentPdf);
+  byId('downloadYearPdfBtn')?.addEventListener('click', downloadYearPdf);
+  byId('downloadPdfBtn')?.addEventListener('click', downloadSelectedPdf);
   byId('residentSearchInput').addEventListener('input', ()=>{ closeResidentSuggestions(); renderResidents(); });
   byId('residentSearchInput').addEventListener('focus', closeResidentSuggestions);
   byId('spotModalClose').addEventListener('click', closeSpotModal); byId('spotModal').addEventListener('click', e=>{ if(e.target.id==='spotModal') closeSpotModal(); });
@@ -753,6 +1120,15 @@ function bindEvents(){
     const mapSpot = e.target.closest('[data-map-spot]'); if(mapSpot){ openMapPopup(mapSpot.dataset.mapContext, Number(mapSpot.dataset.mapSpot), mapSpot.dataset.mapContext==='modalRealMap'); return; }
     const mapArea = e.target.closest('.real-map'); if(mapArea){ closeAllMapPopups(); return; }
     const closeResidentBtn = e.target.closest('[data-close-resident]'); if(closeResidentBtn){ closeResidentModal(); return; }
+    const residentStep = e.target.closest('[data-resident-step]');
+    if(residentStep){
+      e.preventDefault();
+      e.stopPropagation();
+      const name = residentStep.dataset.residentName;
+      goToPeriod(residentStep.dataset.residentStep === 'prev' ? 'prev' : 'next');
+      if(name) byId('residentModalBody').innerHTML = residentStoryHtml(name);
+      return;
+    }
     const fav = e.target.closest('[data-fav-name]'); if(fav){ e.stopPropagation(); const name=fav.dataset.favName; if(name) toggleFavoriteResident(name); return; }
     const remove = e.target.closest('[data-fav-remove-name]'); if(remove){ e.stopPropagation(); const name=remove.dataset.favRemoveName; favorites=favorites.filter(n=>normalizeName(n)!==normalizeName(name)); saveFavorites(); renderAllDynamic(); return; }
     const suggested = e.target.closest('[data-suggest-resident]'); if(suggested){ const name=suggested.dataset.suggestResident; const input=byId('residentSearchInput'); if(input) input.value=''; closeResidentSuggestions(); renderResidents(); openResidentModal(name); return; }
@@ -772,6 +1148,7 @@ function bindEvents(){
     else if(sec === 'condominoSection') renderResidents();
     else if(sec === 'rightsSection') renderRights();
     else if(sec === 'favoritesSection') renderFavorites();
+    else if(sec === 'pdfSection') renderPdfControls();
   }));
 }
 document.addEventListener('DOMContentLoaded',()=>{ bindEvents(); setDate(new Date()); forceHomeMapOnOpen(); });

@@ -1,4 +1,4 @@
-const CACHE_NAME = "parcheggi-mobile-stabile-v20";
+const CACHE_NAME = "parcheggi-pdf-v4-anno-intuitivo";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,7 +6,7 @@ const ASSETS = [
   "./mobile_override.css",
   "./app.js",
   "./mappa-posti-numeri.webp",
-  "./mappa-posti-numeri.png",
+  "./mappa-pdf-base.png",
   "./via.webp",
   "./icon.svg",
   "./manifest.webmanifest"
@@ -35,6 +35,13 @@ self.addEventListener("activate", event => {
   serve sempre i file aggiornati quando c'è connessione.
   Se il telefono è offline, usa la cache.
 */
+
+self.addEventListener("message", event => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
 
