@@ -1,4 +1,4 @@
-const CACHE_NAME = "parcheggi-pdf-v4-anno-intuitivo";
+const CACHE_NAME = "parcheggi-pdf-v5-perf";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,8 @@ const ASSETS = [
   "./mappa-pdf-base.png",
   "./via.webp",
   "./icon.svg",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./data.json"
 ];
 
 self.addEventListener("install", event => {

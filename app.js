@@ -87,7 +87,8 @@ function resetVolatileStateOnOpen(){
   }catch(_){}
 }
 
-resetVolatileStateOnOpen();
+// FIX: eseguito in modo asincrono dopo il primo render, così non blocca lo schermo
+setTimeout(resetVolatileStateOnOpen, 0);
 
 let selectedDate = stripTime(new Date());
 let selectedPeriod = null;
@@ -499,8 +500,20 @@ function renderParkingGrid(){
     </button>`;
   }).join('');
 }
+// FIX: cache mappa reale – evita di ricostruire tutto l'innerHTML se il periodo non è cambiato
+let _lastRealMapKey = null;
+let _lastRealMapTargetId = null;
 function renderRealMap(targetId='realMap', highlightSpot=null){
   const map = byId(targetId); if(!map) return;
+  const periodKey = selectedPeriod ? `${selectedPeriod.cycleStartYear}_${selectedPeriod.index}` : (isFreeParkingPeriod(selectedDate) ? 'free' : 'none');
+
+  // Solo se non c'è un highlight specifico e il periodo e il target sono gli stessi, skip del rebuild HTML
+  if(!highlightSpot && periodKey === _lastRealMapKey && targetId === _lastRealMapTargetId){
+    return;
+  }
+  _lastRealMapKey = periodKey;
+  _lastRealMapTargetId = targetId;
+
   const popupId = `${targetId}Popup`;
   map.innerHTML = DATA.realSpotPositions.map(([spot,x,y])=>{
     if(!SPOTS.includes(Number(spot))) return '';
@@ -657,6 +670,7 @@ function renderAllDynamic(){
 }
 function setDate(date){
   _cachedOccupants = null; // invalida cache occupanti
+  _lastRealMapKey = null;  // FIX: invalida cache mappa reale
   selectedDate = stripTime(date); selectedPeriod = findPeriodByDate(selectedDate);
   ['homeDateInput','residentDateInput','rightsDateInput','favoritesDateInput','pdfDateInput'].forEach(id=>{ const el=byId(id); if(el) el.value = toInputDate(selectedDate); });
   [['homeDateLabel'],['residentDateLabel'],['rightsDateLabel'],['favoritesDateLabel'],['pdfDateLabel']].forEach(([labelId])=>{ const label=byId(labelId); if(label) label.textContent = fullFmt(selectedDate); });
@@ -735,8 +749,10 @@ function forceHomeMapOnOpen(){
    GENERAZIONE PDF A4
 ───────────────────────────────────────────── */
 const PDF_BASE_IMAGE = 'mappa-pdf-base.png';
-const PDF_PAGE = {w:1240, h:1754};
+// FIX: canvas ridotto del 35% → ~40% meno pixel, qualità ancora ottima per stampa
+const PDF_PAGE = {w:806, h:1140};
 const PDF_PAGE_A4 = {w:595.28, h:841.89};
+// FIX: coordinate adattate al canvas ridotto (stesse percentuali, funzionano automaticamente)
 const PDF_COORDS = {
   1:{x:18.7, numberY:9.5}, 2:{x:18.7, numberY:15.3}, 3:{x:18.7, numberY:21.2}, 4:{x:18.7, numberY:27.3}, 5:{x:18.7, numberY:33.0},
   8:{x:18.7, numberY:58.0}, 9:{x:18.7, numberY:64.5}, 10:{x:18.7, numberY:81.2},
@@ -765,6 +781,8 @@ function loadPdfBaseImage(){
   });
   return pdfBaseImagePromise;
 }
+// FIX: precarica l'immagine base subito, così il primo PDF è istantaneo
+loadPdfBaseImage();
 function pdfPeriodKey(period){ return `${toInputDate(period.start)}_${period.index}_${period.cycleStartYear}`; }
 function pdfAllPeriodsAroundYear(year){
   year = Number(year);
@@ -862,9 +880,10 @@ function wrapCanvasText(ctx, text, maxWidth, maxLines){
   return lines;
 }
 function drawFittedName(ctx, text, x, y, maxWidth, maxHeight){
-  let size = 12;
+  // FIX: font minima adattata al canvas ridotto (era 12, ora 8)
+  let size = 8;
   let lines = [];
-  while(size >= 12){
+  while(size >= 8){
     ctx.font = `900 ${size}px Arial, sans-serif`;
     lines = wrapCanvasText(ctx, text, maxWidth, 3);
     const lineHeight = size * 1.04;
@@ -890,14 +909,15 @@ async function drawPdfCanvas(canvas, period){
   ctx.drawImage(img, 0, 0, W, H);
   ctx.fillStyle = '#071735';
   ctx.textAlign = 'right';
-  const titleX = W - 40;
+  const titleX = W - 26;
   ctx.textBaseline = 'middle';
-  ctx.font = '900 34px Arial, sans-serif';
-  ctx.fillText('PARCHEGGI VIA B. CHIMIRRI 27', titleX, 66);
+  // FIX: font scalati proporzionalmente al canvas ridotto
+  ctx.font = '900 22px Arial, sans-serif';
+  ctx.fillText('PARCHEGGI VIA B. CHIMIRRI 27', titleX, 43);
   if(period){
-    ctx.font = '900 30px Arial, sans-serif';
-    ctx.fillText(`${periodDateText(period)}`, titleX, 120);
-    ctx.fillText(`TURNO: ${period.main}  ·  TURNETTO: ${period.small}`, titleX, 172);
+    ctx.font = '900 20px Arial, sans-serif';
+    ctx.fillText(`${periodDateText(period)}`, titleX, 78);
+    ctx.fillText(`TURNO: ${period.main}  ·  TURNETTO: ${period.small}`, titleX, 112);
   }
   const rows = rowsForPeriod(period);
   const occupants = buildOccupants(rows.mainRows, rows.smallRows);
@@ -905,16 +925,17 @@ async function drawPdfCanvas(canvas, period){
     const spot = Number(spotStr);
     const x = W * pos.x / 100;
     const numberY = H * pos.numberY / 100;
-    const nameY = numberY + 35;
+    const nameY = numberY + 23;
     const occ = occupants.get(spot);
     ctx.fillStyle = '#000';
-    ctx.font = '900 44px Arial, sans-serif';
+    // FIX: font scalato proporzionalmente al canvas ridotto
+    ctx.font = '900 29px Arial, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(String(spot), x, numberY);
     if(occ?.name){
       ctx.fillStyle = '#000';
-      drawFittedName(ctx, displayPdfName(occ.name), x, nameY, 105, 58);
+      drawFittedName(ctx, displayPdfName(occ.name), x, nameY, 68, 38);
     }
   });
 }
@@ -1052,11 +1073,17 @@ async function downloadYearPdf(){
     if(!periods.length){ alert('Nessun periodo trovato per questo anno.'); return; }
     if(btn) btn.disabled = true;
     setPdfStatus(`Creo il PDF anno ${year}: ${periods.length} pagine...`);
+
+    // FIX: genera le pagine in batch paralleli (max 4 per volta = limite canvas iOS)
+    const BATCH = 4;
     const jpegs = [];
-    for(let i=0;i<periods.length;i++){
-      setPdfStatus(`Creo pagina ${i+1} di ${periods.length}...`);
-      jpegs.push(await canvasJpegForPeriod(periods[i]));
+    for(let i = 0; i < periods.length; i += BATCH){
+      const batch = periods.slice(i, i + BATCH);
+      setPdfStatus(`Creo pagine ${i+1}–${Math.min(i+BATCH, periods.length)} di ${periods.length}...`);
+      const results = await Promise.all(batch.map(p => canvasJpegForPeriod(p)));
+      jpegs.push(...results);
     }
+
     const blob = makePdfFromJpegDataUrls(jpegs);
     await saveBlob(blob, `parcheggi_anno_${year}.pdf`);
     setPdfStatus(`PDF anno ${year} pronto (${periods.length} pagine).`);

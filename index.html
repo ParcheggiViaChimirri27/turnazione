@@ -11,12 +11,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Parcheggi" />
-  <link rel="manifest" href="manifest.webmanifest?v=pdf6" />
-  <link rel="icon" href="icon.svg?v=pdf6" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest?v=pdf8" />
+  <link rel="icon" href="icon.svg?v=pdf8" type="image/svg+xml" />
   <link rel="preload" href="mappa-posti-numeri.webp" as="image" type="image/webp" />
   <link rel="preload" href="via.webp" as="image" type="image/webp" />
-  <link rel="stylesheet" href="style.css?v=pdf6" />
-  <link rel="stylesheet" href="mobile_override.css?v=pdf6" />
+  <link rel="preload" href="mappa-pdf-base.png" as="image" type="image/png" />
+  <link rel="stylesheet" href="style.css?v=pdf8" />
+  <link rel="stylesheet" href="mobile_override.css?v=pdf8" />
 </head>
 <body>
   <div class="app-shell">
@@ -248,7 +249,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=pdf7"></script>
+  <script src="app.js?v=pdf8"></script>
   <script>
     // Aggiornamento automatico PWA: quando apri l'app controlla sempre i file nuovi.
     // I preferiti restano salvati perché app.js conserva solo parkingFavorites/parkingFavoriteResidents.
@@ -262,7 +263,7 @@
 
       window.addEventListener('load', async () => {
         try {
-          const reg = await navigator.serviceWorker.register('./sw.js?v=pdf7');
+          const reg = await navigator.serviceWorker.register('./sw.js?v=pdf8');
           await reg.update();
 
           if (reg.waiting) {
